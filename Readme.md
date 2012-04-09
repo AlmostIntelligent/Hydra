@@ -1,4 +1,5 @@
-	Hydra
+
+Hydra
 =====
 
 Started in 
@@ -95,6 +96,7 @@ An *application* uses multiple services to solve a problem. An example can be th
 >
 > The service "Stream to disk" invokes a process, that saves the result of the encoding to a HDD.
 
+
 On Screen: The communication
 ----------------------------
 
@@ -126,6 +128,51 @@ A basic packet possibly has the following structure. (This is open for discussio
 		      +--payload length
 		      +--payload type
 		      \--payload data
+
+
+
+Inside the brain: Basic function of every head
+----------------------------------------------
+
+Since we're using Java, everything is an object.
+Every function returns an object.
+
+
+### In the beginning, their is *Invoke*
+
+Starting a process on a head is called invoking.
+The only argument is an storage object that contains all needed parameters.
+
+This is comparable to a function call on a remote machine.
+
+
+### Quis custodiet ipsos custodes: *Watch / Link*
+
+It is often necessary that some process are watched by others.
+Either a process should be stopped when the "parent" stops,
+or a process should be restarted by its parent if it stops.
+
+
+### Interprocess communication: *Send / Receive*
+
+To fulfill their destiny the processes need to exchange data.
+This is done by the send and receive procedures. 
+To transfer any kind of data (processing data, Exceptions, status information, payload), 
+everything is packed into objects.
+
+
+### Are you still there?: *Status*
+
+To tame (aka administer) the Hydra (aka the network) it would be usefull to see,
+what their heads are doing at the moment.
+The status request can be called from any head and receives information about the currently active processes.
+
+
+### Code Exchange: *Push / Pull*
+
+If a structural change inside the net occures, there could be code that needs to be exchanged.
+Therefore these two functions exists. 
+No need to explain them more further as their names speak for themselves.
 
 
 Getting on with the evolution: Future features
@@ -170,7 +217,9 @@ A head inside a Hydra knows every other head and its capabilities and trust its 
 Their is no need to know every single Hydra in the world, especially not those malicious one. 
 
 The only thing a Hydra needs to know is:
+
 - What can I do?
 - If I can't do something, do I know someone who can (or someone, who knows someone who can...)?
+
 This theoretically enables a Hydra to perform every thinkable task, either on its own heads, or by delegating the 
 task to (multiple) other Hydras it trusts.
