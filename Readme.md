@@ -2,7 +2,7 @@ Hydra
 =====
 
 Started in 
-	Summer-Semester 2012 
+	Summersemester 2012 
 at the
 	University of Applied Science, Wedel
 
@@ -123,7 +123,7 @@ A basic packet possibly has the following structure. (This is open for discussio
 Getting on with the evolution: Future feature
 ---------------------------------------------
 
-### On layer on top
+### One layer on top
 
 Implementing a network layer on top to create a communication between multiple networks. 
 This could lead towards a decentralized, distributive computation network.
