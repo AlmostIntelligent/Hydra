@@ -2,7 +2,7 @@ Hydra
 =====
 
 by 
-	Christian Kulpa <chris@gethydrated.org> 
+	Christian Kulpa <chris@gethydrated.org>,
 	Hanno Sternberg <hanno@gethydrated.org>
 
 
@@ -37,7 +37,7 @@ The network shares the same process code. New nodes automatically distribute and
 Inside the network every line of code is seen as "trusthworty". Meaning, there is no malicious code.
 
 
-### Differentiation of heads: *roles*
+### Differentiation of heads: The *roles*
 
 Based on its (hardware-) configurations a head has multiple *roles*. 
 Each process can require specific roles to fulfill its duties.
