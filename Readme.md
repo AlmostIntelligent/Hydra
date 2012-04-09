@@ -1,8 +1,8 @@
-Hydra
+	Hydra
 =====
 
 Started in 
-	Summersemester 2012 
+	summer semester 2012 
 at the
 	[University of Applied Science, Wedel](http://fh-wedel.de)
 
@@ -128,16 +128,13 @@ A basic packet possibly has the following structure. (This is open for discussio
 		      \--payload data
 
 
-Getting on with the evolution: Future feature
----------------------------------------------
+Getting on with the evolution: Future features
+----------------------------------------------
 
 ### One layer on top
 
 Implementing a network layer on top to create a communication between multiple networks. 
-This could lead towards a decentralized, distributive computation network.
-
-In this network their could be malicious code, which makes the security of code a
-prime aspect of the implementation.
+This could lead towards a decentralised, distributive computation network.
 
 The abstract idea behind this layer is a network, that provides the users with the ability to
 access computational resources if needed with autmatic load balancing over the whole network.
@@ -158,3 +155,22 @@ My personal example is this:
 >
 > As a result, it could be possible, that the movie, I recorded in my vacation in Berlin could be rendered 
 > on a Hydra in Hamburg which delegates the work to other Hydras all over the world.
+
+It should be possible that a Hydra can request the code for a service from another Hydra, to expand its
+capabilities. As a result, their could be malicious code, which makes the security of code a
+prime aspect of the implementation.
+
+This layer needs sophisticated routing algorithms to transport services and their data throuh the whole network of
+interconnected hydras which is the second main aspect of the implementation.
+
+In this layer a Hydra can has a single head, meaning only one single machine, a group of machines forming a network
+an also a cloud computer like Amazons EC2  which can spawn new head or even complete Hydras up to their needs.
+The boundaries between single and multi-headed Hydras blur. The big difference is the security and the interconnection.
+A head inside a Hydra knows every other head and its capabilities and trust its process code - A Hydra doesn't.
+Their is no need to know every single Hydra in the world, especially not those malicious one. 
+
+The only thing a Hydra needs to know is:
+- What can I do?
+- If I can't do something, do I know someone who can (or someone, who knows someone who can...)?
+This theoretically enables a Hydra to perform every thinkable task, either on its own heads, or by delegating the 
+task to (multiple) other Hydras it trusts.
