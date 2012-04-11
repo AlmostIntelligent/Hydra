@@ -1,4 +1,3 @@
-
 Hydra
 =====
 
@@ -135,30 +134,39 @@ Inside the brain: Basic function of every head
 ----------------------------------------------
 
 Since we're using Java, everything is an object.
-Every function returns an object.
+
+The arguments passed to a (possibly remote) called function are objects, 
+the result of that call is an object.
+Therefore a serialisation algoritm is needed to pass those objects around.
+How this algorithm works is yet to be specified.
 
 
 ### In the beginning, their is *Invoke*
 
 Starting a process on a head is called invoking.
-The only argument is an storage object that contains all needed parameters.
-
 This is comparable to a function call on a remote machine.
+
+The invokation of a process creates an process-identifing object.
+From now one every head can access this process from all over the network
+using this unique identifier.
 
 
 ### Quis custodiet ipsos custodes: *Watch / Link*
 
 It is often necessary that some process are watched by others.
-Either a process should be stopped when the "parent" stops,
-or a process should be restarted by its parent if it stops.
+
+A process can either be watched by another, meaning if the watch processes terminates unplanned,
+the watching process will restart it.
+
+If a process is linked to another, it will automatically terminate itself, if the parent process is terminated.
 
 
 ### Interprocess communication: *Send / Receive*
 
 To fulfill their destiny the processes need to exchange data.
 This is done by the send and receive procedures. 
-To transfer any kind of data (processing data, Exceptions, status information, payload), 
-everything is packed into objects.
+To transfer any kind of data (processing data, Exceptions, status information, payload) everything is 
+packed into objects.
 
 
 ### Are you still there?: *Status*
