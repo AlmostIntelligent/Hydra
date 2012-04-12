@@ -175,9 +175,11 @@ If a process is ready to _receive_ data, it's possible, that the data isn't ther
 In this case, the process suspends and await the arrival.
 If the data can be tagged with a process identifier only data from this process will be accepted, 
 otherwise any process can send it.
-To avoid locks, e.g. in case of an unexpected process termination, it should be possible, to 
+To avoid locks, e.g. in case of an unexpected process termination, it should be possible, to
+
 a. ping tagged process, to check if they are alive
 b. attach a timeout
+
 to prevent endless waiting.
 
 
@@ -187,6 +189,7 @@ To tame (aka administer) the Hydra (aka the network) it would be usefull to see,
 what their heads are doing at the moment.
 The status request can be called from any head.
 The result contains a package with
+
 0. Base information (version, runtime, etc etc)
 1. active processes (PIDOs)
 2. available services
