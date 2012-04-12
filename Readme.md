@@ -146,9 +146,11 @@ How this algorithm works is yet to be specified.
 Starting a process on a head is called invoking.
 This is comparable to a function call on a remote machine.
 
-The invokation of a process creates an process-identifing object (**PIDO**).
+The invokation of a process creates an process-identifing object (maybe called *PIDO*?).
 From now one every head can access this process from all over the network
 using this unique identifier.
+
+This identifiers can be aquired using the *->status* command.
 
 
 ### Quis custodiet ipsos custodes: *Watch / Link*
@@ -174,22 +176,35 @@ In this case, the process suspends and await the arrival.
 If the data can be tagged with a process identifier only data from this process will be accepted, 
 otherwise any process can send it.
 To avoid locks, e.g. in case of an unexpected process termination, it should be possible, to 
-a) ping tagged process, to check if they are alive
-b) attach a timeout, to prevent endless waiting.
+a. ping tagged process, to check if they are alive
+b. attach a timeout
+to prevent endless waiting.
 
 
 ### Are you still there?: *Status*
 
 To tame (aka administer) the Hydra (aka the network) it would be usefull to see,
 what their heads are doing at the moment.
-The status request can be called from any head and receives information about the currently active processes.
+The status request can be called from any head.
+The result contains a package with
+0. Base information (version, runtime, etc etc)
+1. active processes (PIDOs)
+2. available services
+3. roles
+4. possibly the current / peak load
 
 
 ### Code Exchange: *Push / Pull*
 
 If a structural change inside the net occures, there could be code that needs to be exchanged.
 Therefore these two functions exists. 
-No need to explain them more further as their names speak for themselves.
+
+A new node pushes its process code to the net. 
+All other nodes pull this code, from the coordinator.
+
+Is it useful, to check every code archive using checksum?
+Which algorithm?
+Only after exchange or on a regular basis (in idle?)?
 
 
 Getting on with the evolution: Future features
