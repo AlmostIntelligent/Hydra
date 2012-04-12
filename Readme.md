@@ -146,7 +146,7 @@ How this algorithm works is yet to be specified.
 Starting a process on a head is called invoking.
 This is comparable to a function call on a remote machine.
 
-The invokation of a process creates an process-identifing object.
+The invokation of a process creates an process-identifing object (**PIDO**).
 From now one every head can access this process from all over the network
 using this unique identifier.
 
@@ -167,6 +167,15 @@ To fulfill their destiny the processes need to exchange data.
 This is done by the send and receive procedures. 
 To transfer any kind of data (processing data, Exceptions, status information, payload) everything is 
 packed into objects.
+
+Aside the data transfer, these functions can synchronise the distributed program flow. 
+If a process is ready to _receive_ data, it's possible, that the data isn't there yet.
+In this case, the process suspends and await the arrival.
+If the data can be tagged with a process identifier only data from this process will be accepted, 
+otherwise any process can send it.
+To avoid locks, e.g. in case of an unexpected process termination, it should be possible, to 
+a) ping tagged process, to check if they are alive
+b) attach a timeout, to prevent endless waiting.
 
 
 ### Are you still there?: *Status*
