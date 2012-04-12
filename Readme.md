@@ -81,8 +81,8 @@ The invokation can happen on multiple *nodes* at the same time.
 A service can't rely on every node in the the net for execution of processes. 
 Therefore there must be a handler to react, if 
 
-a. A node with an externally invoked process shuts down / looses its network connection.
-b. A node that has invoked processes on other nodes shuts down / looses its connection.
+- A node with an externally invoked process shuts down / looses its network connection.
+- A node that has invoked processes on other nodes shuts down / looses its connection.
 
 
 ### Solving a problem: The *application*
@@ -177,8 +177,8 @@ If the data can be tagged with a process identifier only data from this process 
 otherwise any process can send it.
 To avoid locks, e.g. in case of an unexpected process termination, it should be possible, to
 
-a. ping tagged process, to check if they are alive
-b. attach a timeout
+- ping tagged process, to check if they are alive
+- attach a timeout
 
 to prevent endless waiting.
 
