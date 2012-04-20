@@ -1,22 +1,24 @@
 configure(allprojects) {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
-	
+
 	group = 'org.gethydrated'
-	
+
 	sourceCompatibility=1.7
 	targetCompatibility=1.7
-	
-	repositories {
-		mavenCentral()
-	}
-	
-	dependencies {
+
+	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+	repositories { mavenCentral() }
+
+	dependencies { 
+		compile 	"org.slf4j:slf4j-api:1.6.4"
 		testCompile "junit:junit:4.10"
+		
 	}
 }
 
-configure(subprojects) { subproject ->
+configure(subprojects) {
 	task sourcesJar(type: Jar, dependsOn:classes) {
 		classifier = 'sources'
 		from sourceSets.main.allJava
@@ -33,32 +35,26 @@ configure(subprojects) { subproject ->
 	}
 }
 
-configure("hydra-api") {
-	description = 'Hydra API'
-}
+configure("hydra-api") { description = 'Hydra API' }
 
 configure("hydra-core") {
 	description = 'Hydra Core'
-	
-	dependencies {
-		compile project(':hydra-api')
-	}
+
+	dependencies { compile project(':hydra-api') }
 }
 
 configure("hydra-cli") {
 	description = 'Hydra CLI'
-	
-	dependencies {
-		compile project(':hydra-api')
-	}
+
+	dependencies { compile project(':hydra-api') }
 }
 
 configure(rootProject) {
-	description='Hydra'
-	
+	description = 'Hydra'
+
 	// don't publish the default jar for the root project
 	configurations.archives.artifacts.clear()
-	
+
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
 		gradleVersion = '1.0-rc-1'

@@ -1,4 +1,4 @@
-rootProject.name = 'Hydra'
+rootProject.name = 'hydra'
 
 include 'hydra-api'
 include 'hydra-core'
