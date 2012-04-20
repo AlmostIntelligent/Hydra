@@ -1,0 +1,5 @@
+rootProject.name = 'Hydra'
+
+include 'hydra-api'
+include 'hydra-core'
+include 'hydra-cli'
