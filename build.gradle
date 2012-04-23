@@ -37,6 +37,8 @@ configure(subprojects) {
 
 configure("hydra-api") { description = 'Hydra API' }
 
+configure("hydra-launcher") { description = 'Hydra Launcher'}
+
 configure("hydra-core") {
 	description = 'Hydra Core'
 
