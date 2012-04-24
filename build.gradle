@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.application.CreateStartScripts
+
 configure(allprojects) {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
@@ -15,10 +17,15 @@ configure(allprojects) {
 		compile 	"org.slf4j:slf4j-api:1.6.4"
 		testCompile "junit:junit:4.10"
 	}
+
+	ext { mainClass = 'org.gethydrated.hydra.launcher.Launcher' }
 }
 
-configure(subprojects) {
-
+configure(subprojects) { subproject ->
+	jar {
+		manifest.attributes['Implementation-Title'] = subproject.name
+		manifest.attributes['Implementation-Version'] = subproject.version
+	}
 	task sourcesJar(type: Jar, dependsOn:classes) {
 		classifier = 'sources'
 		from sourceSets.main.allJava
@@ -35,17 +42,24 @@ configure(subprojects) {
 	}
 }
 
-configure("hydra-api") { description = 'Hydra API' }
+project("hydra-api") { description = 'Hydra API' }
 
-configure("hydra-launcher") { description = 'Hydra Launcher'}
+project("hydra-launcher") {
+	description = 'Hydra Launcher'
+	jar {
+		manifest.attributes['Main-Class'] = mainClass
+	}
 
-configure("hydra-core") {
+	dependencies { compile project(':hydra-core') }
+}
+
+project("hydra-core") {
 	description = 'Hydra Core'
 
 	dependencies { compile project(':hydra-api') }
 }
 
-configure("hydra-cli") {
+project("hydra-cli") {
 	description = 'Hydra CLI'
 
 	dependencies { compile project(':hydra-api') }
@@ -57,32 +71,46 @@ configure(rootProject) {
 	// don't publish the default jar for the root project
 	configurations.archives.artifacts.clear()
 
-	
-	ext.releaseSpec = copySpec {
-		def baseDir = "${project.name}-${project.version}";
-
+	task prepareDist(type: Copy) {
+		description = 'Prepare release bundle'
+		destinationDir = "$buildDir/assemble" as File
 		subprojects.each { subproject ->
-			into ("/libs") {
+			into ("/lib") {
 				from subproject.jar
 				from subproject.configurations.runtime
 			}
 		}
 	}
-	
-	task distZip( type: Zip) {
-		description = "Build release bundle in ZIP format"
-		with project.releaseSpec
+
+	task generateScript(type: CreateStartScripts, dependsOn: prepareDist) {
+		description = 'Generate startup scripts'
+		applicationName = "hydra"
+		mainClassName = mainClass
+		outputDir = file("$buildDir/script")
+		classpath = fileTree(dir: "$buildDir/assemble/lib")
 	}
 
-	task distTar( type: Tar) {
+	task finishDist(type: Copy, dependsOn: [prepareDist, generateScript]) {
+		description = 'Finish release preparations'
+		destinationDir = "$buildDir/assemble" as File
+		from ("$buildDir/script") { into("bin") }
+	}
+
+	task distZip( type: Zip, dependsOn: finishDist) {
+		description = "Build release bundle in ZIP format"
+		from ("$buildDir/assemble")
+
+	}
+
+	task distTar( type: Tar, dependsOn: finishDist) {
 		description = "Build release bundle in GZIP format"
 		compression = Compression.GZIP
-		with project.releaseSpec
+		from ("$buildDir/assemble")
 	}
 
-	artifacts {
-		archives distZip
-		archives distTar
+	task distFull() {
+		description = 'Build release bundle in ZIP and GZIP formats'
+		dependsOn([distZip, distTar])
 	}
 
 	task wrapper(type: Wrapper) {
