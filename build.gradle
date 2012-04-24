@@ -11,14 +11,14 @@ configure(allprojects) {
 
 	repositories { mavenCentral() }
 
-	dependencies { 
+	dependencies {
 		compile 	"org.slf4j:slf4j-api:1.6.4"
 		testCompile "junit:junit:4.10"
-		
 	}
 }
 
 configure(subprojects) {
+
 	task sourcesJar(type: Jar, dependsOn:classes) {
 		classifier = 'sources'
 		from sourceSets.main.allJava
@@ -56,6 +56,34 @@ configure(rootProject) {
 
 	// don't publish the default jar for the root project
 	configurations.archives.artifacts.clear()
+
+	
+	ext.releaseSpec = copySpec {
+		def baseDir = "${project.name}-${project.version}";
+
+		subprojects.each { subproject ->
+			into ("/libs") {
+				from subproject.jar
+				from subproject.configurations.runtime
+			}
+		}
+	}
+	
+	task distZip( type: Zip) {
+		description = "Build release bundle in ZIP format"
+		with project.releaseSpec
+	}
+
+	task distTar( type: Tar) {
+		description = "Build release bundle in GZIP format"
+		compression = Compression.GZIP
+		with project.releaseSpec
+	}
+
+	artifacts {
+		archives distZip
+		archives distTar
+	}
 
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
