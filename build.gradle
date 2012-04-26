@@ -16,6 +16,7 @@ configure(allprojects) {
 	dependencies {
 		compile 	"org.slf4j:slf4j-api:1.6.4"
 		testCompile "junit:junit:4.10"
+		testCompile "ch.qos.logback:logback-classic:1.0.1"
 	}
 
 	ext { mainClass = 'org.gethydrated.hydra.launcher.Launcher' }
@@ -50,7 +51,10 @@ project("hydra-launcher") {
 		manifest.attributes['Main-Class'] = mainClass
 	}
 
-	dependencies { compile project(':hydra-core') }
+	dependencies { 
+		compile project(':hydra-core')
+		compile "ch.qos.logback:logback-classic:1.0.1" 
+	}
 }
 
 project("hydra-core") {
@@ -71,9 +75,12 @@ configure(rootProject) {
 	// don't publish the default jar for the root project
 	configurations.archives.artifacts.clear()
 
-	task prepareDist(type: Copy) {
+	task prepareDist(type: Copy, dependsOn: subprojects*.build) {
 		description = 'Prepare release bundle'
 		destinationDir = "$buildDir/assemble" as File
+		
+		from("src/dist")
+		
 		subprojects.each { subproject ->
 			into ("/lib") {
 				from subproject.jar
@@ -113,6 +120,11 @@ configure(rootProject) {
 		dependsOn([distZip, distTar])
 	}
 
+	artifacts {
+		archives distZip
+		archives distTar
+	}
+	
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
 		gradleVersion = '1.0-rc-1'
