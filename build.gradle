@@ -109,7 +109,7 @@ configure(rootProject) {
 		}
 	}
 	
-	prepareSource = copySpec {
+	ext.prepareSource = copySpec {
 		into( 'sources' ) {
 			from ( rootProject.projectDir ) {
 				exclude( '.git' )
