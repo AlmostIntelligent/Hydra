@@ -75,11 +75,80 @@ configure(rootProject) {
 	// don't publish the default jar for the root project
 	configurations.archives.artifacts.clear()
 
-	task prepareDist(type: Copy, dependsOn: subprojects*.build) {
+	task api(type: Javadoc) {
+		group = 'Documentation'
+		description = 'Generates aggregated Javadoc API documentation.'
+		title = "${rootProject.description} ${version} API"
+		options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+		options.author = true
+		options.header = rootProject.description
+		source subprojects.collect { project ->
+			project.sourceSets.main.allJava
+		}
+		destinationDir = new File(buildDir, "api")
+		classpath = files(subprojects.collect { project ->
+			project.sourceSets.main.compileClasspath
+		})
+		maxMemory = '1024m'
+	}
+	
+	task docsZip(type: Zip, dependsOn: api) {
+		classifier = 'docs'
+		description = "Builds -${classifier} archive containing api and reference documentation."
+		from api {
+			into "api"
+		}
+	}
+	
+	task docsTar(type: Tar, dependsOn: api) {
+		classifier = 'docs'
+		description = "Builds -${classifier} archive containing api and reference documentation."
+		compression = Compression.GZIP
+		from api {
+			into "api"
+		}
+	}
+	
+	prepareSource = copySpec {
+		into( 'sources' ) {
+			from ( rootProject.projectDir ) {
+				exclude( '.git' )
+				exclude( '.gitignore' )
+				exclude( '.classpath' )
+				exclude( '.project' )
+				exclude( '.DS_STore' )
+				exclude( 'Readme.md')
+				exclude( '**/.gradle/**' )
+				exclude( '**/bin/**' )
+				exclude( '**/build/**' )
+			}
+		}
+	}
+	
+	task srcZip(type: Zip, dependsOn: api) {
+		classifier = 'src'
+		description = "Builds -${classifier} archive containing project sources."
+		with project.prepareSource
+	}
+	
+	task srcTar(type: Tar, dependsOn: api) {
+		classifier = 'src'
+		description = "Builds -${classifier} archive containing project sources."
+		compression = Compression.GZIP
+		with project.prepareSource
+	}
+	
+	task prepareDist(type: Copy, dependsOn: [subprojects*.build, docsZip]) {
 		description = 'Prepare release bundle'
 		destinationDir = "$buildDir/assemble" as File
 		
 		from("src/dist")
+		
+		from(zipTree(docsZip.archivePath)) {
+            into "docs"
+        }
+		
+		with project.prepareSource
 		
 		subprojects.each { subproject ->
 			into ("/lib") {
@@ -115,14 +184,13 @@ configure(rootProject) {
 		from ("$buildDir/assemble")
 	}
 
-	task distFull() {
-		description = 'Build release bundle in ZIP and GZIP formats'
-		dependsOn([distZip, distTar])
-	}
-
 	artifacts {
 		archives distZip
 		archives distTar
+		archives docsZip
+		archives docsTar
+		archives srcZip
+		archives srcTar
 	}
 	
 	task wrapper(type: Wrapper) {
