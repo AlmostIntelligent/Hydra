@@ -2,5 +2,7 @@ rootProject.name = 'hydra'
 
 include 'hydra-api'
 include 'hydra-core'
-include 'hydra-cli'
 include 'hydra-launcher'
+
+include 'hydra-cli-service'
+

@@ -63,7 +63,7 @@ project("hydra-core") {
 	dependencies { compile project(':hydra-api') }
 }
 
-project("hydra-cli") {
+project("hydra-cli-service") {
 	description = 'Hydra CLI'
 
 	dependencies { compile project(':hydra-api') }
@@ -151,9 +151,13 @@ configure(rootProject) {
 		with project.prepareSource
 		
 		subprojects.each { subproject ->
-			into ("/lib") {
-				from subproject.jar
-				from subproject.configurations.runtime
+			if(subproject.name.contains("service")) {
+				//TODO: create system service deployment
+			} else {
+				into ("/lib") {
+					from subproject.jar
+					from subproject.configurations.runtime
+				}
 			}
 		}
 	}
