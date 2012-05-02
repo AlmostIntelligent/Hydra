@@ -51,9 +51,9 @@ project("hydra-launcher") {
 		manifest.attributes['Main-Class'] = mainClass
 	}
 
-	dependencies { 
+	dependencies {
 		compile project(':hydra-core')
-		compile "ch.qos.logback:logback-classic:1.0.1" 
+		compile "ch.qos.logback:logback-classic:1.0.1"
 	}
 }
 
@@ -61,6 +61,7 @@ project("hydra-core") {
 	description = 'Hydra Core'
 
 	dependencies { compile project(':hydra-api') }
+
 }
 
 project("hydra-cli-service") {
@@ -91,24 +92,20 @@ configure(rootProject) {
 		})
 		maxMemory = '1024m'
 	}
-	
+
 	task docsZip(type: Zip, dependsOn: api) {
 		classifier = 'docs'
 		description = "Builds -${classifier} archive containing api and reference documentation."
-		from api {
-			into "api"
-		}
+		from api { into "api" }
 	}
-	
+
 	task docsTar(type: Tar, dependsOn: api) {
 		classifier = 'docs'
 		description = "Builds -${classifier} archive containing api and reference documentation."
 		compression = Compression.GZIP
-		from api {
-			into "api"
-		}
+		from api { into "api" }
 	}
-	
+
 	ext.prepareSource = copySpec {
 		into( 'sources' ) {
 			from ( rootProject.projectDir ) {
@@ -124,32 +121,30 @@ configure(rootProject) {
 			}
 		}
 	}
-	
+
 	task srcZip(type: Zip, dependsOn: api) {
 		classifier = 'src'
 		description = "Builds -${classifier} archive containing project sources."
 		with project.prepareSource
 	}
-	
+
 	task srcTar(type: Tar, dependsOn: api) {
 		classifier = 'src'
 		description = "Builds -${classifier} archive containing project sources."
 		compression = Compression.GZIP
 		with project.prepareSource
 	}
-	
+
 	task prepareDist(type: Copy, dependsOn: [subprojects*.build, docsZip]) {
 		description = 'Prepare release bundle'
 		destinationDir = "$buildDir/assemble" as File
-		
+
 		from("src/dist")
-		
-		from(zipTree(docsZip.archivePath)) {
-            into "docs"
-        }
-		
+
+		from(zipTree(docsZip.archivePath)) { into "docs" }
+
 		with project.prepareSource
-		
+
 		subprojects.each { subproject ->
 			if(subproject.name.contains("service")) {
 				//TODO: create system service deployment
@@ -196,7 +191,7 @@ configure(rootProject) {
 		archives srcZip
 		archives srcTar
 	}
-	
+
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
 		gradleVersion = '1.0-rc-1'
