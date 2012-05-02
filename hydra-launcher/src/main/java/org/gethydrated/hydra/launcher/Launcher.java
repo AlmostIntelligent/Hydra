@@ -10,4 +10,8 @@ public class Launcher {
 
 	}
 
+	
+	public static void printUsage() {
+		System.out.println("Hydra Usage:");
+	}
 }
