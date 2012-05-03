@@ -5,7 +5,7 @@ configure(allprojects) {
 	apply plugin: 'eclipse'
 
 	group = 'org.gethydrated'
-
+	
 	sourceCompatibility=1.7
 	targetCompatibility=1.7
 
@@ -20,6 +20,8 @@ configure(allprojects) {
 	}
 
 	ext { mainClass = 'org.gethydrated.hydra.launcher.Launcher' }
+	
+	clean.dependsOn subprojects.collect { "$it.path:clean" }
 }
 
 configure(subprojects) { subproject ->
@@ -37,37 +39,39 @@ configure(subprojects) { subproject ->
 		from javadoc
 	}
 
+	archivesBaseName = 'hydra-' + subproject.name
+	
 	artifacts {
 		archives sourcesJar
 		archives javadocJar
 	}
 }
 
-project("hydra-api") { description = 'Hydra API' }
+project("api") { description = 'Hydra API' }
 
-project("hydra-launcher") {
+project("launcher") {
 	description = 'Hydra Launcher'
 	jar {
 		manifest.attributes['Main-Class'] = mainClass
 	}
 
 	dependencies {
-		compile project(':hydra-core')
+		compile project(':core')
 		compile "ch.qos.logback:logback-classic:1.0.1"
 	}
 }
 
-project("hydra-core") {
+project("core") {
 	description = 'Hydra Core'
 
-	dependencies { compile project(':hydra-api') }
+	dependencies { compile project(':api') }
 
 }
 
-project("hydra-cli-service") {
+project("cli-service") {
 	description = 'Hydra CLI'
 
-	dependencies { compile project(':hydra-api') }
+	dependencies { compile project(':api') }
 }
 
 configure(rootProject) {
@@ -111,13 +115,14 @@ configure(rootProject) {
 			from ( rootProject.projectDir ) {
 				exclude( '.git' )
 				exclude( '.gitignore' )
-				exclude( '.classpath' )
-				exclude( '.project' )
+				exclude( '**/.classpath' )
+				exclude( '**/.project' )
 				exclude( '.DS_STore' )
 				exclude( 'Readme.md')
 				exclude( '**/.gradle/**' )
 				exclude( '**/bin/**' )
 				exclude( '**/build/**' )
+				exclude( '**/.settings/**' )
 			}
 		}
 	}
