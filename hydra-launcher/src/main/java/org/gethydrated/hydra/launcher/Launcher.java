@@ -4,14 +4,14 @@ import java.net.URISyntaxException;
 
 public class Launcher {
 
-	private static String workingDir;
+	private static String hydraDir;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		if(setWorkingDirectory()) {
-			System.out.println(workingDir);
+			System.out.println(hydraDir);
 		}
 	}
 
@@ -19,7 +19,7 @@ public class Launcher {
 		try {
 			String path =Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			path = path.substring(0, path.lastIndexOf('/'));
-			workingDir = path.substring(0, path.lastIndexOf('/')+1);
+			hydraDir = path.substring(0, path.lastIndexOf('/')+1);
 			return true;
 		} catch (URISyntaxException e) {
 			System.err.println("Could not set working directory");
