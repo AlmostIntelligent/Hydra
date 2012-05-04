@@ -16,23 +16,21 @@ public class Launcher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(setWorkingDirectory()) {
-			configureLogback();
-			Logger logger = LoggerFactory.getLogger(Launcher.class);
-			logger.info("Starting Hydra.");
-			logger.debug("Logback configured.");
-		}
+		setWorkingDirectory();
+		configureLogback();
+		Logger logger = LoggerFactory.getLogger(Launcher.class);
+		logger.info("Starting Hydra.");
+		logger.debug("Logback configured.");
+		logger.debug("Set Hydra directory to: "+hydraDir);
 	}
 
-	private static boolean setWorkingDirectory() {
+	private static void setWorkingDirectory() {
 		try {
 			String path =Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			path = path.substring(0, path.lastIndexOf('/'));
 			hydraDir = path.substring(0, path.lastIndexOf('/')+1);
-			return true;
 		} catch (URISyntaxException e) {
-			System.err.println("Could not set working directory");
-			return false;
+			throw new IllegalStateException("Could not detect Hydra directory", e);
 		}
 	}
 	
