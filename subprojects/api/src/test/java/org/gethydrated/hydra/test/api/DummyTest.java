@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.api.test;
+package org.gethydrated.hydra.test.api;
 
 import static org.junit.Assert.assertTrue;
 
