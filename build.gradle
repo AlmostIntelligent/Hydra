@@ -5,7 +5,7 @@ configure(allprojects) {
 	apply plugin: 'eclipse'
 
 	group = 'org.gethydrated'
-	
+
 	sourceCompatibility=1.7
 	targetCompatibility=1.7
 
@@ -20,11 +20,18 @@ configure(allprojects) {
 	}
 
 	ext { mainClass = 'org.gethydrated.hydra.launcher.Launcher' }
-	
+
 	clean.dependsOn subprojects.collect { "$it.path:clean" }
 }
 
 configure(subprojects) { subproject ->
+	configurations { jacoco //Configuration Group used by Sonar to provide Code Coverage using JaCoCo
+	}
+
+	dependencies {
+		jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.5.7.201204190339", classifier: "runtime"
+	}
+
 	jar {
 		manifest.attributes['Implementation-Title'] = subproject.name
 		manifest.attributes['Implementation-Version'] = subproject.version
@@ -39,8 +46,10 @@ configure(subprojects) { subproject ->
 		from javadoc
 	}
 
+	test { jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${rootProject.buildDir}/coverage-results/jacoco.exec,includes=org.gethydrated.hydra.*,excludes=org.gethydrated.hydra.test.*" }
+
 	archivesBaseName = 'hydra-' + subproject.name
-	
+
 	artifacts {
 		archives sourcesJar
 		archives javadocJar
@@ -75,6 +84,43 @@ project("cli-service") {
 }
 
 configure(rootProject) {
+	configurations { jacocoant }
+
+	dependencies {
+		jacocoant group: "org.jacoco", name: "org.jacoco.ant", version: "0.5.7.201204190339"
+	}
+
+	task generateCoverageReport << {
+		ant {
+			taskdef(name:'jacocoreport', classname: 'org.jacoco.ant.ReportTask') { classpath path: "${configurations.jacocoant.asPath}" }
+
+			mkdir dir: "${rootProject.buildDir}/reports/coverage"
+			mkdir dir: "${rootProject.buildDir}/reports/coverage-xml"
+
+			jacocoreport {
+				executiondata {
+					ant.file file: "${rootProject.buildDir}/coverage-results/jacoco.exec"
+				}
+
+				structure(name: "Hydra Coverage Reports") {
+
+					classfiles {
+						files(subprojects.collect { project ->
+							fileset dir: "${project.projectDir.path}/build/classes/main"
+						}) }
+
+					sourcefiles(encoding: 'UTF-8') {
+						files(subprojects.collect { project ->
+							fileset dir: "${project.projectDir.path}/src/main/java"
+						}) }
+
+				}
+
+				xml  destfile: "${rootProject.buildDir}/reports/coverage-xml/jacoco.xml"
+				html destdir: "${rootProject.buildDir}/reports/coverage"
+			}
+		}
+	}
 	description = 'Hydra'
 
 	// don't publish the default jar for the root project
