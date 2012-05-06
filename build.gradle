@@ -54,6 +54,9 @@ configure(subprojects) { subproject ->
 		archives sourcesJar
 		archives javadocJar
 	}
+	
+	testResultsDirName = rootProject.testResultsDir
+	testReportDirName = rootProject.testReportDir
 }
 
 project("api") { description = 'Hydra API' }
@@ -122,7 +125,7 @@ configure(rootProject) {
 		}
 	}
 	description = 'Hydra'
-
+	
 	// don't publish the default jar for the root project
 	configurations.archives.artifacts.clear()
 

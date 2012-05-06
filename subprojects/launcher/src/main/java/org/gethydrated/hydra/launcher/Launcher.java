@@ -4,6 +4,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.core.HydraFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +16,18 @@ public class Launcher {
 	
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		setWorkingDirectory();
 		configureLogback();
 		Logger logger = LoggerFactory.getLogger(Launcher.class);
-		logger.info("Starting Hydra.");
+		logger.info("Launching Hydra platform.");
 		logger.debug("Logback configured.");
 		logger.debug("Set Hydra directory to: "+hydraDir);
+		Hydra hydra = HydraFactory.getHydra();
+		hydra.start();
+		//Thread.currentThread().join();
 	}
 
 	private static void setWorkingDirectory() {
