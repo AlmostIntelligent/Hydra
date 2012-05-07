@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 public class HydraImpl implements Hydra {
 
-	private static final Logger  logger = LoggerFactory.getLogger(Hydra.class);
+	private static final Logger logger = LoggerFactory.getLogger(Hydra.class);
 	
 	private final ShutdownHook shutdownhook = new ShutdownHook(this);
 	
