@@ -4,6 +4,8 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.core.HydraFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,25 +16,27 @@ public class Launcher {
 	
 	/**
 	 * @param args
+	 * @throws Exception 
 	 */
-	public static void main(String[] args) {
-		if(setWorkingDirectory()) {
-			configureLogback();
-			Logger logger = LoggerFactory.getLogger(Launcher.class);
-			logger.info("Starting Hydra.");
-			logger.debug("Logback configured.");
-		}
+	public static void main(String[] args) throws Exception {
+		setWorkingDirectory();
+		configureLogback();
+		Logger logger = LoggerFactory.getLogger(Launcher.class);
+		logger.info("Launching Hydra platform.");
+		logger.debug("Logback configured.");
+		logger.debug("Set Hydra directory to: "+hydraDir);
+		Hydra hydra = HydraFactory.getHydra();
+		hydra.start();
+		//Thread.currentThread().join();
 	}
 
-	private static boolean setWorkingDirectory() {
+	private static void setWorkingDirectory() {
 		try {
 			String path =Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 			path = path.substring(0, path.lastIndexOf('/'));
 			hydraDir = path.substring(0, path.lastIndexOf('/')+1);
-			return true;
 		} catch (URISyntaxException e) {
-			System.err.println("Could not set working directory");
-			return false;
+			throw new IllegalStateException("Could not detect Hydra directory", e);
 		}
 	}
 	
