@@ -13,6 +13,10 @@ public abstract class ConfigurationItem {
 
 	protected String name;
 	
+	public ConfigurationItem(String _name){
+		name = _name;
+	}
+	
 	public String getName(){
 		return name;
 	}

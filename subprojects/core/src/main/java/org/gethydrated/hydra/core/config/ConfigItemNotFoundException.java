@@ -6,7 +6,7 @@ package org.gethydrated.hydra.core.config;
  * @since 0.1.0
  *
  */
-public class ConfigItemNotFound extends Exception {
+public class ConfigItemNotFoundException extends Exception {
 
 	private String itemName;
 	
@@ -15,7 +15,7 @@ public class ConfigItemNotFound extends Exception {
 	 */
 	private static final long serialVersionUID = 1421698206247465742L;
 	
-	public ConfigItemNotFound(String name){
+	public ConfigItemNotFoundException(String name){
 		setItemName(name);
 	}
 

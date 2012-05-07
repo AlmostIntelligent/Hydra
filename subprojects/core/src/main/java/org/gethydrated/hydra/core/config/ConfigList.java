@@ -11,6 +11,11 @@ import java.util.List;
  */
 public class ConfigList extends ConfigurationItem{
 
+	public ConfigList(String _name) {
+		super(_name);
+		// TODO Auto-generated constructor stub
+	}
+
 	protected String name;
 	protected List<ConfigurationItem> childs;
 	
@@ -18,12 +23,12 @@ public class ConfigList extends ConfigurationItem{
 		return childs;
 	}
 	
-	public ConfigurationItem getChild(String name) throws ConfigItemNotFound{
+	public ConfigurationItem getChild(String name) throws ConfigItemNotFoundException{
 		
 		for (ConfigurationItem c : childs)
 			if (c.getName().equals(name))
 				return c;
-		throw new ConfigItemNotFound(name);
+		throw new ConfigItemNotFoundException(name);
 	}
 
 	@Override

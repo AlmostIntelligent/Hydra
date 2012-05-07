@@ -12,6 +12,11 @@ import java.io.PrintStream;
 public class ConfigValue<T> extends ConfigurationItem {
 	
 	
+	public ConfigValue(String _name) {
+		super(_name);
+		// TODO Auto-generated constructor stub
+	}
+
 	protected T value;
 	
 	@Override

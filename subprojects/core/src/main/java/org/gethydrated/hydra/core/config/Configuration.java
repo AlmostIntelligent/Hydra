@@ -7,24 +7,58 @@ package org.gethydrated.hydra.core.config;
  * @since 0.1.0
  *
  */
-public interface Configuration {
+public class Configuration {
 
-	public void load(String filename);
-	public void save(String filename);
+	protected ConfigurationItem root;
 	
-	public void set(String name, Object value);
-	public Object get(String name);
+	public Configuration(){
+		root = new ConfigList("Configuration");
+	}
 	
-	public void setBoolean(String name, Boolean value);
-	public Boolean getBoolean(String name);
+	public void set(String name, Object value) throws ConfigItemNotFoundException{
+		throw new ConfigItemNotFoundException(name);
+	}
 	
-	public void setInteger(String name, Integer value);
-	public Integer getInteger(String name);
+	private Object getFromItem(ConfigurationItem base, String name) throws ConfigItemNotFoundException {
+		if (base.hasValue() && base.getName() == name)
+			return ((ConfigValue<?>)base).value();
+		throw new ConfigItemNotFoundException(name);
+	}
 	
-	public void setFloat(String name, Double value);
-	public Double getFloat(String name);
+	public Object get(String name) throws ConfigItemNotFoundException{
+		return getFromItem(root, name);
+	}
 	
-	public void setString(String name, String value);
-	public String getString(String name);
+	public void setBoolean(String name, Boolean value) throws ConfigItemNotFoundException{ 
+		set(name, value);
+	}
+	
+	public Boolean getBoolean(String name) throws ConfigItemNotFoundException{ 
+		return (Boolean) get(name); 
+	}
+	
+	public void setInteger(String name, Integer value) throws ConfigItemNotFoundException{
+		set(name, value);
+	}
+	
+	public Integer getInteger(String name) throws ConfigItemNotFoundException{ 
+		return (Integer) get(name); 
+	}
+	
+	public void setFloat(String name, Double value) throws ConfigItemNotFoundException{
+		set(name, value);
+	}
+	
+	public Double getFloat(String name) throws ConfigItemNotFoundException{ 
+		return (Double) get(name); 
+	}
+	
+	public void setString(String name, String value) throws ConfigItemNotFoundException{
+		set(name, value);
+	}
+	
+	public String getString(String name) throws ConfigItemNotFoundException{
+		return (String) get(name);
+	}
 	
 }
