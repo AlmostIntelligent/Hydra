@@ -1,6 +1,9 @@
 package org.gethydrated.hydra.core;
 
 import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.core.config.ConfigItemNotFoundException;
+import org.gethydrated.hydra.core.config.Configuration;
+import org.gethydrated.hydra.core.config.ConfigurationInitializer;
 
 /**
  * 
@@ -9,7 +12,23 @@ import org.gethydrated.hydra.api.Hydra;
  */
 public class HydraFactory {
 	
+	private static final Configuration defaultCfg = new Configuration();
+	
+	private static boolean initialized = false;
+	
 	public static Hydra getHydra() {
-		return new HydraImpl();
+		if(!initialized) {
+			init();
+		}
+		return new HydraImpl(defaultCfg);
+	}
+	
+	private static void init() {
+		try {
+			new ConfigurationInitializer(defaultCfg).configure();
+			initialized = true;
+		} catch (ConfigItemNotFoundException e) {
+			throw new IllegalStateException("Could not create hydra configuration.", e);
+		}
 	}
 }
