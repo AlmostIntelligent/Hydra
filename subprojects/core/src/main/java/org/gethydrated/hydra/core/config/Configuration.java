@@ -11,7 +11,7 @@ public class Configuration {
 
 	protected ConfigList root;
 	
-	protected String CONFIG_SEPERATOR = ".";
+	protected static String CONFIG_SEPERATOR = ".";
 	
 	public Configuration(){
 		root = new ConfigList("Configuration");
