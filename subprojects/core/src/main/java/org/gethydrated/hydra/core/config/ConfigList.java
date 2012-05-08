@@ -1,6 +1,5 @@
 package org.gethydrated.hydra.core.config;
 
-import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,6 +40,33 @@ public class ConfigList extends ConfigurationItem{
 	public Boolean hasChildren() {
 		return childs.size() != 0;
 	}
+	
+	@Override
+	public ConfigurationItem copy() {
+		ConfigList l = new ConfigList(name); 
+		for(ConfigurationItem i : childs)
+			l.getChilds().add(i.copy());
+		return l;
+	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		ConfigList other = (ConfigList) obj;
+		if (childs == null) {
+			if (other.childs != null)
+				return false;
+		} else if (!childs.equals(other.childs))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
 		
 }

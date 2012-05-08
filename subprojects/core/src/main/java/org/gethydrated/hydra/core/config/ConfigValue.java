@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.config;
 
-import java.io.PrintStream;
-
 /**
  * 
  * @author Hanno Sternberg
@@ -20,6 +18,7 @@ public class ConfigValue<T> extends ConfigurationItem {
 		super(_name);
 		value = _value;
 	}
+
 
 	protected T value;
 	
@@ -43,6 +42,27 @@ public class ConfigValue<T> extends ConfigurationItem {
 	
 	public Object type(){
 		return value.getClass();
+	}
+
+	@Override
+	public ConfigurationItem copy() {
+		return new ConfigValue<T>(name, value);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("unchecked")
+		ConfigValue<T> other = (ConfigValue<T>) obj;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
 	}
 
 

@@ -11,12 +11,29 @@ public class Configuration {
 
 	protected ConfigList root;
 	
-	protected String CONFIG_SEPERATOR = ".";
+	protected static String CONFIG_SEPERATOR = ".";
 	
 	public Configuration(){
 		root = new ConfigList("Configuration");
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Configuration other = (Configuration) obj;
+		if (root == null) {
+			if (other.root != null)
+				return false;
+		} else if (!root.equals(other.root))
+			return false;
+		return true;
+	}
+
 	public ConfigList getRoot(){
 		return root;
 	}
@@ -49,6 +66,11 @@ public class Configuration {
 			}
 			setItem(l, nametail, value, type);
 		}
+	}
+	
+	public Configuration copy() {
+		Configuration cp = new Configuration();
+		return cp;
 	}
 	
 	public void set(String name, Object value){

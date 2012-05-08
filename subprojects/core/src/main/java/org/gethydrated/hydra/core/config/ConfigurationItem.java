@@ -20,7 +20,11 @@ public abstract class ConfigurationItem {
 		return name;
 	}
 	
+	public abstract ConfigurationItem copy();
+	
 	public abstract Boolean hasValue();
 	public abstract Boolean hasChildren();
+	
+	public abstract boolean equals(Object obj);
 
 }

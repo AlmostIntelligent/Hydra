@@ -206,5 +206,13 @@ public class ConfigurationTest {
 			fail("Value not set");
 		}
 	}
+	
+	
+	@Test
+	public void testCopy() {
+		Configuration cp = cfg.copy();
+		assertFalse(cp == cfg);
+		assertEquals(cfg, cp);
+	}
 
 }
