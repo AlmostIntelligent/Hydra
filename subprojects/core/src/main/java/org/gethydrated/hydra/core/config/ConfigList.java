@@ -1,6 +1,5 @@
 package org.gethydrated.hydra.core.config;
 
-import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
 

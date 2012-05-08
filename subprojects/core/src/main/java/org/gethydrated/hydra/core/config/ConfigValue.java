@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.config;
 
-import java.io.PrintStream;
-
 /**
  * 
  * @author Hanno Sternberg
