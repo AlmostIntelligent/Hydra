@@ -1,8 +1,11 @@
-import org.gradle.api.tasks.application.CreateStartScripts
+apply from: "${rootProject.projectDir}/gradle/dist.gradle"
+
+defaultTasks 'build'
 
 configure(allprojects) {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
+
 
 	group = 'org.gethydrated'
 
@@ -19,9 +22,8 @@ configure(allprojects) {
 		testCompile "ch.qos.logback:logback-classic:1.0.1"
 	}
 
-	ext { mainClass = 'org.gethydrated.hydra.launcher.Launcher' }
-
 	clean.dependsOn subprojects.collect { "$it.path:clean" }
+	build.dependsOn subprojects.collect { "$it.path:build" }
 }
 
 configure(subprojects) { subproject ->
@@ -36,27 +38,11 @@ configure(subprojects) { subproject ->
 		manifest.attributes['Implementation-Title'] = subproject.name
 		manifest.attributes['Implementation-Version'] = subproject.version
 	}
-	task sourcesJar(type: Jar, dependsOn:classes) {
-		classifier = 'sources'
-		from sourceSets.main.allJava
-	}
-
-	task javadocJar(type: Jar) {
-		classifier = 'javadoc'
-		from javadoc
-	}
+	
 
 	test { jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${rootProject.buildDir}/coverage-results/jacoco.exec,includes=org.gethydrated.hydra.*,excludes=org.gethydrated.hydra.test.*" }
 
 	archivesBaseName = 'hydra-' + subproject.name
-
-	artifacts {
-		archives sourcesJar
-		archives javadocJar
-	}
-	
-	testResultsDirName = rootProject.testResultsDir
-	testReportDirName = rootProject.testReportDir
 }
 
 project("api") { description = 'Hydra API' }
@@ -124,127 +110,7 @@ configure(rootProject) {
 			}
 		}
 	}
-	description = 'Hydra'
-	
-	// don't publish the default jar for the root project
-	configurations.archives.artifacts.clear()
-
-	task api(type: Javadoc) {
-		group = 'Documentation'
-		description = 'Generates aggregated Javadoc API documentation.'
-		title = "${rootProject.description} ${version} API"
-		options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
-		options.author = true
-		options.header = rootProject.description
-		source subprojects.collect { project ->
-			project.sourceSets.main.allJava
-		}
-		destinationDir = new File(buildDir, "api")
-		classpath = files(subprojects.collect { project ->
-			project.sourceSets.main.compileClasspath
-		})
-		maxMemory = '1024m'
-	}
-
-	task docsZip(type: Zip, dependsOn: api) {
-		classifier = 'docs'
-		description = "Builds -${classifier} archive containing api and reference documentation."
-		from api { into "api" }
-	}
-
-	task docsTar(type: Tar, dependsOn: api) {
-		classifier = 'docs'
-		description = "Builds -${classifier} archive containing api and reference documentation."
-		compression = Compression.GZIP
-		from api { into "api" }
-	}
-
-	ext.prepareSource = copySpec {
-		into( 'sources' ) {
-			from ( rootProject.projectDir ) {
-				exclude( '.git' )
-				exclude( '.gitignore' )
-				exclude( '**/.classpath' )
-				exclude( '**/.project' )
-				exclude( '.DS_STore' )
-				exclude( 'Readme.md')
-				exclude( '**/.gradle/**' )
-				exclude( '**/bin/**' )
-				exclude( '**/build/**' )
-				exclude( '**/.settings/**' )
-			}
-		}
-	}
-
-	task srcZip(type: Zip, dependsOn: api) {
-		classifier = 'src'
-		description = "Builds -${classifier} archive containing project sources."
-		with project.prepareSource
-	}
-
-	task srcTar(type: Tar, dependsOn: api) {
-		classifier = 'src'
-		description = "Builds -${classifier} archive containing project sources."
-		compression = Compression.GZIP
-		with project.prepareSource
-	}
-
-	task prepareDist(type: Copy, dependsOn: [subprojects*.build, docsZip]) {
-		description = 'Prepare release bundle'
-		destinationDir = "$buildDir/assemble" as File
-
-		from("src/dist")
-
-		from(zipTree(docsZip.archivePath)) { into "docs" }
-
-		with project.prepareSource
-
-		subprojects.each { subproject ->
-			if(subproject.name.contains("service")) {
-				//TODO: create system service deployment
-			} else {
-				into ("/lib") {
-					from subproject.jar
-					from subproject.configurations.runtime
-				}
-			}
-		}
-	}
-
-	task generateScript(type: CreateStartScripts, dependsOn: prepareDist) {
-		description = 'Generate startup scripts'
-		applicationName = "hydra"
-		mainClassName = mainClass
-		outputDir = file("$buildDir/script")
-		classpath = fileTree(dir: "$buildDir/assemble/lib")
-	}
-
-	task finishDist(type: Copy, dependsOn: [prepareDist, generateScript]) {
-		description = 'Finish release preparations'
-		destinationDir = "$buildDir/assemble" as File
-		from ("$buildDir/script") { into("bin") }
-	}
-
-	task distZip( type: Zip, dependsOn: finishDist) {
-		description = "Build release bundle in ZIP format"
-		from ("$buildDir/assemble")
-
-	}
-
-	task distTar( type: Tar, dependsOn: finishDist) {
-		description = "Build release bundle in GZIP format"
-		compression = Compression.GZIP
-		from ("$buildDir/assemble")
-	}
-
-	artifacts {
-		archives distZip
-		archives distTar
-		archives docsZip
-		archives docsTar
-		archives srcZip
-		archives srcTar
-	}
+	description = 'Hydra'	
 
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
