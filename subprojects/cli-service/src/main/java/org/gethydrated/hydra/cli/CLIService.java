@@ -6,6 +6,6 @@ package org.gethydrated.hydra.cli;
  * @author chris
  *
  */
-public class Dummy {
+public class CLIService {
 
 }
