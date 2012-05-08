@@ -9,19 +9,64 @@ package org.gethydrated.hydra.core.config;
  */
 public class Configuration {
 
-	protected ConfigurationItem root;
+	protected ConfigList root;
+	
+	protected String CONFIG_SEPERATOR = ".";
 	
 	public Configuration(){
 		root = new ConfigList("Configuration");
 	}
 	
-	public void set(String name, Object value) throws ConfigItemNotFoundException{
-		throw new ConfigItemNotFoundException(name);
+	public ConfigList getRoot(){
+		return root;
 	}
 	
-	private Object getFromItem(ConfigurationItem base, String name) throws ConfigItemNotFoundException {
-		if (base.hasValue() && base.getName() == name)
-			return ((ConfigValue<?>)base).value();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void setItem(ConfigList base, String name, Object value, Class<?> type){
+		String[] namesplit = name.split("\\"+CONFIG_SEPERATOR);
+		if (namesplit.length == 1){
+			/* Got value element, set value */
+			try {
+				ConfigValue child =(ConfigValue) base.getChild(name); 
+				child.set(value);
+			} catch (ConfigItemNotFoundException e) {
+				/* Value doesn't exists, add new element*/
+				base.getChilds().add(new ConfigValue<Object>(name, value));
+			}
+		} else if (namesplit.length > 1) {
+			/* Merge namesplit to tail */
+			String nametail = namesplit[1];
+			for (int i = 2; i < namesplit.length; i++)
+				nametail.concat(CONFIG_SEPERATOR + namesplit[i]);
+			ConfigList l;
+			try {
+				/* List exists: append*/
+				 l = (ConfigList) base.getChild(namesplit[0]);
+			} catch (ConfigItemNotFoundException e) {
+				/* List doesn't exists: create*/
+				l = new ConfigList(namesplit[0]);
+				base.childs.add(l);
+			}
+			setItem(l, nametail, value, type);
+		}
+	}
+	
+	public void set(String name, Object value){
+		set(name,value, value.getClass());
+	}
+	
+	public void set(String name, Object value, Class<?> type){
+		setItem(root, name, value, type);
+	}
+	
+	private Object getFromItem(ConfigList base, String name) throws ConfigItemNotFoundException {
+		for(ConfigurationItem i: base.getChilds()){
+			if (i.hasValue() && i.getName().equals(name)){
+				return ((ConfigValue<?>)i).value();
+			} else if (i.hasChildren() && name.startsWith(i.getName()+CONFIG_SEPERATOR)){
+				return getFromItem((ConfigList)i, name.replace(i.getName()+CONFIG_SEPERATOR, ""));
+			}
+		}
 		throw new ConfigItemNotFoundException(name);
 	}
 	
@@ -29,32 +74,32 @@ public class Configuration {
 		return getFromItem(root, name);
 	}
 	
-	public void setBoolean(String name, Boolean value) throws ConfigItemNotFoundException{ 
-		set(name, value);
+	public void setBoolean(String name, Boolean value){ 
+		set(name, value, value.getClass());
 	}
 	
 	public Boolean getBoolean(String name) throws ConfigItemNotFoundException{ 
 		return (Boolean) get(name); 
 	}
 	
-	public void setInteger(String name, Integer value) throws ConfigItemNotFoundException{
-		set(name, value);
+	public void setInteger(String name, Integer value){
+		set(name, value, value.getClass());
 	}
 	
 	public Integer getInteger(String name) throws ConfigItemNotFoundException{ 
 		return (Integer) get(name); 
 	}
 	
-	public void setFloat(String name, Double value) throws ConfigItemNotFoundException{
-		set(name, value);
+	public void setFloat(String name, Double value){
+		set(name, value, value.getClass());
 	}
 	
 	public Double getFloat(String name) throws ConfigItemNotFoundException{ 
 		return (Double) get(name); 
 	}
 	
-	public void setString(String name, String value) throws ConfigItemNotFoundException{
-		set(name, value);
+	public void setString(String name, String value){
+		set(name, value, value.getClass());
 	}
 	
 	public String getString(String name) throws ConfigItemNotFoundException{

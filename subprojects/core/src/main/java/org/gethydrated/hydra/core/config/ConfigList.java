@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.config;
 
 import java.io.PrintStream;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class ConfigList extends ConfigurationItem{
 
 	public ConfigList(String _name) {
 		super(_name);
-		// TODO Auto-generated constructor stub
+		childs = new LinkedList<ConfigurationItem>();
 	}
 
 	protected String name;
@@ -41,15 +42,5 @@ public class ConfigList extends ConfigurationItem{
 		return childs.size() != 0;
 	}
 
-	@Override
-	public void saveToStream(PrintStream stream, int indent) {
-		for (int i = 0; i < indent;i++)
-			stream.print("\t");
-		stream.print("<"+name+">");
-		for(ConfigurationItem itm: childs){
-			itm.saveToStream(stream, indent+1);
-		}
-		stream.println("</"+name+">");
-	}
 		
 }

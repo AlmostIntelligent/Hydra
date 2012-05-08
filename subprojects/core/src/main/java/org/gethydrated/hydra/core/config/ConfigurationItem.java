@@ -1,6 +1,5 @@
 package org.gethydrated.hydra.core.config;
 
-import java.io.PrintStream;
 
 
 /**
@@ -23,9 +22,5 @@ public abstract class ConfigurationItem {
 	
 	public abstract Boolean hasValue();
 	public abstract Boolean hasChildren();
-	
-	public abstract void saveToStream(PrintStream stream, int indent);
-	public void saveToStream(PrintStream stream){
-		saveToStream(stream,0);
-	}
+
 }
