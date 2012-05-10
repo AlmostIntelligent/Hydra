@@ -1,0 +1,21 @@
+
+configure(subprojects) {
+	apply plugin: 'checkstyle'
+	apply plugin: 'eclipse'
+	
+	def configDir = new File(rootProject.projectDir, 'config')
+	ext.checkstyleConfigDir = "$configDir/checkstyle"
+	
+	checkstyle {
+		configFile = new File(checkstyleConfigDir, "checkstyle.xml")
+		configProperties.checkstyleConfigDir = checkstyleConfigDir
+		ignoreFailures = true
+	}
+	
+	eclipse {
+		project {
+		   natures 'net.sf.eclipsecs.core.CheckstyleNature'
+		   buildCommand 'net.sf.eclipsecs.core.CheckstyleBuilder'
+		}
+	}
+}
