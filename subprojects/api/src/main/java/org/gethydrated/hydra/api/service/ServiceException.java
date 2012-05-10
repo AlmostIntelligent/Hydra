@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.api.service;
 
-public class ServiceException extends Exception {
+import org.gethydrated.hydra.api.HydraException;
+
+public class ServiceException extends HydraException {
 
 	public ServiceException(Throwable e) {
 		super(e);

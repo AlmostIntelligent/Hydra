@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.config;
 
-import java.io.PrintStream;
-
 /**
  * 
  * @author Hanno Sternberg
@@ -14,8 +12,13 @@ public class ConfigValue<T> extends ConfigurationItem {
 	
 	public ConfigValue(String _name) {
 		super(_name);
-		// TODO Auto-generated constructor stub
 	}
+	
+	public ConfigValue(String _name, T _value){
+		super(_name);
+		value = _value;
+	}
+
 
 	protected T value;
 	
@@ -33,17 +36,35 @@ public class ConfigValue<T> extends ConfigurationItem {
 		return value;
 	}
 	
+	public void set(T _value){
+		value = _value;
+	}
+	
 	public Object type(){
 		return value.getClass();
 	}
 
 	@Override
-	public void saveToStream(PrintStream stream, int indent) {
-		for (int i = 0; i < indent;i++)
-			stream.print("\t");
-		stream.println("<"+name+">"+value+"</"+name+">");
-		
+	public ConfigurationItem copy() {
+		return new ConfigValue<T>(name, value);
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (getClass() != obj.getClass())
+			return false;
+		@SuppressWarnings("unchecked")
+		ConfigValue<T> other = (ConfigValue<T>) obj;
+		if (value == null) {
+			if (other.value != null)
+				return false;
+		} else if (!value.equals(other.value))
+			return false;
+		return true;
+	}
+
+
 	
 }

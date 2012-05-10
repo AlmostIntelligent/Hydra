@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core;
 
 import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.core.config.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,42 @@ public class HydraImpl implements Hydra {
 	public void stop() {
 		logger.info("Stopping Hydra.");
 		shutdownhook.unregister();
+	}
+
+	@Override
+	public void startService() throws HydraException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopService() throws HydraException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registerLocal() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void registerGlobal() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getLocalService() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void getGlobalService() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

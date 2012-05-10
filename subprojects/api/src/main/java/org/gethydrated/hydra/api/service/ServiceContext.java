@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.api.service;
 
-public interface ServiceContext {
+import org.gethydrated.hydra.api.HydraApi;
+
+public interface ServiceContext extends HydraApi{
 
 	
 	Service getService();
