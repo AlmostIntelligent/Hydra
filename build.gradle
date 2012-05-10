@@ -33,6 +33,7 @@ configure(subprojects) { subproject ->
 		manifest.attributes['Implementation-Version'] = subproject.version
 	}
 
+	test.ignoreFailures=true
 	archivesBaseName = 'hydra-' + subproject.name
 }
 
