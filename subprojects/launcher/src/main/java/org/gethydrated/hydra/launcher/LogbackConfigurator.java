@@ -3,6 +3,7 @@ package org.gethydrated.hydra.launcher;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,15 @@ public class LogbackConfigurator {
 		}
 	}
 	
-	private static void configure(InputStream input, Map<String,String> properties) {
+	public static void configure(URL file, Map<String,String> properties){
+		try( InputStream input = file.openStream()) {
+			configure(input, properties);
+		} catch (IOException e) {
+			throw new IllegalStateException("Could not load logback configuration: "+file, e);
+		}
+	}
+	
+	public static void configure(InputStream input, Map<String,String> properties) {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 	    try {
 	      JoranConfigurator configurator = new JoranConfigurator();
