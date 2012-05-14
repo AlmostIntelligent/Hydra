@@ -16,33 +16,33 @@ import org.xml.sax.SAXException;
 
 public class ConfigurationReaderTest {
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @Before
+    public void setUp() throws Exception {
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
-	@Test
-	public void testLoad() {
-		XMLConfigurationReader ld = new XMLConfigurationReader();
-		
-		try {
-			Configuration cfg = ld.load("test/testConfig.xml");
-			assertEquals("Test-configuration", cfg.getString("name"));
-			assertEquals((Integer)1337, cfg.getInteger("network.port"));
-			assertEquals("local", cfg.getString("network.host"));
-		} catch (SAXException e) {
-			fail("SAX error");
-		} catch (IOException e) {
-			fail("File not found");
-		} catch (ParserConfigurationException e) {
-			fail("Parser Error");
-		} catch (ConfigItemNotFoundException e) {
-			fail("Config load error");
-		}
-		
-	}
+    @Test
+    public void testLoad() {
+        XMLConfigurationReader ld = new XMLConfigurationReader();
+
+        try {
+            Configuration cfg = ld.load("test/testConfig.xml");
+            assertEquals("Test-configuration", cfg.getString("name"));
+            assertEquals((Integer) 1337, cfg.getInteger("network.port"));
+            assertEquals("local", cfg.getString("network.host"));
+        } catch (SAXException e) {
+            fail("SAX error");
+        } catch (IOException e) {
+            fail("File not found");
+        } catch (ParserConfigurationException e) {
+            fail("Parser Error");
+        } catch (ConfigItemNotFoundException e) {
+            fail("Config load error");
+        }
+
+    }
 
 }

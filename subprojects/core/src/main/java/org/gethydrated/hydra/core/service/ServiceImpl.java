@@ -6,29 +6,28 @@ import org.gethydrated.hydra.api.service.ServiceException;
 
 public class ServiceImpl implements Service {
 
-	private final ServiceActivator activator;
-	
-	public ServiceImpl(ServiceActivator sa) {
-		activator = sa;
-	}
+    private final ServiceActivator activator;
 
-	@Override
-	public void start() throws ServiceException {
-		try {
-			activator.start(null);
-		} catch (Exception e) {
-			throw new ServiceException(e);
-		}
-	}
+    public ServiceImpl(ServiceActivator sa) {
+        activator = sa;
+    }
 
-	@Override
-	public void stop() throws ServiceException {
-		try {
-			activator.stop(null);
-		} catch (Exception e) {
-			throw new ServiceException(e);
-		}
-	}
-	
-	
+    @Override
+    public void start() throws ServiceException {
+        try {
+            activator.start(null);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    @Override
+    public void stop() throws ServiceException {
+        try {
+            activator.stop(null);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
 }

@@ -12,23 +12,23 @@ import org.junit.Test;
 
 public class LauncherTest {
 
-	private final ByteArrayOutputStream output = new ByteArrayOutputStream();
-	
-	private static final String lineSep = System.getProperty( "line.separator" ); 
-	
-	@Before
-	public void setup() {
-		System.setOut(new PrintStream(output));
-	}
-	
-	@Test
-	public void testUsage() {
-		Launcher.printUsage();
-		assertTrue(output.toString().equals("Hydra Usage:"+lineSep));
-	}
-	
-	@After
-	public void teardown() {
-		System.setOut(null);
-	}
+    private final ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+    private static final String lineSep = System.getProperty("line.separator");
+
+    @Before
+    public void setup() {
+        System.setOut(new PrintStream(output));
+    }
+
+    @Test
+    public void testUsage() {
+        Launcher.printUsage();
+        assertTrue(output.toString().equals("Hydra Usage:" + lineSep));
+    }
+
+    @After
+    public void teardown() {
+        System.setOut(null);
+    }
 }

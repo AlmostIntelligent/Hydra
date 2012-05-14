@@ -7,21 +7,21 @@ import java.io.PrintStream;
  * 
  * @author Hanno Sternberg
  * @since 0.1.0
- *
+ * 
  */
 public abstract class ConfigurationWriter {
 
-	protected Configuration cfg;
+    protected Configuration cfg;
 
-	public ConfigurationWriter(Configuration _cfg) {
-		cfg = _cfg;
-	}
+    public ConfigurationWriter(Configuration _cfg) {
+        cfg = _cfg;
+    }
 
-	public abstract void saveToStream(PrintStream stream);
+    public abstract void saveToStream(PrintStream stream);
 
-	public void saveToFile(String filename) throws FileNotFoundException {
-		PrintStream stream = new PrintStream(filename);
-		saveToStream(stream);
-	}
+    public void saveToFile(String filename) throws FileNotFoundException {
+        PrintStream stream = new PrintStream(filename);
+        saveToStream(stream);
+    }
 
 }

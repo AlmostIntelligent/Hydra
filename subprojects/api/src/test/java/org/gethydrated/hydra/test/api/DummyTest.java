@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 
 public class DummyTest {
 
-	@Test
-	public void dummyTest() {
-		Logger logger = LoggerFactory.getLogger(DummyTest.class);
-		logger.info("dummy");
-		assertTrue(true);
-	}
+    @Test
+    public void dummyTest() {
+        Logger logger = LoggerFactory.getLogger(DummyTest.class);
+        logger.info("dummy");
+        assertTrue(true);
+    }
 }
