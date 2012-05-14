@@ -8,7 +8,7 @@ configure(subprojects) {
 	
 	checkstyle {
 		configFile = new File(checkstyleConfigDir, "checkstyle.xml")
-		configProperties.checkstyleConfigDir = checkstyleConfigDir
+		configProperties.config_loc = checkstyleConfigDir
 		ignoreFailures = true
 	}
 	
