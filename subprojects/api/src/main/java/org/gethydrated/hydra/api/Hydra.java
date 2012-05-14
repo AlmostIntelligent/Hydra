@@ -7,13 +7,13 @@ package org.gethydrated.hydra.api;
  */
 public interface Hydra extends HydraApi {
 
-	/**
-	 * Starts the Hydra.
-	 */
-	public void start();
+    /**
+     * Starts the Hydra.
+     */
+    public void start();
 
-	/**
-	 * Stops the Hydra.
-	 */
-	public void stop();
+    /**
+     * Stops the Hydra.
+     */
+    public void stop();
 }
