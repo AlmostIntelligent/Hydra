@@ -10,17 +10,40 @@ import java.io.PrintStream;
  */
 public class XMLConfigurationWriter extends ConfigurationWriter {
 
-    public XMLConfigurationWriter(Configuration _cfg) {
-        super(_cfg);
+    /**
+     * 
+     * @param cfg
+     *            Configuration.
+     */
+    public XMLConfigurationWriter(final Configuration cfg) {
+        super(cfg);
     }
 
-    protected void writeIndent(PrintStream stream, int indent) {
-        for (int i = 0; i < indent; i++)
+    /**
+     * 
+     * @param stream
+     *            .
+     * @param indent
+     *            Number of indentions.
+     */
+    protected final void writeIndent(final PrintStream stream, final int indent) {
+        for (int i = 0; i < indent; i++) {
             stream.print("\t");
+
+        }
     }
 
-    protected void writeValue(PrintStream stream, ConfigValue<?> value,
-            int indent) {
+    /**
+     * 
+     * @param stream
+     *            .
+     * @param value
+     *            .
+     * @param indent
+     *            Indention.
+     */
+    protected final void writeValue(final PrintStream stream,
+            final ConfigValue<?> value, final int indent) {
         writeIndent(stream, indent);
         stream.print("<");
         stream.print(value.getName());
@@ -32,7 +55,17 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
 
     }
 
-    protected void writeList(PrintStream stream, ConfigList list, int indent) {
+    /**
+     * 
+     * @param stream
+     *            .
+     * @param list
+     *            .
+     * @param indent
+     *            Indention.
+     */
+    protected final void writeList(final PrintStream stream,
+            final ConfigList list, final int indent) {
         if (list.hasChildren()) {
             writeIndent(stream, indent);
             stream.print("<");
@@ -52,9 +85,13 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
         }
     }
 
-    public void saveToStream(PrintStream stream) {
+    /**
+     * @param stream
+     *            .
+     */
+    public final void saveToStream(final PrintStream stream) {
         stream.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        writeList(stream, cfg.getRoot(), 0);
+        writeList(stream, getCfg().getRoot(), 0);
 
     }
 

@@ -11,62 +11,89 @@ import java.util.List;
  */
 public class ConfigList extends ConfigurationItem {
 
-    public ConfigList(String _name) {
-        super(_name);
+    /**
+     * 
+     * @param itemName
+     *            .
+     */
+    public ConfigList(final String itemName) {
+        super(itemName);
         childs = new LinkedList<ConfigurationItem>();
     }
 
-    protected String name;
-    protected List<ConfigurationItem> childs;
+    /**
+     * @var List of child item.
+     */
+    private List<ConfigurationItem> childs;
 
-    public List<ConfigurationItem> getChilds() {
+    /**
+     * 
+     * @return Child items.
+     */
+    public final List<ConfigurationItem> getChilds() {
         return childs;
     }
 
-    public ConfigurationItem getChild(String name)
+    /**
+     * 
+     * @param name
+     *            .
+     * @return Configuration Item with the given name.
+     * @throws ConfigItemNotFoundException .
+     */
+    public final ConfigurationItem getChild(final String name)
             throws ConfigItemNotFoundException {
 
-        for (ConfigurationItem c : childs)
-            if (c.getName().equals(name))
+        for (ConfigurationItem c : childs) {
+            if (c.getName().equals(name)) {
                 return c;
+            }
+        }
         throw new ConfigItemNotFoundException(name);
     }
 
     @Override
-    public Boolean hasValue() {
+    public final Boolean hasValue() {
         return false;
     }
 
     @Override
-    public Boolean hasChildren() {
+    public final Boolean hasChildren() {
         return childs.size() != 0;
     }
 
     @Override
-    public ConfigurationItem copy() {
-        ConfigList l = new ConfigList(name);
-        for (ConfigurationItem i : childs)
+    public final ConfigurationItem copy() {
+        ConfigList l = new ConfigList(getName());
+        for (ConfigurationItem i : childs) {
             l.getChilds().add(i.copy());
+        }
         return l;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public final boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ConfigList other = (ConfigList) obj;
         if (childs == null) {
-            if (other.childs != null)
+            if (other.childs != null) {
                 return false;
-        } else if (!childs.equals(other.childs))
+            }
+        } else if (!childs.equals(other.childs)) {
             return false;
-        if (name == null) {
-            if (other.name != null)
+        }
+        if (getName() == null) {
+            if (other.getName() != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!getName().equals(other.getName())) {
             return false;
+        }
         return true;
     }
 

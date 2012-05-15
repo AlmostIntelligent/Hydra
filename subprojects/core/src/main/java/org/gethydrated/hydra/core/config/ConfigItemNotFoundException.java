@@ -8,23 +8,40 @@ package org.gethydrated.hydra.core.config;
  */
 public class ConfigItemNotFoundException extends Exception {
 
+    /**
+     * @var Name of the item.
+     */
     private String itemName;
 
     /**
-	 * 
-	 */
+     * @var unique ID.
+     */
     private static final long serialVersionUID = 1421698206247465742L;
 
-    public ConfigItemNotFoundException(String name) {
+    /**
+     * 
+     * @param name
+     *            Item name.
+     */
+    public ConfigItemNotFoundException(final String name) {
         setItemName(name);
     }
 
-    public String getItemName() {
+    /**
+     * 
+     * @return Item name.
+     */
+    public final String getItemName() {
         return itemName;
     }
 
-    private void setItemName(String itemName) {
-        this.itemName = itemName;
+    /**
+     * 
+     * @param name
+     *            .
+     */
+    private void setItemName(final String name) {
+        this.itemName = name;
     }
 
 }

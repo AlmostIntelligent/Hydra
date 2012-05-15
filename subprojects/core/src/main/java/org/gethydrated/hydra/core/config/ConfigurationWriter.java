@@ -11,15 +11,47 @@ import java.io.PrintStream;
  */
 public abstract class ConfigurationWriter {
 
-    protected Configuration cfg;
+    /**
+     * @var The configuration.
+     */
+    private Configuration cfg;
 
-    public ConfigurationWriter(Configuration _cfg) {
-        cfg = _cfg;
+    /**
+     * Constructor.
+     * @param config .
+     */
+    public ConfigurationWriter(final Configuration config) {
+        cfg = config;
     }
 
+    /**
+     * 
+     * @return Configuration.
+     */
+    public final Configuration getCfg() {
+        return cfg;
+    }
+
+    /**
+     * 
+     * @param config .
+     */
+    public final void setCfg(final Configuration config) {
+        this.cfg = config;
+    }
+
+    /**
+     * 
+     * @param stream .
+     */
     public abstract void saveToStream(PrintStream stream);
 
-    public void saveToFile(String filename) throws FileNotFoundException {
+    /**
+     * Saves the configuration to a file.
+     * @param filename .
+     * @throws FileNotFoundException .
+     */
+    public final void saveToFile(final String filename) throws FileNotFoundException {
         PrintStream stream = new PrintStream(filename);
         saveToStream(stream);
     }

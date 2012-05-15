@@ -8,22 +8,49 @@ package org.gethydrated.hydra.core.config;
  */
 public abstract class ConfigurationItem {
 
-    protected String name;
+    /**
+     * 
+     */
+    private String name;
 
-    public ConfigurationItem(String _name) {
-        name = _name;
+    /**
+     * 
+     * @param itemName .
+     */
+    public ConfigurationItem(final String itemName) {
+        name = itemName;
     }
 
-    public String getName() {
+    /**
+     * 
+     * @return Item name.
+     */
+    public final String getName() {
         return name;
     }
 
+    /**
+     * 
+     * @return Copy of this item.
+     */
     public abstract ConfigurationItem copy();
 
+    /**
+     * 
+     * @return True, if the item has a value.
+     */
     public abstract Boolean hasValue();
 
+    /**
+     * 
+     * @return True, if the item has children.
+     */
     public abstract Boolean hasChildren();
 
+    /**
+     * @param obj Object for comparison.
+     * @return True, if objects are equal.
+     */
     public abstract boolean equals(Object obj);
 
 }

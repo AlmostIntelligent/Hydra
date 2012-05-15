@@ -19,22 +19,51 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class XMLConfigurationReader {
 
+    /**
+     * A stack of strings.
+     * 
+     * @author Hanno
+     * @since 0.1.0
+     */
     class StringStack {
-        List<String> strs = new LinkedList<String>();
 
-        public void push(String s) {
+        /**
+         * @var List structure for the stack.
+         */
+        private List<String> strs = new LinkedList<String>();
+
+        /**
+         * 
+         * @param s
+         *            .
+         */
+        public void push(final String s) {
             strs.add(s);
         }
 
+        /**
+         * 
+         */
         public void pop() {
             strs.remove(strs.size() - 1);
         }
 
-        public void remove(String s) {
+        /**
+         * 
+         * @param s
+         *            .
+         */
+        public void remove(final String s) {
             strs.remove(s);
         }
 
-        public String toString(String seperator) {
+        /**
+         * 
+         * @param seperator
+         *            .
+         * @return The stack as a single string.
+         */
+        public String toString(final String seperator) {
             StringBuilder sb = new StringBuilder();
             String str;
             for (String s : strs) {
@@ -42,17 +71,33 @@ public class XMLConfigurationReader {
                 sb.append(seperator);
             }
             str = sb.toString();
-            if (str.endsWith(seperator))
+            if (str.endsWith(seperator)) {
                 str = str.substring(0, str.length() - seperator.length());
+            }
             return str;
         }
 
     }
 
-    StringStack stack;
-    Configuration cfg;
+    /**
+     * @var Configuration hierarchy as a stack.
+     */
+    private StringStack stack;
+    /**
+     * @var The configuration.
+     */
+    private Configuration cfg;
 
-    public Configuration load(String filename) throws SAXException,
+    /**
+     * 
+     * @param filename
+     *            filename.
+     * @return Configuration.
+     * @throws SAXException .
+     * @throws IOException .
+     * @throws ParserConfigurationException .
+     */
+    public final Configuration load(final String filename) throws SAXException,
             IOException, ParserConfigurationException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
@@ -62,49 +107,79 @@ public class XMLConfigurationReader {
 
         DefaultHandler handler = new DefaultHandler() {
 
-            public void startElement(String uri, String localName,
-                    String qName, Attributes attributes) throws SAXException {
-                if (!qName.equalsIgnoreCase("configuration"))
+            /**
+             * @param uri
+             *            .
+             * @param localname
+             *            .
+             * @param qName
+             *            .
+             * @param attributes
+             *            .
+             * @throws SAXExcpetion .
+             */
+            public void startElement(final String uri, final String localName,
+                    final String qName, final Attributes attributes)
+                    throws SAXException {
+                if (!qName.equalsIgnoreCase("configuration")) {
                     stack.push(qName);
+                }
             }
 
-            public void endElement(String uri, String localName, String qName)
-                    throws SAXException {
-                if (!qName.equalsIgnoreCase("configuration"))
+            /**
+             * @param uri
+             *            .
+             * @param localname
+             *            .
+             * @param qName
+             *            .
+             */
+            public void endElement(final String uri, final String localName,
+                    final String qName) throws SAXException {
+                if (!qName.equalsIgnoreCase("configuration")) {
                     stack.pop();
+                }
             }
 
-            public void characters(char ch[], int start, int length)
-                    throws SAXException {
+            /**
+             * @param ch
+             *            Char array.
+             * @param start
+             *            start index.
+             * @param length
+             *            array length.
+             */
+            public void characters(final char[] ch, final int start,
+                    final int length) throws SAXException {
                 String s = new String(ch, start, length);
                 if (!s.trim().isEmpty()) {
                     /* Boolean */
-                    if (s.equalsIgnoreCase("TRUE"))
+                    if (s.equalsIgnoreCase("TRUE")) {
                         cfg.setBoolean(
-                                stack.toString(Configuration.CONFIG_SEPERATOR),
+                                stack.toString(Configuration.getConfigSeparator()),
                                 true);
-                    else if (s.equalsIgnoreCase("FALSE"))
+                    } else if (s.equalsIgnoreCase("FALSE")) {
                         cfg.setBoolean(
-                                stack.toString(Configuration.CONFIG_SEPERATOR),
+                                stack.toString(Configuration.getConfigSeparator()),
                                 false);
-                    else {
+                    } else {
                         /* Integer */
                         try {
                             int i = Integer.parseInt(s);
                             cfg.setInteger(stack
-                                    .toString(Configuration.CONFIG_SEPERATOR),
+                                    .toString(Configuration.getConfigSeparator()),
                                     i);
                         } catch (Exception e) {
                             try {
                                 /* Double */
                                 Double d = Double.parseDouble(s);
                                 cfg.setFloat(
-                                        stack.toString(Configuration.CONFIG_SEPERATOR),
+                                        stack.toString(Configuration.getConfigSeparator()),
                                         d);
                             } catch (Exception ee) {
                                 /* String */
                                 cfg.setString(
-                                        stack.toString(Configuration.CONFIG_SEPERATOR),
+                                        stack.toString(Configuration.getConfigSeparator()),
                                         s);
                             }
                         }
