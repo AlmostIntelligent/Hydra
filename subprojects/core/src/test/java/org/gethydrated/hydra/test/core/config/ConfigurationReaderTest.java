@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.test.core.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -14,18 +15,35 @@ import org.junit.Before;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
+/**
+ * Testsuite for XML Configuration reader.
+ * @author Hanno Sternberg
+ * @since 0.1.0
+ *
+ */
 public class ConfigurationReaderTest {
 
+    /**
+     * Test set up.
+     * @throws Exception .
+     */
     @Before
     public void setUp() throws Exception {
     }
 
+    /**
+     * Test tear down.
+     * @throws Exception .
+     */
     @After
     public void tearDown() throws Exception {
     }
 
+    /**
+     * Test the load method.
+     */
     @Test
-    public void testLoad() {
+    public final void testLoad() {
         XMLConfigurationReader ld = new XMLConfigurationReader();
 
         try {

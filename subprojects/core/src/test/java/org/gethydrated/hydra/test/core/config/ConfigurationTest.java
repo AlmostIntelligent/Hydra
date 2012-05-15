@@ -3,7 +3,11 @@
  */
 package org.gethydrated.hydra.test.core.config;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.gethydrated.hydra.core.config.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.config.Configuration;
@@ -15,27 +19,30 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Hanno Sternber
+ * @author Hanno Sternberg
  * @since 0.1.0
  * 
  */
 public class ConfigurationTest {
 
-    Configuration cfg;
+    /**
+     * @var Test configuration.
+     */
+    private Configuration cfg;
 
     /**
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception .
      */
     @Before
-    public void setUp() throws Exception {
+    public final void setUp() throws Exception {
         cfg = new Configuration();
     }
 
     /**
-     * @throws java.lang.Exception
+     * @throws java.lang.Exception .
      */
     @After
-    public void tearDown() throws Exception {
+    public final void tearDown() throws Exception {
 
     }
 
@@ -45,7 +52,7 @@ public class ConfigurationTest {
      * .
      */
     @Test
-    public void testSetValue() {
+    public final void testSetValue() {
         try {
             cfg.set("Name", "test");
         } catch (Exception e) {
@@ -60,7 +67,7 @@ public class ConfigurationTest {
      * .
      */
     @Test
-    public void testSetSubValue() {
+    public final void testSetSubValue() {
         ConfigurationItem child = null;
         cfg.set("Network.Port", 1337);
         cfg.set("Network.Host", "local");
@@ -94,7 +101,7 @@ public class ConfigurationTest {
      * .
      */
     @Test
-    public void testGet() {
+    public final void testGet() {
         cfg.set("Name", "test");
         cfg.set("Network.Port", 1337);
         cfg.set("Network.Host", "local");
@@ -115,7 +122,7 @@ public class ConfigurationTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testSetBoolean() {
+    public final void testSetBoolean() {
         cfg.setBoolean("Active", true);
         try {
             assertTrue(((ConfigValue<Boolean>) cfg.getRoot().getChild("Active"))
@@ -131,7 +138,7 @@ public class ConfigurationTest {
      * .
      */
     @Test
-    public void testGetBoolean() {
+    public final void testGetBoolean() {
         cfg.setBoolean("Active", true);
         try {
             assertTrue(cfg.getBoolean("Active"));
@@ -147,7 +154,7 @@ public class ConfigurationTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testSetInteger() {
+    public final void testSetInteger() {
         cfg.setInteger("A_Number", 1337);
         try {
             assertEquals(
@@ -165,7 +172,7 @@ public class ConfigurationTest {
      * .
      */
     @Test
-    public void testGetInteger() {
+    public final void testGetInteger() {
         cfg.setInteger("A_Number", 1337);
         try {
             assertEquals(cfg.getInteger("A_Number"), (Integer) 1337);
@@ -181,7 +188,7 @@ public class ConfigurationTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testSetFloat() {
+    public final void testSetFloat() {
         cfg.setFloat("A_Double", (Double) 13.37);
         try {
             assertEquals(
@@ -200,7 +207,7 @@ public class ConfigurationTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetFloat() {
+    public final void testGetFloat() {
         cfg.setFloat("A_Double", (Double) 13.37);
         try {
             assertEquals(
@@ -219,7 +226,7 @@ public class ConfigurationTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testSetString() {
+    public final void testSetString() {
         cfg.setString("A_String", "foobar");
         try {
             assertEquals(
@@ -237,7 +244,7 @@ public class ConfigurationTest {
      * .
      */
     @Test
-    public void testGetString() {
+    public final void testGetString() {
         cfg.setString("A_String", "foobar");
         try {
             assertEquals(cfg.getString("A_String"), "foobar");
@@ -246,8 +253,11 @@ public class ConfigurationTest {
         }
     }
 
+    /**
+     * Test method for copy.
+     */
     @Test
-    public void testCopy() {
+    public final void testCopy() {
         Configuration cp = cfg.copy();
         assertFalse(cp == cfg);
         assertEquals(cfg, cp);
