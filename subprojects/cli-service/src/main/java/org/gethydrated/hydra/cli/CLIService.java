@@ -1,8 +1,6 @@
 package org.gethydrated.hydra.cli;
 
 import java.io.IOException;
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;
@@ -18,6 +16,7 @@ import org.gethydrated.hydra.cli.commands.CLICommandRoot;
  */
 public class CLIService {
 
+        
         /**
          * 
          */
@@ -26,13 +25,11 @@ public class CLIService {
         /**
          * @param ctx
          *                Context.
-         * @param out
-         *                OutputStream.
          */
-        public CLIService(final ServiceContext ctx, final PrintStream out) {
-                commands = new CLICommandRoot(out, ctx);
-                commands.addSubCommand(new CLICommandEcho(out, ctx));
-                commands.addSubCommand(new CLICommandConfig(out, ctx));
+        public CLIService(final ServiceContext ctx) {
+                commands = new CLICommandRoot(ctx.getOutputStream(), ctx);
+                commands.addSubCommand(new CLICommandEcho(ctx.getOutputStream(), ctx));
+                commands.addSubCommand(new CLICommandConfig(ctx.getOutputStream(), ctx));
         }
 
         /**

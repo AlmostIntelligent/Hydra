@@ -1,8 +1,14 @@
 package org.gethydrated.hydra.test.cli;
 
+import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.platform.Platform;
+import org.gethydrated.hydra.api.service.Service;
+import org.gethydrated.hydra.api.service.ServiceContext;
+
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import org.gethydrated.hydra.cli.CLIService;
@@ -21,21 +27,105 @@ public class CLIServiceTest {
 
         /**
          * 
+         * @author Hanno Sternberg
+         *
+         */
+        private class TestContext implements ServiceContext {
+                
+                /**
+                 * 
+                 */
+                private PrintStream ps;
+                
+                /**
+                 * 
+                 */
+                private ByteArrayOutputStream output;
+                
+                /**
+                 * 
+                 * @return OutputStream.
+                 */
+                public final String getOutput() {
+                        return output.toString();
+                }
+                
+                /**
+                 * 
+                 */
+                public TestContext() {
+                        output = new ByteArrayOutputStream();
+                        ps = new PrintStream(output);
+                }
+
+                @Override
+                public void registerLocal() {
+                        // TODO Auto-generated method stub
+                        
+                }
+
+                @Override
+                public void registerGlobal() {
+                        // TODO Auto-generated method stub
+                        
+                }
+
+                @Override
+                public void getLocalService() {
+                        // TODO Auto-generated method stub
+                        
+                }
+
+                @Override
+                public void getGlobalService() {
+                        // TODO Auto-generated method stub
+                        
+                }
+
+                @Override
+                public void startService() throws HydraException {
+                        // TODO Auto-generated method stub
+                        
+                }
+
+                @Override
+                public void stopService() throws HydraException {
+                        // TODO Auto-generated method stub
+                        
+                }
+
+                @Override
+                public Platform getPlatform() {
+                        // TODO Auto-generated method stub
+                        return null;
+                }
+
+                @Override
+                public Service getService() {
+                        // TODO Auto-generated method stub
+                        return null;
+                }
+
+                @Override
+                public PrintStream getOutputStream() {
+                        return ps;
+                }
+
+                @Override
+                public InputStream getInputStream() {
+                        return System.in;
+                }
+        }
+        
+        /**
+         * 
          */
         private CLIService dut;
         
         /**
          * 
          */
-        private ByteArrayOutputStream output;
-        
-        /**
-         * 
-         * @return OutputStream.
-         */
-        public final String getOutput() {
-                return output.toString();
-        }
+        private TestContext ctx;
         
         /**
          * 
@@ -43,9 +133,8 @@ public class CLIServiceTest {
          */
         @Before
         public final void setUp() throws Exception {
-                output = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(output);
-                dut = new CLIService(null, ps);
+                ctx = new TestContext();
+                dut = new CLIService(ctx);
         }
 
 
@@ -63,7 +152,7 @@ public class CLIServiceTest {
         @Test
         public final void testEcho() {
                 dut.handleInputString("echo Hallo");
-                assertEquals("Hallo", getOutput().trim());
+                assertEquals("Hallo", ctx.getOutput().trim());
         }
         
         /**
@@ -72,7 +161,7 @@ public class CLIServiceTest {
         @Test
         public final void testConfigSet() {
                 dut.handleInputString("configuration set key value");
-                assertEquals("key=value", getOutput());
+                assertEquals("key=value", ctx.getOutput());
         }
         
         /**
@@ -81,7 +170,7 @@ public class CLIServiceTest {
         @Test
         public final void testConfigGet() {
                 dut.handleInputString("configuration get key");
-                assertEquals("key", getOutput());
+                assertEquals("key", ctx.getOutput());
         }
 
 }
