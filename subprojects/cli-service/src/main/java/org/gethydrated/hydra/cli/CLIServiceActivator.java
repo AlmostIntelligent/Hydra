@@ -18,12 +18,14 @@ public class CLIServiceActivator implements ServiceActivator {
 
         @Override
         public final void start(final ServiceContext context) throws Exception {
-                cli = new CLIService(context);
+                cli = new CLIService(context, null);
+                cli.handleInput();
+                System.out.println("CLI Service Start");
         }
 
         @Override
-        public void stop(final ServiceContext context) throws Exception {
-
+        public final void stop(final ServiceContext context) throws Exception {
+                System.out.println("CLI Service Stop");
         }
 
 }

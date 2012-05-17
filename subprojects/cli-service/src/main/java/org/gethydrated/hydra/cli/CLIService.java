@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.cli;
 
 import java.io.IOException;
+import java.io.PrintStream;
+
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;
@@ -20,15 +22,26 @@ public class CLIService {
          * 
          */
         private CLICommand commands;
-        
+
         /**
          * @param ctx
          *                Context.
+         * @param out
+         *                OutputStream.
          */
-        public CLIService(final ServiceContext ctx) {
-                commands = new CLICommandRoot(System.out, ctx);
-                commands.addSubCommand(new CLICommandEcho(System.out, ctx));
-                commands.addSubCommand(new CLICommandConfig(System.out, ctx));
+        public CLIService(final ServiceContext ctx, final PrintStream out) {
+                commands = new CLICommandRoot(out, ctx);
+                commands.addSubCommand(new CLICommandEcho(out, ctx));
+                commands.addSubCommand(new CLICommandConfig(out, ctx));
+        }
+
+        /**
+         * 
+         * @param str
+         *                command String
+         */
+        public final void handleInputString(final String str) {
+                commands.parseCommand(str);
         }
 
         /**
@@ -41,13 +54,13 @@ public class CLIService {
                         try {
                                 c = (char) System.in.read();
                                 if (c == '\n') {
-                                        commands.parseCommand(str.toString());
+                                        handleInputString(str.toString());
                                         str.delete(0, -1);
                                 } else {
                                         str.append(c);
                                 }
                         } catch (IOException e) {
-                                
+                                e.printStackTrace();
                         }
                 }
         }
