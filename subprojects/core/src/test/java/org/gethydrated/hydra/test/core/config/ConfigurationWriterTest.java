@@ -20,72 +20,87 @@ import org.junit.Test;
  */
 public class ConfigurationWriterTest {
 
-    /**
-     * @var Configuration.
-     */
-    private Configuration cfg;
+        /**
+         * @var Configuration.
+         */
+        private Configuration cfg;
 
-    /**
-     * Test setup.
-     * 
-     * @throws Exception .
-     */
-    @Before
-    public final void setUp() throws Exception {
-        cfg = new Configuration();
-        cfg.set("Name", "test");
-        cfg.set("Network.Port", 1337);
-        cfg.set("Network.Host", "local");
-    }
-
-    /**
-     * Test tear down.
-     * 
-     * @throws Exception .
-     */
-    @After
-    public final void tearDown() throws Exception {
-    }
-
-    /**
-     * Tests the XML writer.
-     */
-    @Test
-    public final void testXML() {
-        XMLConfigurationWriter dut = new XMLConfigurationWriter(cfg);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        dut.saveToStream(ps);
-        try {
-            assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                    + "<Configuration>\r\n" + "\t<Name>test</Name>\r\n"
-                    + "\t<Network>\r\n" + "\t\t<Port>1337</Port>\r\n"
-                    + "\t\t<Host>local</Host>\r\n" + "\t</Network>\r\n"
-                    + "</Configuration>\r\n", baos.toString("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            fail("");
+        /**
+         * Test setup.
+         * 
+         * @throws Exception .
+         */
+        @Before
+        public final void setUp() throws Exception {
+                cfg = new Configuration();
+                cfg.set("Name", "test");
+                cfg.set("Network.Port", 1337);
+                cfg.set("Network.Host", "local");
         }
 
-    }
-
-    /**
-     * Test the plain text writer.
-     */
-    @Test
-    public final void testPlain() {
-        PlainConfigurationWriter dut = new PlainConfigurationWriter(cfg);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        dut.saveToStream(ps);
-        try {
-            assertEquals("Configuration.Name=test\r\n"
-                    + "Configuration.Network.Port=1337\r\n"
-                    + "Configuration.Network.Host=local\r\n",
-                    baos.toString("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            fail("");
+        /**
+         * Test tear down.
+         * 
+         * @throws Exception .
+         */
+        @After
+        public final void tearDown() throws Exception {
         }
 
-    }
+        /**
+         * Tests the XML writer.
+         */
+        @Test
+        public final void testXML() {
+                XMLConfigurationWriter dut = new XMLConfigurationWriter(cfg);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(baos);
+                dut.saveToStream(ps);
+                try {
+                        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                                        + System.getProperty("line.separator")
+                                        + "<Configuration>"
+                                        + System.getProperty("line.separator")
+                                        + "\t<Name>test</Name>"
+                                        + System.getProperty("line.separator")
+                                        + "\t<Network>"
+                                        + System.getProperty("line.separator")
+                                        + "\t\t<Port>1337</Port>"
+                                        + System.getProperty("line.separator")
+                                        + "\t\t<Host>local</Host>"
+                                        + System.getProperty("line.separator")
+                                        + "\t</Network>"
+                                        + System.getProperty("line.separator")
+                                        + "</Configuration>"
+                                        + System.getProperty("line.separator"),
+                                        baos.toString("UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                        fail("");
+                }
+
+        }
+
+        /**
+         * Test the plain text writer.
+         */
+        @Test
+        public final void testPlain() {
+                PlainConfigurationWriter dut = new PlainConfigurationWriter(cfg);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                PrintStream ps = new PrintStream(baos);
+                dut.saveToStream(ps);
+                try {
+                        assertEquals("Configuration.Name=test"
+                                        + System.getProperty("line.separator")
+                                        + "Configuration.Network.Port=1337"
+                                        + System.getProperty("line.separator")
+                                        + "Configuration.Network.Host=local"
+                                        + System.getProperty("line.separator"),
+                                        baos.toString("UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                        fail("");
+                }
+
+        }
 
 }
