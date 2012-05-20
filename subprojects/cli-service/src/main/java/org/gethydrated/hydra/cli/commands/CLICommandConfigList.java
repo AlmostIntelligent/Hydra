@@ -5,51 +5,51 @@ import java.io.PrintStream;
 import org.gethydrated.hydra.api.service.ServiceContext;
 
 /**
- * A simple echo command, simply prints out what comes in.
  * 
  * @author Hanno Sternberg
+ * @since 0.1.0
  *
  */
-public class CLICommandEcho extends CLICommand {
+public class CLICommandConfigList extends CLICommand {
 
         /**
          * 
          * @param out OutputStream.
-         * @param ctx Service context.
+         * @param ctx Service Context.
          */
-        public CLICommandEcho(final PrintStream out, final ServiceContext ctx) {
+        public CLICommandConfigList(final PrintStream out, final ServiceContext ctx) {
                 super(out, ctx);
+                // TODO Auto-generated constructor stub
         }
 
         @Override
         public final String getCommandWord() {
-                return "echo";
+                return "list";
         }
 
         @Override
         public final String getCommandShort() {
-                return ":e";
-        }
-
-        @Override
-        public final void executeCommand(final String[] args) {
-                int i = 0;
-                for (i = 0; i < args.length - 1; i++) {
-                        getOutput().printf("%s ", args[i]);
-                }
-                getOutput().println(args[args.length - 1]);
+                return "l";
         }
 
         @Override
         protected final String generateHelpText() {
                 StringBuilder sb = new StringBuilder();
-                sb.append("Echos everything given as a parameter.");
+                sb.append("Aspects one parameter:");
+                sb.append(System.getProperty("line.separator"));
+                sb.append("The parameter is the key for the configuration value");
                 return sb.toString();
         }
 
         @Override
         protected final String generateShortDescr() {
-                return "Echos the given parameters.";
+                return "List all configuration sub items.";
+        }
+
+        @Override
+        public final void executeCommand(final String[] args) {
+                getOutput().printf("[%s]", args[0]);
+
         }
 
 }

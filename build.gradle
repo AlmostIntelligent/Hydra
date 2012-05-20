@@ -61,7 +61,10 @@ project("core") {
 project("cli-service") {
 	description = 'Hydra CLI'
 
-	dependencies { compile project(':api') }
+	dependencies { 
+	   compile project(':api')
+	   testCompile project(':core') 
+	}
 }
 
 configure(rootProject) {

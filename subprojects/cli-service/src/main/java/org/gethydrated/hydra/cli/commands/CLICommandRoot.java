@@ -36,4 +36,14 @@ public class CLICommandRoot extends CLICommand {
 
         }
 
+        @Override
+        protected final String generateHelpText() {
+                return "";
+        }
+
+        @Override
+        protected final String generateShortDescr() {
+                return "CLI Service";
+        }
+
 }

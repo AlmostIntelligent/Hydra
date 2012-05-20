@@ -14,6 +14,11 @@ public class CLICommandConfig extends CLICommand {
 
         /**
          * 
+         */
+        
+        
+        /**
+         * 
          * @param out OutputStream.
          * @param ctx Service context.
          */
@@ -21,6 +26,7 @@ public class CLICommandConfig extends CLICommand {
                 super(out, ctx);
                 addSubCommand(new CLICommandConfigSet(out, ctx));
                 addSubCommand(new CLICommandConfigGet(out, ctx));
+                addSubCommand(new CLICommandConfigList(out, ctx));
         }
 
         @Override
@@ -37,6 +43,18 @@ public class CLICommandConfig extends CLICommand {
         public void executeCommand(final String[] args) {
                 
 
+        }
+
+        @Override
+        protected final String generateHelpText() {
+                StringBuilder sb = new StringBuilder();
+                sb.append(System.getProperty("line.separator"));
+                return sb.toString();
+        }
+
+        @Override
+        protected final String generateShortDescr() {
+                return "Access configuration";
         }
 
 }

@@ -58,7 +58,7 @@ public class CLICommandConfigTest {
                 dut.parseCommand("set key value");
                 assertEquals("key=value", getOutput());
         }
-        
+
         /**
          * Test method for "configuration get".
          */
@@ -66,6 +66,15 @@ public class CLICommandConfigTest {
         public final void testGet() {
                 dut.parseCommand("get key");
                 assertEquals("key", getOutput());
+        }
+        
+        /**
+         * Test method for "configuration get".
+         */
+        @Test 
+        public final void testList() {
+                dut.parseCommand("list key");
+                assertEquals("[key]", getOutput());
         }
 
 }

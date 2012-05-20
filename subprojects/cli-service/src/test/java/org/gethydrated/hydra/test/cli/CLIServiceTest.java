@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.test.cli;
 
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
+import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
 import org.gethydrated.hydra.api.platform.Platform;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
@@ -12,6 +14,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 import org.gethydrated.hydra.cli.CLIService;
+import org.gethydrated.hydra.core.config.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,6 +47,11 @@ public class CLIServiceTest {
                 
                 /**
                  * 
+                 */
+                private Configuration testConfig;
+                
+                /**
+                 * 
                  * @return OutputStream.
                  */
                 public final String getOutput() {
@@ -56,6 +64,7 @@ public class CLIServiceTest {
                 public TestContext() {
                         output = new ByteArrayOutputStream();
                         ps = new PrintStream(output);
+                        testConfig = new Configuration();
                 }
 
                 @Override
@@ -114,6 +123,18 @@ public class CLIServiceTest {
                 @Override
                 public InputStream getInputStream() {
                         return System.in;
+                }
+
+                @Override
+                public ConfigurationGetter getConfigurationGetter() {
+                        // TODO Auto-generated method stub
+                        return testConfig;
+                }
+
+                @Override
+                public ConfigurationSetter getConfigurationSetter() {
+                        // TODO Auto-generated method stub
+                        return testConfig;
                 }
         }
         

@@ -31,6 +31,16 @@ public abstract class CLICommand {
         private ServiceContext context;
         
         /**
+         * Full text for command help.
+         */
+        private String helpText;
+        
+        /**
+         * Short description of the command.
+         */
+        private String shortDescr;
+        
+        /**
          * 
          * @param out Reference to the output stream
          * @param ctx Service context.
@@ -39,7 +49,8 @@ public abstract class CLICommand {
                 setOutput(out);
                 setContext(ctx);
                 subCommands = new LinkedList<CLICommand>();
-                
+                helpText = generateHelpText();
+                shortDescr = generateShortDescr();
         }
         
         /**
@@ -87,6 +98,34 @@ public abstract class CLICommand {
 
         /**
          * 
+         * @return Help text
+         */
+        public final String getHelpText() {
+                return helpText;
+        }
+
+        /**
+         * 
+         * @return Help text.
+         */
+        protected abstract String generateHelpText();
+
+        /**
+         * 
+         * @return Short command description.
+         */
+        public final String getShortDescription() {
+                return shortDescr;
+        }
+
+        /**
+         * 
+         * @return Short description
+         */
+        protected abstract String generateShortDescr();
+
+        /**
+         * 
          * @param cmd new Sub command.
          */
         public final void addSubCommand(final CLICommand cmd) {
@@ -111,7 +150,22 @@ public abstract class CLICommand {
          * 
          */
         private void displayHelp() {
-                getOutput().println("HELP : ");
+                getOutput().printf("Help for command %s", getCommandWord());
+                getOutput().println();
+                getOutput().println();
+                getOutput().println(getShortDescription());
+                getOutput().println();
+                getOutput().println("Long Description: ");
+                getOutput().println(getHelpText());
+                getOutput().println();
+                getOutput().println("List of sub commands");
+                for (CLICommand cmd : subCommands) {
+                        getOutput().printf("\t%s: %s", cmd.getCommandWord(), cmd.getShortDescription());
+                        getOutput().println();
+                }
+                getOutput().println();
+                getOutput().println("Type <command help for further information");
+                getOutput().println();
         }
 
         /**

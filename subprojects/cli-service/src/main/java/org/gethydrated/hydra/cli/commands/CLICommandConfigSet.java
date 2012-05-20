@@ -29,12 +29,28 @@ public class CLICommandConfigSet extends CLICommand {
 
         @Override
         public final String getCommandShort() {
-                return getCommandWord();
+                return "s";
         }
 
         @Override
         public final void executeCommand(final String[] args) {
                 getOutput().printf("%s=%s", args[0], args[1]);
+        }
+
+        @Override
+        protected final String generateHelpText() {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Aspects two parameters:");
+                sb.append(System.getProperty("line.separator"));
+                sb.append("The first parameter is the key for the configuration value");
+                sb.append(System.getProperty("line.separator"));
+                sb.append("The second parameter is the new configuration value");
+                return sb.toString();
+        }
+
+        @Override
+        protected final String generateShortDescr() {
+                return "Set a configuration value";
         }
 
 }
