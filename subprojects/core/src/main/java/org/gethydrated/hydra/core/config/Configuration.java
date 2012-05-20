@@ -182,13 +182,7 @@ public class Configuration implements ConfigurationSetter, ConfigurationGetter {
                 }
         }
 
-        /**
-         * 
-         * @param name
-         *                .
-         * @param value
-         *                .
-         */
+        @Override
         public final void set(final String name, final Object value) {
                 set(name, value, value.getClass());
         }
@@ -234,13 +228,7 @@ public class Configuration implements ConfigurationSetter, ConfigurationGetter {
                 throw new ConfigItemNotFoundException(name);
         }
 
-        /**
-         * 
-         * @param name
-         *                Item name.
-         * @return item value.
-         * @throws ConfigItemNotFoundException .
-         */
+        @Override
         public final Object get(final String name)
                         throws ConfigItemNotFoundException {
                 return getFromItem(root, name);

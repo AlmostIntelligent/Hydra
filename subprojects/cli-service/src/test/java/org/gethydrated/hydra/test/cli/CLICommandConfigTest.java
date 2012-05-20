@@ -1,10 +1,9 @@
 package org.gethydrated.hydra.test.cli;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;
 import org.junit.Before;
@@ -14,67 +13,90 @@ import org.junit.Test;
  * 
  * @author Hanno Sternberg
  * @since 0.1.0
- *
+ * 
  */
 public class CLICommandConfigTest {
 
-        
         /**
          * 
          */
         private CLICommand dut;
-        
+
         /**
          * 
          */
-        private ByteArrayOutputStream output;
-        
-        /**
-         * 
-         * @return OutputStream.
-         */
-        public final String getOutput() {
-                return output.toString();
-        }
-        
+        private CLITestContext ctx;
+
         /**
          * 
          * @throws Exception .
          */
         @Before
         public final void setUp() throws Exception {
-                output = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(output);
-                dut = new CLICommandConfig(ps, null);
+                ctx = new CLITestContext();
+                dut = new CLICommandConfig(ctx);
         }
 
-
-        
         /**
          * Test method for "configuration set".
          */
         @Test
         public final void testSet() {
-                dut.parseCommand("set key value");
-                assertEquals("key=value", getOutput());
+                dut.parseCommand("set Network.Host localhost");
+                assertEquals("Network.Host = localhost", ctx.getOutput());
+                try {
+                        assertEquals("localhost", ctx.getConfigurationGetter()
+                                        .getString("Network.Host"));
+                } catch (ConfigItemNotFoundException e) {
+                        fail("Configuration Item not found");
+                }
         }
 
         /**
          * Test method for "configuration get".
          */
-        @Test 
+        @Test
         public final void testGet() {
-                dut.parseCommand("get key");
-                assertEquals("key", getOutput());
+                dut.parseCommand("get Network.Port");
+                assertEquals("1337", ctx.getOutput());
+        }
+
+        /**
+         * Test method for "configuration list".
+         */
+        @Test
+        public final void testList() {
+                dut.parseCommand("list Network");
+                assertEquals("Port" + System.getProperty("line.separator")
+                                + "Host" + System.getProperty("line.separator"),
+                                ctx.getOutput());
         }
         
         /**
-         * Test method for "configuration get".
+         * 
          */
-        @Test 
-        public final void testList() {
-                dut.parseCommand("list key");
-                assertEquals("[key]", getOutput());
+        @Test
+        public final void testGetEmptyKey() {
+                dut.parseCommand("get");
+                assertEquals("No key given.", ctx.getOutput());
+        }
+        
+        /**
+         * 
+         */
+        @Test
+        public final void testListEmptyKey() {
+                dut.parseCommand("list");
+                assertEquals("No key given.", ctx.getOutput());
+        }
+        
+        /**
+         * 
+         */
+        @Test
+        public final void testSetEmptyKey() {
+                dut.parseCommand("set");
+                assertEquals("Not enough parameters.", ctx.getOutput());
         }
 
 }

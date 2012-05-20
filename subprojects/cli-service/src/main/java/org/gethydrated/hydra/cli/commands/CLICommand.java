@@ -23,11 +23,6 @@ public abstract class CLICommand {
         /**
          * 
          */
-        private PrintStream output;
-        
-        /**
-         * 
-         */
         private ServiceContext context;
         
         /**
@@ -42,11 +37,9 @@ public abstract class CLICommand {
         
         /**
          * 
-         * @param out Reference to the output stream
          * @param ctx Service context.
          */
-        public CLICommand(final PrintStream out, final ServiceContext ctx) {
-                setOutput(out);
+        public CLICommand(final ServiceContext ctx) {
                 setContext(ctx);
                 subCommands = new LinkedList<CLICommand>();
                 helpText = generateHelpText();
@@ -58,15 +51,7 @@ public abstract class CLICommand {
          * @return OutputStream.
          */
         public final PrintStream getOutput() {
-                return output;
-        }
-
-        /**
-         * 
-         * @param out OutputStream.
-         */
-        private void setOutput(final PrintStream out) {
-                output = out;
+                return getContext().getOutputStream();
         }
 
         /**
@@ -164,7 +149,7 @@ public abstract class CLICommand {
                         getOutput().println();
                 }
                 getOutput().println();
-                getOutput().println("Type <command help for further information");
+                getOutput().println("Type '<command> help' for further information");
                 getOutput().println();
         }
 
@@ -213,9 +198,9 @@ public abstract class CLICommand {
          * @param cmds .
          */
         public final void parseCommand(final String[] cmds) {
-                if (cmds[0].equalsIgnoreCase("help")) {
+                if (cmds.length > 0 && cmds[0].equalsIgnoreCase("help")) {
                         displayHelp();
-                } else if (hasSubCommands()) {
+                } else if (cmds.length > 0 && hasSubCommands()) {
                         CLICommand subCmd = isSubCommand(cmds[0]);
                         if (subCmd != null) {
                                 String[] rest = new String[cmds.length - 1];

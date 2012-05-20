@@ -26,8 +26,16 @@ public interface ConfigurationGetter {
          * @return item value.
          * @throws ConfigItemNotFoundException .
          */
-        Boolean getBoolean(final String name)
-                        throws ConfigItemNotFoundException;
+        Object get(final String name) throws ConfigItemNotFoundException;
+        
+        /**
+         * 
+         * @param name
+         *                Item name.
+         * @return item value.
+         * @throws ConfigItemNotFoundException .
+         */
+        Boolean getBoolean(final String name) throws ConfigItemNotFoundException;
 
         /**
          * 
@@ -36,8 +44,7 @@ public interface ConfigurationGetter {
          * @return item value.
          * @throws ConfigItemNotFoundException .
          */
-        Integer getInteger(final String name)
-                        throws ConfigItemNotFoundException;
+        Integer getInteger(final String name) throws ConfigItemNotFoundException;
 
         /**
          * 

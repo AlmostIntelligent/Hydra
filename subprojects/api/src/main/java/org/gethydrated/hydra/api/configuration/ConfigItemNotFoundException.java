@@ -9,7 +9,7 @@ package org.gethydrated.hydra.api.configuration;
 public class ConfigItemNotFoundException extends Exception {
 
     /**
-     * @var Name of the item.
+     * Name of the item.
      */
     private String itemName;
 

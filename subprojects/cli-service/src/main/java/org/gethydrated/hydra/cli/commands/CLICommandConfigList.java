@@ -1,7 +1,8 @@
 package org.gethydrated.hydra.cli.commands;
 
-import java.io.PrintStream;
+import java.util.List;
 
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.service.ServiceContext;
 
 /**
@@ -14,11 +15,10 @@ public class CLICommandConfigList extends CLICommand {
 
         /**
          * 
-         * @param out OutputStream.
          * @param ctx Service Context.
          */
-        public CLICommandConfigList(final PrintStream out, final ServiceContext ctx) {
-                super(out, ctx);
+        public CLICommandConfigList(final ServiceContext ctx) {
+                super(ctx);
                 // TODO Auto-generated constructor stub
         }
 
@@ -48,7 +48,20 @@ public class CLICommandConfigList extends CLICommand {
 
         @Override
         public final void executeCommand(final String[] args) {
-                getOutput().printf("[%s]", args[0]);
+                if (args.length >= 1) {
+                        List<String> l;
+                        try {
+                                l = getContext().getConfigurationGetter().list(args[0]);
+                                for (String s : l) {
+                                        getOutput().println(s);
+                                }
+                        } catch (ConfigItemNotFoundException e) {
+                                getOutput().printf("Configuration item %s not found", args[0]);
+                        }
+                        
+                } else {
+                        getOutput().print("No key given.");
+                }
 
         }
 

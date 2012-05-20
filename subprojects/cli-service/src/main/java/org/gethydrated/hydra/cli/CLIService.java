@@ -27,9 +27,9 @@ public class CLIService {
          *                Context.
          */
         public CLIService(final ServiceContext ctx) {
-                commands = new CLICommandRoot(ctx.getOutputStream(), ctx);
-                commands.addSubCommand(new CLICommandEcho(ctx.getOutputStream(), ctx));
-                commands.addSubCommand(new CLICommandConfig(ctx.getOutputStream(), ctx));
+                commands = new CLICommandRoot(ctx);
+                commands.addSubCommand(new CLICommandEcho(ctx));
+                commands.addSubCommand(new CLICommandConfig(ctx));
         }
 
         /**

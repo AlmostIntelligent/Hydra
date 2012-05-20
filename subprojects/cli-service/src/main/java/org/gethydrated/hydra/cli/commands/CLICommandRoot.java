@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.cli.commands;
 
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.api.service.ServiceContext;
 
 /**
@@ -13,11 +11,10 @@ public class CLICommandRoot extends CLICommand {
 
         /**
          * 
-         * @param out .
          * @param ctx .
          */
-        public CLICommandRoot(final PrintStream out, final ServiceContext ctx) {
-                super(out, ctx);
+        public CLICommandRoot(final ServiceContext ctx) {
+                super(ctx);
         }
 
         @Override

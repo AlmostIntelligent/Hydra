@@ -7,7 +7,16 @@ package org.gethydrated.hydra.api.configuration;
  * 
  */
 public interface ConfigurationSetter {
-
+        
+        /**
+         * 
+         * @param name
+         *                item name.
+         * @param value
+         *                item value.
+         */
+        void set(final String name, final Object value);
+        
         /**
          * 
          * @param name

@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.cli.commands;
 
-import java.io.PrintStream;
-
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.service.ServiceContext;
 
 /**
@@ -14,11 +13,10 @@ public class CLICommandConfigSet extends CLICommand {
 
         /**
          * 
-         * @param out OutputStream.
          * @param ctx Service context.
          */
-        public CLICommandConfigSet(final PrintStream out, final ServiceContext ctx) {
-                super(out, ctx);
+        public CLICommandConfigSet(final ServiceContext ctx) {
+                super(ctx);
                 
         }
 
@@ -34,7 +32,16 @@ public class CLICommandConfigSet extends CLICommand {
 
         @Override
         public final void executeCommand(final String[] args) {
-                getOutput().printf("%s=%s", args[0], args[1]);
+                if (args.length >= 2) {
+                        getContext().getConfigurationSetter().set(args[0], args[1]);
+                        try {
+                                getOutput().printf("%s = %s", args[0], getContext().getConfigurationGetter().get(args[0]));
+                        } catch (ConfigItemNotFoundException e) {
+                                getOutput().printf("Encountered an exception, while setting %s to %s", args[0], args[1]);
+                        }
+                } else {
+                        getOutput().printf("Not enough parameters.");
+                }
         }
 
         @Override

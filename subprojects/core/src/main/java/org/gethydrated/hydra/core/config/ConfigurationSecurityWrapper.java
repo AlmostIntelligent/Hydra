@@ -99,4 +99,15 @@ public class ConfigurationSecurityWrapper implements ConfigurationGetter,
                 return getCoreConfiguration().list(name);
         }
 
+        @Override
+        public final Object get(final String name) throws ConfigItemNotFoundException {
+                return getCoreConfiguration().get(name);
+        }
+
+        @Override
+        public final void set(final String name, final Object value) {
+                getCoreConfiguration().set(name, value);
+                
+        }
+
 }

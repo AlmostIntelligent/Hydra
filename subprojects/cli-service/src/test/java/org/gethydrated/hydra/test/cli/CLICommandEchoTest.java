@@ -2,9 +2,6 @@ package org.gethydrated.hydra.test.cli;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandEcho;
 import org.junit.After;
@@ -28,15 +25,7 @@ public class CLICommandEchoTest {
         /**
          * 
          */
-        private ByteArrayOutputStream output;
-        
-        /**
-         * 
-         * @return OutputStream.
-         */
-        public final String getOutput() {
-                return output.toString();
-        }
+        private CLITestContext ctx;
         
         /**
          * 
@@ -44,9 +33,8 @@ public class CLICommandEchoTest {
          */
         @Before
         public final void setUp() throws Exception {
-                output = new ByteArrayOutputStream();
-                PrintStream ps = new PrintStream(output);
-                dut = new CLICommandEcho(ps, null);
+                ctx = new CLITestContext();
+                dut = new CLICommandEcho(ctx);
         }
 
         /**
@@ -65,7 +53,7 @@ public class CLICommandEchoTest {
                 String[] s = new String[1];
                 s[0] = "Test Execute Echo";
                 dut.executeCommand(s);
-                assertEquals(getOutput().trim(), s[0]);
+                assertEquals(s[0], ctx.getOutput().trim());
         }
         
         /**
@@ -75,6 +63,6 @@ public class CLICommandEchoTest {
         public final void testParseCommandString() {
                 String s = "Test Parse Echo";
                 dut.parseCommand(s);
-                assertEquals(getOutput().trim(), s);
+                assertEquals(s, ctx.getOutput().trim());
         }
 }

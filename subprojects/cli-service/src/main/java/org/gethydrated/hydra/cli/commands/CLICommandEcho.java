@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.cli.commands;
 
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.api.service.ServiceContext;
 
 /**
@@ -14,11 +12,10 @@ public class CLICommandEcho extends CLICommand {
 
         /**
          * 
-         * @param out OutputStream.
          * @param ctx Service context.
          */
-        public CLICommandEcho(final PrintStream out, final ServiceContext ctx) {
-                super(out, ctx);
+        public CLICommandEcho(final ServiceContext ctx) {
+                super(ctx);
         }
 
         @Override
