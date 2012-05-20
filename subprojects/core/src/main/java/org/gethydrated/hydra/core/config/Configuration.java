@@ -1,15 +1,12 @@
 package org.gethydrated.hydra.core.config;
 
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
-
 /**
  * 
  * @author Hanno Sternberg
  * @since 0.1.0
  * 
  */
-public class Configuration implements ConfigurationSetter, ConfigurationGetter {
+public class Configuration {
 
     /**
      * 
@@ -164,47 +161,80 @@ public class Configuration implements ConfigurationSetter, ConfigurationGetter {
         return getFromItem(root, name);
     }
 
-    @Override
+    /**
+     * 
+     * @param name item name.
+     * @param value item value.
+     */
     public final void setBoolean(final String name, final Boolean value) {
-            set(name, value, value.getClass());
-            
+        set(name, value, value.getClass());
     }
 
-    @Override
+    /**
+     * 
+     * @param name Item name.
+     * @return item value.
+     * @throws ConfigItemNotFoundException .
+     */
     public final Boolean getBoolean(final String name) throws ConfigItemNotFoundException {
         return (Boolean) get(name);
     }
 
-    @Override
+    /**
+     * 
+     * @param name item name.
+     * @param value item value.
+     */
     public final void setInteger(final String name, final Integer value) {
         set(name, value, value.getClass());
     }
 
-    @Override
+    /**
+     * 
+     * @param name Item name.
+     * @return item value.
+     * @throws ConfigItemNotFoundException .
+     */
     public final Integer getInteger(final String name) throws ConfigItemNotFoundException {
         return (Integer) get(name);
     }
 
-    @Override
+    /**
+     * 
+     * @param name item name.
+     * @param value item value.
+     */
     public final void setFloat(final String name, final Double value) {
         set(name, value, value.getClass());
     }
 
-    @Override
+    /**
+     * 
+     * @param name Item name.
+     * @return item value.
+     * @throws ConfigItemNotFoundException .
+     */
     public final Double getFloat(final String name) throws ConfigItemNotFoundException {
         return (Double) get(name);
     }
 
-    @Override
+    /**
+     * 
+     * @param name item name.
+     * @param value item value.
+     */
     public final void setString(final String name, final String value) {
         set(name, value, value.getClass());
     }
 
-    @Override
+    /**
+     * 
+     * @param name Item name.
+     * @return item value.
+     * @throws ConfigItemNotFoundException .
+     */
     public final String getString(final String name) throws ConfigItemNotFoundException {
         return (String) get(name);
     }
-
-
 
 }

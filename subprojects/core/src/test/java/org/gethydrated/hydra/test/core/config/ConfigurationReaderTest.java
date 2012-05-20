@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.gethydrated.hydra.core.config.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.config.Configuration;
 import org.gethydrated.hydra.core.config.XMLConfigurationReader;
 import org.junit.After;

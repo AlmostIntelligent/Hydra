@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.gethydrated.hydra.core.config.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.config.Configuration;
 import org.gethydrated.hydra.core.config.ConfigurationItem;
 import org.gethydrated.hydra.core.config.ConfigList;
@@ -96,8 +96,23 @@ public class ConfigurationTest {
     }
 
     /**
+     * Test method for 
+     * {@link org.gethydrated.hydra.core.config.Configuration#list(java.lang.String)}.
+     */
+    @Test
+    public final void testList() {
+            cfg.set("Name", "test");
+            cfg.set("Network.Port", 1337);
+            cfg.set("Network.Host", "local");
+            
+            
+            assertEquals("[Name, Network]", cfg.list("").toString());
+            assertEquals("[Port, Host]", cfg.list("Network").toString());
+    }
+    
+    /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#get(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.config.Configuration#get(java.lang.String)}.
      * .
      */
     @Test
