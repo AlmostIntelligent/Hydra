@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.core.config;
 
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+
 /**
  * 
  * @author 

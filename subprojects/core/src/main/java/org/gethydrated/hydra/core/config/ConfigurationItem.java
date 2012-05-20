@@ -53,4 +53,9 @@ public abstract class ConfigurationItem {
      */
     public abstract boolean equals(Object obj);
 
+    /**
+     * @return HashCode;
+     */
+    public abstract int hashCode();
+
 }
