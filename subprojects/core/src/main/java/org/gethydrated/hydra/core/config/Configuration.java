@@ -1,12 +1,15 @@
 package org.gethydrated.hydra.core.config;
 
+import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
+import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
+
 /**
  * 
  * @author Hanno Sternberg
  * @since 0.1.0
  * 
  */
-public class Configuration {
+public class Configuration implements ConfigurationSetter, ConfigurationGetter {
 
     /**
      * 
@@ -161,80 +164,47 @@ public class Configuration {
         return getFromItem(root, name);
     }
 
-    /**
-     * 
-     * @param name item name.
-     * @param value item value.
-     */
+    @Override
     public final void setBoolean(final String name, final Boolean value) {
-        set(name, value, value.getClass());
+            set(name, value, value.getClass());
+            
     }
 
-    /**
-     * 
-     * @param name Item name.
-     * @return item value.
-     * @throws ConfigItemNotFoundException .
-     */
+    @Override
     public final Boolean getBoolean(final String name) throws ConfigItemNotFoundException {
         return (Boolean) get(name);
     }
 
-    /**
-     * 
-     * @param name item name.
-     * @param value item value.
-     */
+    @Override
     public final void setInteger(final String name, final Integer value) {
         set(name, value, value.getClass());
     }
 
-    /**
-     * 
-     * @param name Item name.
-     * @return item value.
-     * @throws ConfigItemNotFoundException .
-     */
+    @Override
     public final Integer getInteger(final String name) throws ConfigItemNotFoundException {
         return (Integer) get(name);
     }
 
-    /**
-     * 
-     * @param name item name.
-     * @param value item value.
-     */
+    @Override
     public final void setFloat(final String name, final Double value) {
         set(name, value, value.getClass());
     }
 
-    /**
-     * 
-     * @param name Item name.
-     * @return item value.
-     * @throws ConfigItemNotFoundException .
-     */
+    @Override
     public final Double getFloat(final String name) throws ConfigItemNotFoundException {
         return (Double) get(name);
     }
 
-    /**
-     * 
-     * @param name item name.
-     * @param value item value.
-     */
+    @Override
     public final void setString(final String name, final String value) {
         set(name, value, value.getClass());
     }
 
-    /**
-     * 
-     * @param name Item name.
-     * @return item value.
-     * @throws ConfigItemNotFoundException .
-     */
+    @Override
     public final String getString(final String name) throws ConfigItemNotFoundException {
         return (String) get(name);
     }
+
+
 
 }
