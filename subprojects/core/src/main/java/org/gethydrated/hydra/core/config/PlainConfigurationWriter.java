@@ -10,22 +10,44 @@ import java.io.PrintStream;
  */
 public class PlainConfigurationWriter extends ConfigurationWriter {
 
-    public PlainConfigurationWriter(Configuration _cfg) {
-        super(_cfg);
+    /**
+     * 
+     * @param cfg
+     *            .
+     */
+    public PlainConfigurationWriter(final Configuration cfg) {
+        super(cfg);
     }
 
-    protected void writeValue(PrintStream stream, ConfigValue<?> value,
-            String namePrefix) {
+    /**
+     * 
+     * @param stream
+     *            .
+     * @param value
+     *            .
+     * @param namePrefix
+     *            .
+     */
+    protected final void writeValue(final PrintStream stream,
+            final ConfigValue<?> value, final String namePrefix) {
         stream.print(namePrefix);
         stream.print(value.getName());
         stream.print("=");
         stream.println(value.value());
-        ;
 
     }
 
-    protected void writeList(PrintStream stream, ConfigList list,
-            String namePrefix) {
+    /**
+     * 
+     * @param stream
+     *            .
+     * @param list
+     *            .
+     * @param namePrefix
+     *            .
+     */
+    protected final void writeList(final PrintStream stream,
+            final ConfigList list, final String namePrefix) {
         if (list.hasChildren()) {
             for (ConfigurationItem i : list.getChilds()) {
                 if (i.hasValue()) {
@@ -40,9 +62,13 @@ public class PlainConfigurationWriter extends ConfigurationWriter {
         }
     }
 
+    /**
+     * @param stream
+     *            .
+     */
     @Override
-    public void saveToStream(PrintStream stream) {
-        writeList(stream, cfg.getRoot(), "");
+    public final void saveToStream(final PrintStream stream) {
+        writeList(stream, getCfg().getRoot(), "");
     }
 
 }
