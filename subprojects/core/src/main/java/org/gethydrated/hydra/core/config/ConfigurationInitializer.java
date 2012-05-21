@@ -4,7 +4,7 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 
 /**
  * 
- * @author 
+ * @author  Hanno Sternberg
  * @since 0.1.0
  *
  */

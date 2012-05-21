@@ -55,25 +55,25 @@ public class CLITestContext implements ServiceContext {
         }
 
         @Override
-        public void registerLocal() {
+        public void registerLocal(String name, Object obj) {
                 // TODO Auto-generated method stub
                 
         }
 
         @Override
-        public void registerGlobal() {
+        public void registerGlobal(String name, Object obj) {
                 // TODO Auto-generated method stub
                 
         }
 
         @Override
-        public void getLocalService() {
+        public void getLocalService(String name) {
                 // TODO Auto-generated method stub
                 
         }
 
         @Override
-        public void getGlobalService() {
+        public void getGlobalService(String name) {
                 // TODO Auto-generated method stub
                 
         }
