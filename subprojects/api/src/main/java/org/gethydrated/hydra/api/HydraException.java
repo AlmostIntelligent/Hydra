@@ -7,7 +7,7 @@ public class HydraException extends Exception {
     }
 
     /**
-	 * 
+     * 
 	 */
     private static final long serialVersionUID = 9050861266290634703L;
 
