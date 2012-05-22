@@ -109,7 +109,9 @@ configure(rootProject) {
 
 		subprojects.each { subproject ->
 			if(subproject.name.contains("service")) {
-				//TODO: create system service deployment
+				into ("/service/system") {
+					from subproject.jar
+				}
 			} else {
 				into ("/lib") {
 					from subproject.jar

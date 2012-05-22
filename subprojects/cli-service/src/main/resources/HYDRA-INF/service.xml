@@ -1,0 +1,5 @@
+<service>
+	<activators>
+		<activator>org.gethydrated.hydra.cli.CLIServiceActivator</activator>
+	</activators>
+</service>
