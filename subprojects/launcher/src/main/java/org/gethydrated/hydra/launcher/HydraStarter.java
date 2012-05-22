@@ -13,6 +13,7 @@ public class HydraStarter {
         configureLogback(System.getProperty("hydra.home"));
         Hydra hydra = HydraFactory.getHydra();
         hydra.start();
+        hydra.startService("CLI");
     }
 
     private static void configureLogback(String hydraHome) throws Exception {
