@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
 import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
-import org.gethydrated.hydra.api.platform.Platform;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.core.config.Configuration;
@@ -88,12 +87,6 @@ public class CLITestContext implements ServiceContext {
         public void stopService(String name) throws HydraException {
                 // TODO Auto-generated method stub
                 
-        }
-
-        @Override
-        public final Platform getPlatform() {
-                // TODO Auto-generated method stub
-                return null;
         }
 
         @Override

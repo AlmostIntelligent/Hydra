@@ -4,7 +4,6 @@ import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
 import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
-import org.gethydrated.hydra.api.platform.Platform;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
 
