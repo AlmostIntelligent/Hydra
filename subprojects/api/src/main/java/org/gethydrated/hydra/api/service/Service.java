@@ -24,4 +24,10 @@ public interface Service {
      *             on errors while stopping the service.
      */
     void stop() throws ServiceException;
+    
+    /**
+     * Return unique service id.
+     * @return service id.
+     */
+    Long getId();
 }

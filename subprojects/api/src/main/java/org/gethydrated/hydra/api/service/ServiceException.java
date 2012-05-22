@@ -8,6 +8,10 @@ public class ServiceException extends HydraException {
         super(e);
     }
 
+    public ServiceException(String m) {
+    	super(m);
+    }
+    
     /**
 	 * 
 	 */

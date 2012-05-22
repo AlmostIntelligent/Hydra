@@ -4,6 +4,8 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gethydrated.hydra.core.service.ServiceInfo;
+
 /**
  * Locator chain.
  * 
@@ -31,12 +33,12 @@ public class ChainedServiceLocator implements ServiceLocator {
     }
 
     @Override
-    public final URL locate(final String name) {
+    public final ServiceInfo locate(final String name) {
         return null;
     }
 
     @Override
-    public final URL locate(final String name, final String version) {
+    public final ServiceInfo locate(final String name, final String version) {
         // TODO Auto-generated method stub
         return null;
     }

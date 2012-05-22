@@ -1,25 +1,48 @@
 package org.gethydrated.hydra.core.service;
 
-import java.util.List;
+import java.net.URLClassLoader;
 
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceActivator;
 import org.gethydrated.hydra.api.service.ServiceException;
+import org.gethydrated.hydra.core.api.ServiceContextImpl;
 
+/**
+ * Service implementation.
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
 public class ServiceImpl implements Service {
 
-    private final List<ServiceActivator> activators;
+    /**
+     * Service activator.
+     */
+    private final ServiceActivator activator;
+    
+    private final ServiceInfo serviceInfo;
+    
+    private final ClassLoader cl;
 
-    public ServiceImpl(List<ServiceActivator> sa) {
-        activators = sa;
+    
+    public ServiceImpl(ServiceInfo si) throws ServiceException {
+        serviceInfo = si;
+        cl = new URLClassLoader(si.getServiceJars(), ServiceImpl.class.getClassLoader());
+        try {
+            Class clzz = cl.loadClass(si.getActivator());
+            if(clzz == null) {
+                throw new ServiceException("Service activator not found:" +si.getActivator());
+            }
+            activator = (ServiceActivator) clzz.newInstance();
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        } 
     }
 
     @Override
-    public void start() throws ServiceException {
+    public final void start() throws ServiceException {
         try {
-            for (ServiceActivator sa : activators) {
-                sa.start(null);
-            }
+            activator.start(new ServiceContextImpl());
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -27,13 +50,13 @@ public class ServiceImpl implements Service {
 
     @Override
     public void stop() throws ServiceException {
-        try {
-            for (ServiceActivator sa : activators) {
-                sa.stop(null);
-            }
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
+
+    }
+
+    @Override
+    public Long getId() {
+        // TODO Auto-generated method stub
+        return (long) 0;
     }
 
 }

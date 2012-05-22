@@ -1,6 +1,6 @@
 package org.gethydrated.hydra.core.service.locator;
 
-import java.net.URL;
+import org.gethydrated.hydra.core.service.ServiceInfo;
 
 /**
  * Local installed service locator.
@@ -12,13 +12,13 @@ import java.net.URL;
 public class LocalServiceLocator implements ServiceLocator {
 
     @Override
-    public final URL locate(final String name) {
+    public final ServiceInfo locate(final String name) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public final URL locate(final String name, final String version) {
+    public final ServiceInfo locate(final String name, final String version) {
         // TODO Auto-generated method stub
         return null;
     }

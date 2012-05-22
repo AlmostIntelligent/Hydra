@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.service.locator;
 
-import java.net.URL;
+import java.io.IOException;
+import org.gethydrated.hydra.core.service.ServiceInfo;
 
 /**
  * 
@@ -14,14 +15,16 @@ public interface ServiceLocator {
      * Tries to locate a service by name.
      * @param name Service name.
      * @return URL to service jar file.
+     * @throws IOException 
      */
-    URL locate(String name);
+    ServiceInfo locate(String name) throws IOException;
     
     /**
      * Tries to locate a service.
      * @param name Service name.
      * @param version Serive version.
      * @return URL to service jar file.
+     * @throws IOException 
      */
-    URL locate(String name, String version);
+    ServiceInfo locate(String name, String version) throws IOException;
 }

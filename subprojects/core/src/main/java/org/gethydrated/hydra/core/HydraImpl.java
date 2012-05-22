@@ -59,7 +59,7 @@ public final class HydraImpl implements Hydra {
 
     @Override
     public void startService(final String name) throws HydraException {
-        // TODO Auto-generated method stub
+        sm.startService(name);
     }
 
     @Override
