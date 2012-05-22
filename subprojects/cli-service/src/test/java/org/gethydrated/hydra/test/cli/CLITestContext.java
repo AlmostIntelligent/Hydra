@@ -79,13 +79,13 @@ public class CLITestContext implements ServiceContext {
         }
 
         @Override
-        public void startService() throws HydraException {
+        public void startService(String name) throws HydraException {
                 // TODO Auto-generated method stub
                 
         }
 
         @Override
-        public void stopService() throws HydraException {
+        public void stopService(String name) throws HydraException {
                 // TODO Auto-generated method stub
                 
         }

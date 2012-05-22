@@ -17,14 +17,16 @@ import org.xml.sax.SAXException;
 
 /**
  * Testsuite for XML Configuration reader.
+ * 
  * @author Hanno Sternberg
  * @since 0.1.0
- *
+ * 
  */
 public class ConfigurationReaderTest {
 
     /**
      * Test set up.
+     * 
      * @throws Exception .
      */
     @Before
@@ -33,6 +35,7 @@ public class ConfigurationReaderTest {
 
     /**
      * Test tear down.
+     * 
      * @throws Exception .
      */
     @After

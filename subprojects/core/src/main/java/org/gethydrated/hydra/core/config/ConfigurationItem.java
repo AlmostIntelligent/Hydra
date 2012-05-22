@@ -15,7 +15,8 @@ public abstract class ConfigurationItem {
 
     /**
      * 
-     * @param itemName .
+     * @param itemName
+     *            .
      */
     public ConfigurationItem(final String itemName) {
         name = itemName;
@@ -48,7 +49,8 @@ public abstract class ConfigurationItem {
     public abstract Boolean hasChildren();
 
     /**
-     * @param obj Object for comparison.
+     * @param obj
+     *            Object for comparison.
      * @return True, if objects are equal.
      */
     public abstract boolean equals(Object obj);

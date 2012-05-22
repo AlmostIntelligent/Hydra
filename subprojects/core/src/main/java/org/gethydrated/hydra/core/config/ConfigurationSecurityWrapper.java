@@ -9,105 +9,111 @@ import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
 /**
  * 
  * @author Hanno Sternberg
- * @since 0.1.0
- * TO-DO Create real security implementation 
+ * @since 0.1.0 TO-DO Create real security implementation
  */
 public class ConfigurationSecurityWrapper implements ConfigurationGetter,
-                ConfigurationSetter {
+        ConfigurationSetter {
 
-        /**
-         * @var Reference to the core configuration.
-         */
-        private Configuration coreConfiguration;
-        
-        /**
-         * 
-         * @return core Configuration
-         */
-        private Configuration getCoreConfiguration() {
-                return coreConfiguration;
-        }
-        
-        /**
-         * 
-         * @param coreConfig Core Configuration.
-         */
-        private void setCoreConfiguration(final Configuration coreConfig) {
-                this.coreConfiguration = coreConfig;
-        }
-        
-        /**
-         * 
-         * @param coreConfig core Configuration
-         */
-        public ConfigurationSecurityWrapper(final Configuration coreConfig) {
-                setCoreConfiguration(coreConfig);
-        }
-        
-        @Override
-        public final void setBoolean(final String name, final Boolean value) {
-                // TODO Auto-generated method stub
-                getCoreConfiguration().setBoolean(name, value);
-        }
+    /**
+     * @var Reference to the core configuration.
+     */
+    private Configuration coreConfiguration;
 
-        @Override
-        public final void setInteger(final String name, final Integer value) {
-                // TODO Auto-generated method stub
-                getCoreConfiguration().setInteger(name, value);
-        }
+    /**
+     * 
+     * @return core Configuration
+     */
+    private Configuration getCoreConfiguration() {
+        return coreConfiguration;
+    }
 
-        @Override
-        public final void setFloat(final String name, final Double value) {
-                // TODO Auto-generated method stub
-                getCoreConfiguration().setFloat(name, value);
-        }
+    /**
+     * 
+     * @param coreConfig
+     *            Core Configuration.
+     */
+    private void setCoreConfiguration(final Configuration coreConfig) {
+        this.coreConfiguration = coreConfig;
+    }
 
-        @Override
-        public final void setString(final String name, final String value) {
-                // TODO Auto-generated method stub
-                getCoreConfiguration().setString(name, value);
-        }
+    /**
+     * 
+     * @param coreConfig
+     *            core Configuration
+     */
+    public ConfigurationSecurityWrapper(final Configuration coreConfig) {
+        setCoreConfiguration(coreConfig);
+    }
 
-        @Override
-        public final Boolean getBoolean(final String name) throws ConfigItemNotFoundException {
-                // TODO Auto-generated method stub
-                return getCoreConfiguration().getBoolean(name);
-        }
+    @Override
+    public final void setBoolean(final String name, final Boolean value) {
+        // TODO Auto-generated method stub
+        getCoreConfiguration().setBoolean(name, value);
+    }
 
-        @Override
-        public final Integer getInteger(final String name) throws ConfigItemNotFoundException {
-                // TODO Auto-generated method stub
-                return getCoreConfiguration().getInteger(name);
-        }
+    @Override
+    public final void setInteger(final String name, final Integer value) {
+        // TODO Auto-generated method stub
+        getCoreConfiguration().setInteger(name, value);
+    }
 
-        @Override
-        public final Double getFloat(final String name) throws ConfigItemNotFoundException {
-                // TODO Auto-generated method stub
-                return getCoreConfiguration().getFloat(name);
-        }
+    @Override
+    public final void setFloat(final String name, final Double value) {
+        // TODO Auto-generated method stub
+        getCoreConfiguration().setFloat(name, value);
+    }
 
-        @Override
-        public final String getString(final String name) throws ConfigItemNotFoundException {
-                // TODO Auto-generated method stub
-                return getCoreConfiguration().getString(name);
-        }
+    @Override
+    public final void setString(final String name, final String value) {
+        // TODO Auto-generated method stub
+        getCoreConfiguration().setString(name, value);
+    }
 
-        @Override
-        public final List<String> list(final String name)
-                        throws ConfigItemNotFoundException {
-                // TODO Auto-generated method stub
-                return getCoreConfiguration().list(name);
-        }
+    @Override
+    public final Boolean getBoolean(final String name)
+            throws ConfigItemNotFoundException {
+        // TODO Auto-generated method stub
+        return getCoreConfiguration().getBoolean(name);
+    }
 
-        @Override
-        public final Object get(final String name) throws ConfigItemNotFoundException {
-                return getCoreConfiguration().get(name);
-        }
+    @Override
+    public final Integer getInteger(final String name)
+            throws ConfigItemNotFoundException {
+        // TODO Auto-generated method stub
+        return getCoreConfiguration().getInteger(name);
+    }
 
-        @Override
-        public final void set(final String name, final Object value) {
-                getCoreConfiguration().set(name, value);
-                
-        }
+    @Override
+    public final Double getFloat(final String name)
+            throws ConfigItemNotFoundException {
+        // TODO Auto-generated method stub
+        return getCoreConfiguration().getFloat(name);
+    }
+
+    @Override
+    public final String getString(final String name)
+            throws ConfigItemNotFoundException {
+        // TODO Auto-generated method stub
+        return getCoreConfiguration().getString(name);
+    }
+
+    @Override
+    public final List<String> list(final String name)
+            throws ConfigItemNotFoundException {
+        // TODO Auto-generated method stub
+        return getCoreConfiguration().list(name);
+    }
+
+    @Override
+    public final Object get(final String name)
+            throws ConfigItemNotFoundException {
+        return getCoreConfiguration().get(name);
+    }
+
+    @Override
+    public final void set(final String name, final Object value) {
+        getCoreConfiguration().set(name, value);
+
+    }
 
 }

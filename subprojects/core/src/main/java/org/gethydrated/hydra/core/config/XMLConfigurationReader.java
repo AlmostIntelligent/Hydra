@@ -155,32 +155,27 @@ public class XMLConfigurationReader {
                 if (!s.trim().isEmpty()) {
                     /* Boolean */
                     if (s.equalsIgnoreCase("TRUE")) {
-                        cfg.setBoolean(
-                                stack.toString(Configuration.getConfigSeparator()),
-                                true);
+                        cfg.setBoolean(stack.toString(Configuration
+                                .getConfigSeparator()), true);
                     } else if (s.equalsIgnoreCase("FALSE")) {
-                        cfg.setBoolean(
-                                stack.toString(Configuration.getConfigSeparator()),
-                                false);
+                        cfg.setBoolean(stack.toString(Configuration
+                                .getConfigSeparator()), false);
                     } else {
                         /* Integer */
                         try {
                             int i = Integer.parseInt(s);
-                            cfg.setInteger(stack
-                                    .toString(Configuration.getConfigSeparator()),
-                                    i);
+                            cfg.setInteger(stack.toString(Configuration
+                                    .getConfigSeparator()), i);
                         } catch (Exception e) {
                             try {
                                 /* Double */
                                 Double d = Double.parseDouble(s);
-                                cfg.setFloat(
-                                        stack.toString(Configuration.getConfigSeparator()),
-                                        d);
+                                cfg.setFloat(stack.toString(Configuration
+                                        .getConfigSeparator()), d);
                             } catch (Exception ee) {
                                 /* String */
-                                cfg.setString(
-                                        stack.toString(Configuration.getConfigSeparator()),
-                                        s);
+                                cfg.setString(stack.toString(Configuration
+                                        .getConfigSeparator()), s);
                             }
                         }
                     }

@@ -18,7 +18,9 @@ public abstract class ConfigurationWriter {
 
     /**
      * Constructor.
-     * @param config .
+     * 
+     * @param config
+     *            .
      */
     public ConfigurationWriter(final Configuration config) {
         cfg = config;
@@ -34,7 +36,8 @@ public abstract class ConfigurationWriter {
 
     /**
      * 
-     * @param config .
+     * @param config
+     *            .
      */
     public final void setCfg(final Configuration config) {
         this.cfg = config;
@@ -42,16 +45,20 @@ public abstract class ConfigurationWriter {
 
     /**
      * 
-     * @param stream .
+     * @param stream
+     *            .
      */
     public abstract void saveToStream(PrintStream stream);
 
     /**
      * Saves the configuration to a file.
-     * @param filename .
+     * 
+     * @param filename
+     *            .
      * @throws FileNotFoundException .
      */
-    public final void saveToFile(final String filename) throws FileNotFoundException {
+    public final void saveToFile(final String filename)
+            throws FileNotFoundException {
         PrintStream stream = new PrintStream(filename);
         saveToStream(stream);
     }
