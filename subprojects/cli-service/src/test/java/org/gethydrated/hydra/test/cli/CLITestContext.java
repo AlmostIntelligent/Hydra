@@ -14,106 +14,106 @@ import org.gethydrated.hydra.core.config.Configuration;
 /**
  * 
  * @author Hanno Sternberg
- *
+ * 
  */
 public class CLITestContext implements ServiceContext {
-        
-        /**
+
+    /**
          * 
          */
-        private PrintStream ps;
-        
-        /**
+    private PrintStream ps;
+
+    /**
          * 
          */
-        private ByteArrayOutputStream output;
-        
-        /**
+    private ByteArrayOutputStream output;
+
+    /**
          * 
          */
-        private Configuration testConfig;
-        
-        /**
+    private Configuration testConfig;
+
+    /**
+     * 
+     * @return OutputStream.
+     */
+    public final String getOutput() {
+        return output.toString();
+    }
+
+    /**
          * 
-         * @return OutputStream.
          */
-        public final String getOutput() {
-                return output.toString();
-        }
-        
-        /**
-         * 
-         */
-        public CLITestContext() {
-                output = new ByteArrayOutputStream();
-                ps = new PrintStream(output);
-                testConfig = new Configuration();
-                testConfig.setString("Name", "Test");
-                testConfig.setInteger("Network.Port", 1337);
-                testConfig.setString("Network.Host", "local");
-        }
+    public CLITestContext() {
+        output = new ByteArrayOutputStream();
+        ps = new PrintStream(output);
+        testConfig = new Configuration();
+        testConfig.setString("Name", "Test");
+        testConfig.setInteger("Network.Port", 1337);
+        testConfig.setString("Network.Host", "local");
+    }
 
-        @Override
-        public void registerLocal(String name, Object obj) {
-                // TODO Auto-generated method stub
-                
-        }
+    @Override
+    public void registerLocal(String name, Object obj) {
+        // TODO Auto-generated method stub
 
-        @Override
-        public void registerGlobal(String name, Object obj) {
-                // TODO Auto-generated method stub
-                
-        }
+    }
 
-        @Override
-        public void getLocalService(String name) {
-                // TODO Auto-generated method stub
-                
-        }
+    @Override
+    public void registerGlobal(String name, Object obj) {
+        // TODO Auto-generated method stub
 
-        @Override
-        public void getGlobalService(String name) {
-                // TODO Auto-generated method stub
-                
-        }
+    }
 
-        @Override
-        public void startService(String name) throws HydraException {
-                // TODO Auto-generated method stub
-                
-        }
+    @Override
+    public void getLocalService(String name) {
+        // TODO Auto-generated method stub
 
-        @Override
-        public void stopService(String name) throws HydraException {
-                // TODO Auto-generated method stub
-                
-        }
+    }
 
-        @Override
-        public final Service getService() {
-                // TODO Auto-generated method stub
-                return null;
-        }
+    @Override
+    public void getGlobalService(String name) {
+        // TODO Auto-generated method stub
 
-        @Override
-        public final PrintStream getOutputStream() {
-                return ps;
-        }
+    }
 
-        @Override
-        public final InputStream getInputStream() {
-                return System.in;
-        }
+    @Override
+    public void startService(String name) throws HydraException {
+        // TODO Auto-generated method stub
 
-        @Override
-        public final ConfigurationGetter getConfigurationGetter() {
-                // TODO Auto-generated method stub
-                return testConfig;
-        }
+    }
 
-        @Override
-        public final ConfigurationSetter getConfigurationSetter() {
-                // TODO Auto-generated method stub
-                return testConfig;
-        }
+    @Override
+    public void stopService(String name) throws HydraException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public final Service getService() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public final PrintStream getOutputStream() {
+        return ps;
+    }
+
+    @Override
+    public final InputStream getInputStream() {
+        return System.in;
+    }
+
+    @Override
+    public final ConfigurationGetter getConfigurationGetter() {
+        // TODO Auto-generated method stub
+        return testConfig;
+    }
+
+    @Override
+    public final ConfigurationSetter getConfigurationSetter() {
+        // TODO Auto-generated method stub
+        return testConfig;
+    }
 }

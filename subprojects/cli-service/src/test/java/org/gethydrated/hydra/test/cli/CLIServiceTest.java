@@ -24,83 +24,79 @@ import org.junit.Test;
  * 
  * @author Hanno Sternberg
  * @since 0.1.0
- *
+ * 
  */
 public class CLIServiceTest {
 
+    /**
+         * 
+         */
+    private CLIService dut;
 
-        
-        /**
+    /**
          * 
          */
-        private CLIService dut;
-        
-        /**
-         * 
-         */
-        private CLITestContext ctx;
-        
-        /**
-         * 
-         * @throws Exception .
-         */
-        @Before
-        public final void setUp() throws Exception {
-                ctx = new CLITestContext();
-                dut = new CLIService(ctx);
-        }
+    private CLITestContext ctx;
 
+    /**
+     * 
+     * @throws Exception .
+     */
+    @Before
+    public final void setUp() throws Exception {
+        ctx = new CLITestContext();
+        dut = new CLIService(ctx);
+    }
 
-        /**
-         * 
-         * @throws Exception .
-         */
-        @After
-        public void tearDown() throws Exception {
-        }
+    /**
+     * 
+     * @throws Exception .
+     */
+    @After
+    public void tearDown() throws Exception {
+    }
 
-        /**
+    /**
          * 
          */
-        @Test
-        public final void testEcho() {
-                dut.handleInputString("echo Hallo");
-                assertEquals("Hallo", ctx.getOutput().trim());
-        }
-        
-        /**
+    @Test
+    public final void testEcho() {
+        dut.handleInputString("echo Hallo");
+        assertEquals("Hallo", ctx.getOutput().trim());
+    }
+
+    /**
          * 
          */
-        @Test
-        public final void testConfigSet() {
-                dut.handleInputString("configuration set Network.Host localhost");
-                assertEquals("Network.Host = localhost", ctx.getOutput());
-                try {
-                        assertEquals("localhost", ctx.getConfigurationGetter()
-                                        .getString("Network.Host"));
-                } catch (ConfigItemNotFoundException e) {
-                        fail("Configuration Item not found");
-                }
+    @Test
+    public final void testConfigSet() {
+        dut.handleInputString("configuration set Network.Host localhost");
+        assertEquals("Network.Host = localhost", ctx.getOutput());
+        try {
+            assertEquals("localhost",
+                    ctx.getConfigurationGetter().getString("Network.Host"));
+        } catch (ConfigItemNotFoundException e) {
+            fail("Configuration Item not found");
         }
-        
-        /**
+    }
+
+    /**
          * 
          */
-        @Test
-        public final void testConfigGet() {
-                dut.handleInputString("configuration get Network.Port");
-                assertEquals("1337", ctx.getOutput());
-        }
-        
-        /**
-         * Test method for "configuration list".
-         */
-        @Test
-        public final void testList() {
-                dut.handleInputString("configuration list Network");
-                assertEquals("Port" + System.getProperty("line.separator")
-                                + "Host" + System.getProperty("line.separator"),
-                                ctx.getOutput());
-        }
+    @Test
+    public final void testConfigGet() {
+        dut.handleInputString("configuration get Network.Port");
+        assertEquals("1337", ctx.getOutput());
+    }
+
+    /**
+     * Test method for "configuration list".
+     */
+    @Test
+    public final void testList() {
+        dut.handleInputString("configuration list Network");
+        assertEquals("Port" + System.getProperty("line.separator") + "Host"
+                + System.getProperty("line.separator"), ctx.getOutput());
+    }
 
 }

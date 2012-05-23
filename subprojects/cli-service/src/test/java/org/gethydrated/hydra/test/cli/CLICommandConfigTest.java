@@ -17,86 +17,85 @@ import org.junit.Test;
  */
 public class CLICommandConfigTest {
 
-        /**
+    /**
          * 
          */
-        private CLICommand dut;
+    private CLICommand dut;
 
-        /**
+    /**
          * 
          */
-        private CLITestContext ctx;
+    private CLITestContext ctx;
 
-        /**
-         * 
-         * @throws Exception .
-         */
-        @Before
-        public final void setUp() throws Exception {
-                ctx = new CLITestContext();
-                dut = new CLICommandConfig(ctx);
-        }
+    /**
+     * 
+     * @throws Exception .
+     */
+    @Before
+    public final void setUp() throws Exception {
+        ctx = new CLITestContext();
+        dut = new CLICommandConfig(ctx);
+    }
 
-        /**
-         * Test method for "configuration set".
-         */
-        @Test
-        public final void testSet() {
-                dut.parseCommand("set Network.Host localhost");
-                assertEquals("Network.Host = localhost", ctx.getOutput());
-                try {
-                        assertEquals("localhost", ctx.getConfigurationGetter()
-                                        .getString("Network.Host"));
-                } catch (ConfigItemNotFoundException e) {
-                        fail("Configuration Item not found");
-                }
+    /**
+     * Test method for "configuration set".
+     */
+    @Test
+    public final void testSet() {
+        dut.parseCommand("set Network.Host localhost");
+        assertEquals("Network.Host = localhost", ctx.getOutput());
+        try {
+            assertEquals("localhost",
+                    ctx.getConfigurationGetter().getString("Network.Host"));
+        } catch (ConfigItemNotFoundException e) {
+            fail("Configuration Item not found");
         }
+    }
 
-        /**
-         * Test method for "configuration get".
-         */
-        @Test
-        public final void testGet() {
-                dut.parseCommand("get Network.Port");
-                assertEquals("1337", ctx.getOutput());
-        }
+    /**
+     * Test method for "configuration get".
+     */
+    @Test
+    public final void testGet() {
+        dut.parseCommand("get Network.Port");
+        assertEquals("1337", ctx.getOutput());
+    }
 
-        /**
-         * Test method for "configuration list".
-         */
-        @Test
-        public final void testList() {
-                dut.parseCommand("list Network");
-                assertEquals("Port" + System.getProperty("line.separator")
-                                + "Host" + System.getProperty("line.separator"),
-                                ctx.getOutput());
-        }
-        
-        /**
+    /**
+     * Test method for "configuration list".
+     */
+    @Test
+    public final void testList() {
+        dut.parseCommand("list Network");
+        assertEquals("Port" + System.getProperty("line.separator") + "Host"
+                + System.getProperty("line.separator"), ctx.getOutput());
+    }
+
+    /**
          * 
          */
-        @Test
-        public final void testGetEmptyKey() {
-                dut.parseCommand("get");
-                assertEquals("No key given.", ctx.getOutput());
-        }
-        
-        /**
+    @Test
+    public final void testGetEmptyKey() {
+        dut.parseCommand("get");
+        assertEquals("No key given.", ctx.getOutput());
+    }
+
+    /**
          * 
          */
-        @Test
-        public final void testListEmptyKey() {
-                dut.parseCommand("list");
-                assertEquals("No key given.", ctx.getOutput());
-        }
-        
-        /**
+    @Test
+    public final void testListEmptyKey() {
+        dut.parseCommand("list");
+        assertEquals("No key given.", ctx.getOutput());
+    }
+
+    /**
          * 
          */
-        @Test
-        public final void testSetEmptyKey() {
-                dut.parseCommand("set");
-                assertEquals("Not enough parameters.", ctx.getOutput());
-        }
+    @Test
+    public final void testSetEmptyKey() {
+        dut.parseCommand("set");
+        assertEquals("Not enough parameters.", ctx.getOutput());
+    }
 
 }

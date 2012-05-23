@@ -14,33 +14,41 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public class ServiceInfoParser {
-    
+
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceInfoParser.class);
-    
+    private static final Logger LOG = LoggerFactory
+            .getLogger(ServiceInfoParser.class);
+
     /**
      * Parses service.xml informations.
-     * @param in InputStream to parse.
-     * @param expName expected service name.
-     * @param expVersion expected service version.
+     * 
+     * @param in
+     *            InputStream to parse.
+     * @param expName
+     *            expected service name.
+     * @param expVersion
+     *            expected service version.
      * @return ServiceInfo with parsed values.
-     * @throws IOException on IO failures.
+     * @throws IOException
+     *             on IO failures.
      */
-    public static ServiceInfo parse(final InputStream in, final String expName, final String expVersion) throws IOException {
-        
+    public static ServiceInfo parse(final InputStream in, final String expName,
+            final String expVersion) throws IOException {
+
         final ServiceInfo si = new ServiceInfo();
-        
+
         try {
             final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
             xmlReader.setContentHandler(new ContentHandler() {
 
                 private String currentValue;
-                
+
                 @Override
-                public void endElement(final String uri, final String localName,
-                        final String qName) throws SAXException {
+                public void endElement(final String uri,
+                        final String localName, final String qName)
+                        throws SAXException {
                     switch (localName) {
                     case "name":
                         if (expName != null && !currentValue.equals(expName)) {
@@ -49,7 +57,8 @@ public class ServiceInfoParser {
                         si.setName(currentValue);
                         break;
                     case "version":
-                        if (expVersion != null && !currentValue.equals(expVersion)) {
+                        if (expVersion != null
+                                && !currentValue.equals(expVersion)) {
                             throw new NoMatchException();
                         }
                         si.setVersion(currentValue);
@@ -59,48 +68,59 @@ public class ServiceInfoParser {
                         break;
                     }
                 }
-                
+
                 @Override
-                public void characters(final char[] ch, final int start, final int length)
-                        throws SAXException {
+                public void characters(final char[] ch, final int start,
+                        final int length) throws SAXException {
                     currentValue = new String(ch, start, length);
                 }
-                
-                @Override
-                public void startElement(final String uri, final String localName,
-                        final String qName, final Attributes atts) throws SAXException { } 
-                
-                @Override
-                public void setDocumentLocator(final Locator locator) { }
 
                 @Override
-                public void startDocument() throws SAXException { }
+                public void startElement(final String uri,
+                        final String localName, final String qName,
+                        final Attributes atts) throws SAXException {
+                }
 
                 @Override
-                public void endDocument() throws SAXException { }
+                public void setDocumentLocator(final Locator locator) {
+                }
 
                 @Override
-                public void startPrefixMapping(final String prefix, final String uri)
-                        throws SAXException { }
+                public void startDocument() throws SAXException {
+                }
 
                 @Override
-                public void endPrefixMapping(final String prefix) throws SAXException { }
+                public void endDocument() throws SAXException {
+                }
 
                 @Override
-                public void ignorableWhitespace(final char[] ch, final int start, final int length)
-                        throws SAXException { }
+                public void startPrefixMapping(final String prefix,
+                        final String uri) throws SAXException {
+                }
 
                 @Override
-                public void processingInstruction(final String target, final String data)
-                        throws SAXException { }
+                public void endPrefixMapping(final String prefix)
+                        throws SAXException {
+                }
 
                 @Override
-                public void skippedEntity(final String name) throws SAXException { }
+                public void ignorableWhitespace(final char[] ch,
+                        final int start, final int length) throws SAXException {
+                }
 
-                
+                @Override
+                public void processingInstruction(final String target,
+                        final String data) throws SAXException {
+                }
+
+                @Override
+                public void skippedEntity(final String name)
+                        throws SAXException {
+                }
+
             });
             xmlReader.parse(new InputSource(in));
-            
+
             return si;
         } catch (final SAXException e) {
             LOG.warn(e.getMessage());
@@ -108,14 +128,16 @@ public class ServiceInfoParser {
         } catch (final NoMatchException e) {
             LOG.debug("Skipped full parsing. Name or version didnt match.");
             return null;
-        }       
+        }
     }
-    
+
     /**
-     * Exception used to skip parsing when name or version doesnt match required values.
+     * Exception used to skip parsing when name or version doesnt match required
+     * values.
+     * 
      * @author Christian Kulpa
      * @since 0.1.0
-     *
+     * 
      */
     private static class NoMatchException extends RuntimeException {
 

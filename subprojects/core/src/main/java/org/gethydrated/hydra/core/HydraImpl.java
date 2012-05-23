@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public final class HydraImpl implements Hydra {
 
@@ -30,7 +30,7 @@ public final class HydraImpl implements Hydra {
      * Hydra configuration.
      */
     private final Configuration cfg;
-    
+
     /**
      * ServiceManager.
      */
@@ -38,7 +38,9 @@ public final class HydraImpl implements Hydra {
 
     /**
      * Constructor.
-     * @param cfg Hydra configuration.
+     * 
+     * @param cfg
+     *            Hydra configuration.
      */
     public HydraImpl(final Configuration cfg) {
         this.cfg = cfg;

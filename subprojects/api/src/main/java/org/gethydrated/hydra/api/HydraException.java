@@ -7,14 +7,14 @@ public class HydraException extends Exception {
     }
 
     public HydraException(String m) {
-		super(m);
-	}
-    
-    public HydraException(String m, Throwable e) {
-		super(m, e);
-	}
+        super(m);
+    }
 
-	/**
+    public HydraException(String m, Throwable e) {
+        super(m, e);
+    }
+
+    /**
      * 
 	 */
     private static final long serialVersionUID = 9050861266290634703L;

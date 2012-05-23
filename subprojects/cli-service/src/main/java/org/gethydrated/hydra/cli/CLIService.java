@@ -16,50 +16,70 @@ import org.gethydrated.hydra.cli.commands.CLICommandRoot;
  */
 public class CLIService {
 
-        
-        /**
+    /**
+     * 
+     */
+    private CLICommand commands;
+
+    /**
+     * 
+     */
+    private volatile boolean running;
+
+    /**
+     * @param ctx
+     *            Context.
+     */
+    public CLIService(final ServiceContext ctx) {
+        running = true;
+        commands = new CLICommandRoot(ctx);
+        commands.addSubCommand(new CLICommandEcho(ctx));
+        commands.addSubCommand(new CLICommandConfig(ctx));
+    }
+
+    /**
+     * 
+     * @param str
+     *            command String
+     */
+    public final void handleInputString(final String str) {
+        commands.parseCommand(str);
+    }
+
+    /**
          * 
          */
-        private CLICommand commands;
+    public final void handleInput() {
+        StringBuilder str = new StringBuilder();
+        while (running) {
 
-        /**
-         * @param ctx
-         *                Context.
-         */
-        public CLIService(final ServiceContext ctx) {
-                commands = new CLICommandRoot(ctx);
-                commands.addSubCommand(new CLICommandEcho(ctx));
-                commands.addSubCommand(new CLICommandConfig(ctx));
-        }
-
-        /**
-         * 
-         * @param str
-         *                command String
-         */
-        public final void handleInputString(final String str) {
-                commands.parseCommand(str);
-        }
-
-        /**
-         * 
-         */
-        public final void handleInput() {
-                StringBuilder str = new StringBuilder();
-                while (true) {
-                        char c;
-                        try {
-                                c = (char) System.in.read();
-                                if (c == '\n') {
-                                        handleInputString(str.toString());
-                                        str.delete(0, -1);
-                                } else {
-                                        str.append(c);
-                                }
-                        } catch (IOException e) {
-                                e.printStackTrace();
-                        }
+            try {
+                char c;
+                int i;
+                if ((i = System.in.read()) == -1) {
+                    running = false;
+                } else {
+                    c = (char) i;
+                    switch (c) {
+                    case '\r':
+                        break;
+                    case '\n':
+                        handleInputString(str.toString());
+                        str.setLength(0);
+                        break;
+                    default:
+                        str.append(c);
+                    }
                 }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    public void stop() {
+        running = false;
+    }
 
 }

@@ -11,21 +11,20 @@ import org.gethydrated.hydra.api.service.ServiceContext;
  */
 public class CLIServiceActivator implements ServiceActivator {
 
-        /**
+    /**
          * 
          */
-        private CLIService cli;
+    private CLIService cli;
 
-        @Override
-        public final void start(final ServiceContext context) throws Exception {
-                cli = new CLIService(context);
-                cli.handleInput();
-                System.out.println("CLI Service Start");
-        }
+    @Override
+    public final void start(final ServiceContext context) throws Exception {
+        cli = new CLIService(context);
+        cli.handleInput();
+    }
 
-        @Override
-        public final void stop(final ServiceContext context) throws Exception {
-                System.out.println("CLI Service Stop");
-        }
+    @Override
+    public final void stop(final ServiceContext context) throws Exception {
+        cli.stop();
+    }
 
 }

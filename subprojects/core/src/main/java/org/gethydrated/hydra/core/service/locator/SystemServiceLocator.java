@@ -19,27 +19,31 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public class SystemServiceLocator implements ServiceLocator {
-    
+
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(SystemServiceLocator.class);
-    
+    private static final Logger LOG = LoggerFactory
+            .getLogger(SystemServiceLocator.class);
+
     /**
      * System service dir.
      */
     private final String systemServiceDir;
-    
+
     /**
      * Constructor.
-     * @param cfg Configuration
+     * 
+     * @param cfg
+     *            Configuration
      */
     public SystemServiceLocator(final Configuration cfg) {
         systemServiceDir = System.getProperty("hydra.home") + "/service/system";
     }
 
     @Override
-    public final ServiceInfo locate(final String name, final String version) throws IOException {
+    public final ServiceInfo locate(final String name, final String version)
+            throws IOException {
         File[] dir = new File(systemServiceDir).listFiles(new FileFilter() {
             public boolean accept(final File file) {
                 if (file.getAbsolutePath().endsWith(".jar")) {
@@ -48,7 +52,7 @@ public class SystemServiceLocator implements ServiceLocator {
                 return false;
             }
         });
-        for (File f: dir) {
+        for (File f : dir) {
             ServiceInfo si = checkJarInfo(f, name, version);
             if (si != null) {
                 return si;
@@ -64,13 +68,17 @@ public class SystemServiceLocator implements ServiceLocator {
 
     /**
      * 
-     * @param f file
-     * @param name service name
+     * @param f
+     *            file
+     * @param name
+     *            service name
      * @return true if service name is found
      */
-    private ServiceInfo checkJarInfo(final File f, final String name, final String version) {
-        try (JarFile jf = new JarFile(f); 
-                InputStream is = jf.getInputStream(jf.getEntry("HYDRA-INF/service.xml"))) {
+    private ServiceInfo checkJarInfo(final File f, final String name,
+            final String version) {
+        try (JarFile jf = new JarFile(f);
+                InputStream is = jf.getInputStream(jf
+                        .getEntry("HYDRA-INF/service.xml"))) {
             if (is != null) {
                 ServiceInfo si = ServiceInfoParser.parse(is, name, version);
                 if (si != null) {

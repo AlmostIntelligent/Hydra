@@ -23,13 +23,14 @@ public class ServiceManager {
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceManager.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(ServiceManager.class);
 
     /**
      * Service locator.
      */
     private final ServiceLocator sl;
-    
+
     /**
      * List of loaded services.
      */
@@ -37,7 +38,9 @@ public class ServiceManager {
 
     /**
      * Constructor.
-     * @param cfg Configuration.
+     * 
+     * @param cfg
+     *            Configuration.
      */
     public ServiceManager(final Configuration cfg) {
         sl = new SystemServiceLocator(cfg);
@@ -45,9 +48,12 @@ public class ServiceManager {
 
     /**
      * Attempts to start a service.
-     * @param name service name.
+     * 
+     * @param name
+     *            service name.
      * @return unique service id.
-     * @throws HydraException on failure.
+     * @throws HydraException
+     *             on failure.
      */
     public final Long startService(final String name) throws HydraException {
         try {
@@ -60,7 +66,8 @@ public class ServiceManager {
                 s.start();
                 return s.getId();
             } else {
-                throw new HydraException("Could not locate service with name: " + name);
+                throw new HydraException("Could not locate service with name: "
+                        + name);
             }
         } catch (IOException e) {
             throw new HydraException(e);

@@ -10,7 +10,7 @@ public class ServiceInfo {
     private String name;
 
     private String version;
-    
+
     private String activator;
 
     public String getName() {
@@ -32,7 +32,7 @@ public class ServiceInfo {
     public URL[] getServiceJars() {
         int i = 0;
         URL[] urls = new URL[serviceJars.size()];
-        for(URL u : serviceJars) {
+        for (URL u : serviceJars) {
             urls[i] = serviceJars.get(i++);
         }
         return urls;

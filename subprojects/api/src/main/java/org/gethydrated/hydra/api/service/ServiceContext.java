@@ -20,12 +20,12 @@ public interface ServiceContext extends ServiceApi {
      * @return service instance
      */
     Service getService();
-    
+
     PrintStream getOutputStream();
-    
+
     InputStream getInputStream();
-    
+
     ConfigurationGetter getConfigurationGetter();
-    
+
     ConfigurationSetter getConfigurationSetter();
 }

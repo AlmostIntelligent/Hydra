@@ -9,9 +9,9 @@ public class ServiceException extends HydraException {
     }
 
     public ServiceException(String m) {
-    	super(m);
+        super(m);
     }
-    
+
     /**
 	 * 
 	 */

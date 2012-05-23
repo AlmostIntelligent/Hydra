@@ -19,7 +19,7 @@ public class ChainedServiceLocator implements ServiceLocator {
      * Child locators.
      */
     private List<ServiceLocator> childs = new LinkedList<>();
-    
+
     /**
      * Appends an locator to the child list.
      * 
