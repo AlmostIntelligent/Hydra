@@ -6,6 +6,7 @@ import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;
 import org.gethydrated.hydra.cli.commands.CLICommandEcho;
 import org.gethydrated.hydra.cli.commands.CLICommandRoot;
+import org.gethydrated.hydra.cli.commands.CLICommandShutdown;
 
 /**
  * CLI Service.
@@ -35,6 +36,7 @@ public class CLIService {
         commands = new CLICommandRoot(ctx);
         commands.addSubCommand(new CLICommandEcho(ctx));
         commands.addSubCommand(new CLICommandConfig(ctx));
+        commands.addSubCommand(new CLICommandShutdown(ctx));
     }
 
     /**

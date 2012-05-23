@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.Service;
+import org.gethydrated.hydra.api.service.ServiceException;
 import org.gethydrated.hydra.core.config.Configuration;
 import org.gethydrated.hydra.core.service.locator.ServiceLocator;
 import org.gethydrated.hydra.core.service.locator.SystemServiceLocator;
@@ -71,6 +72,16 @@ public class ServiceManager {
             }
         } catch (IOException e) {
             throw new HydraException(e);
+        }
+    }
+
+    public void shutdown() {
+        for (Service s : services) {
+            try {
+                s.stop();
+            } catch (ServiceException e) {
+                LOG.info("{}", e);
+            }
         }
     }
 

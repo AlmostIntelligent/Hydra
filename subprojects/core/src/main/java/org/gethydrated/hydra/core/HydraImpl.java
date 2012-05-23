@@ -57,6 +57,7 @@ public final class HydraImpl implements Hydra {
     public void stop() {
         LOG.info("Stopping Hydra.");
         shutdownhook.unregister();
+        sm.shutdown();
     }
 
     @Override
