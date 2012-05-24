@@ -1,21 +1,10 @@
 package org.gethydrated.hydra.test.cli;
 
-import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
-import org.gethydrated.hydra.api.service.Service;
-import org.gethydrated.hydra.api.service.ServiceContext;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.cli.CLIService;
-import org.gethydrated.hydra.core.config.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

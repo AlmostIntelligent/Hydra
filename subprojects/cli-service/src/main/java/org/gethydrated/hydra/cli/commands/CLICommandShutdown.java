@@ -2,34 +2,43 @@ package org.gethydrated.hydra.cli.commands;
 
 import org.gethydrated.hydra.api.service.ServiceContext;
 
+/**
+ * 
+ * @author Christian Kulpa
+ *
+ */
 public class CLICommandShutdown extends CLICommand {
 
-    public CLICommandShutdown(ServiceContext ctx) {
+    /**
+     * 
+     * @param ctx context.
+     */
+    public CLICommandShutdown(final ServiceContext ctx) {
         super(ctx);
     }
 
     @Override
-    public String getCommandWord() {
+    public final String getCommandWord() {
         return "shutdown";
     }
 
     @Override
-    public String getCommandShort() {
+    public final String getCommandShort() {
         return ":sd";
     }
 
     @Override
-    protected String generateHelpText() {
-        return "Hydra shutdown.";
+    protected final String generateHelpText() {
+        return "";
     }
 
     @Override
-    protected String generateShortDescr() {
-        return generateHelpText();
+    protected final String generateShortDescr() {
+        return "Start hydra shutdown ";
     }
 
     @Override
-    public void executeCommand(String[] args) {
+    public final void executeCommand(final String[] args) {
         System.exit(0);
     }
 

@@ -20,7 +20,7 @@ public class CLICommandRoot extends CLICommand {
 
     @Override
     public final String getCommandWord() {
-        return "root";
+        return "";
     }
 
     @Override

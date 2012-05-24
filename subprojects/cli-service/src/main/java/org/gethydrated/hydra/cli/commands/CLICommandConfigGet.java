@@ -39,9 +39,11 @@ public class CLICommandConfigGet extends CLICommand {
                         getContext().getConfigurationGetter().get(args[0]));
             } catch (ConfigItemNotFoundException e) {
                 getOutput().printf("Configuration item %s not found", args[0]);
+            } catch (NullPointerException e) {
+                getOutput().printf("Caught Nullpointer exception. No Context defined?");
             }
         } else {
-            getOutput().print("No key given.");
+            getOutput().println("No key given.");
         }
     }
 

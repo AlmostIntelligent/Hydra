@@ -136,24 +136,39 @@ public abstract class CLICommand {
     public abstract void executeCommand(final String[] args);
 
     /**
+     * 
+     * @param args Array with arguments.
+     */
+    private void executeCommandSecure(final String[] args) {
+        try {
+            executeCommand(args);
+        } catch (Exception e) {
+            getOutput().println("Caught exception in command execution!");
+            e.printStackTrace(getOutput());
+        }
+    }
+    
+    /**
          * 
          */
     private void displayHelp() {
-        getOutput().printf("Help for command %s", getCommandWord());
-        getOutput().println();
-        getOutput().println();
+        getOutput().printf("Help for command %s - ", getCommandWord());
         getOutput().println(getShortDescription());
         getOutput().println();
-        getOutput().println("Long Description: ");
-        getOutput().println(getHelpText());
-        getOutput().println();
-        getOutput().println("List of sub commands");
-        for (CLICommand cmd : subCommands) {
-            getOutput().printf("\t%s: %s", cmd.getCommandWord(),
-                    cmd.getShortDescription());
+        if (getHelpText() != "") {
+            getOutput().println("Long Description: ");
+            getOutput().println(getHelpText());
             getOutput().println();
         }
-        getOutput().println();
+        if (hasSubCommands()) {
+            getOutput().println("List of sub commands");
+            for (CLICommand cmd : subCommands) {
+                getOutput().printf("\t%s: %s", cmd.getCommandWord(),
+                        cmd.getShortDescription());
+                getOutput().println();
+            }
+            getOutput().println();
+        }
         getOutput().println("Type '<command> help' for further information");
         getOutput().println();
     }
@@ -220,7 +235,7 @@ public abstract class CLICommand {
             }
 
         } else {
-            executeCommand(cmds);
+            executeCommandSecure(cmds);
         }
 
     }

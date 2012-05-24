@@ -42,6 +42,8 @@ public class CLICommandConfigSet extends CLICommand {
                 getOutput().printf(
                         "Encountered an exception, while setting %s to %s",
                         args[0], args[1]);
+            } catch (NullPointerException e) {
+                getOutput().printf("Caught Nullpointer exception. No Context defined?");
             }
         } else {
             getOutput().printf("Not enough parameters.");

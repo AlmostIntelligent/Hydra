@@ -54,37 +54,37 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public void registerLocal(String name, Object obj) {
+    public final void registerLocal(final String name, final Object obj) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void registerGlobal(String name, Object obj) {
+    public final void registerGlobal(final String name, final Object obj) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void getLocalService(String name) {
+    public final void getLocalService(final String name) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void getGlobalService(String name) {
+    public final void getGlobalService(final String name) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void startService(String name) throws HydraException {
+    public final void startService(final String name) throws HydraException {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public void stopService(String name) throws HydraException {
+    public final void stopService(final String name) throws HydraException {
         // TODO Auto-generated method stub
 
     }
