@@ -173,21 +173,45 @@ public abstract class CLICommand {
         getOutput().println("Type '<command> -help' for further information");
         getOutput().println();
     }
-
+    
+    /**
+     * 
+     * @param str possible command word.
+     * @return True, if "str" is a sub command.
+     */
+    public final Boolean hasSubCommand(final String str) {
+        for (CLICommand c: subCommands) {
+            if (c.testString(str)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Tests if the given String is this command.
+     * @param str the string
+     * @return True, if the String is this command.
+     */
+    public final Boolean testString(final String str) {
+        return getCommandWord().equalsIgnoreCase(str)
+                || getCommandShort().equals(str);
+    }
+    
     /**
      * 
      * @param str
      *            String.
      * @return True, if the String is a sub command.
+     * @throws CLISubCommandDoesNotExistsException 
      */
-    public final CLICommand isSubCommand(final String str) {
+    public final CLICommand isSubCommand(final String str) throws CLISubCommandDoesNotExistsException {
         for (CLICommand cmd : subCommands) {
-            if (cmd.getCommandWord().equalsIgnoreCase(str)
-                    || cmd.getCommandShort().equals(str)) {
+            if (cmd.testString(str)) {
                 return cmd;
             }
         }
-        return null;
+        throw new CLISubCommandDoesNotExistsException(str);
     }
 
     /**
@@ -228,16 +252,19 @@ public abstract class CLICommand {
                         || cmds[0].equalsIgnoreCase("-?"))) {
             displayHelp();
         } else if (cmds.length > 0 && hasSubCommands()) {
-            CLICommand subCmd = isSubCommand(cmds[0]);
-            if (subCmd != null) {
+            CLICommand subCmd;
+            try {
+                subCmd = isSubCommand(cmds[0]);
                 String[] rest = new String[cmds.length - 1];
                 int i;
                 for (i = 1; i < cmds.length; i++) {
                     rest[i - 1] = cmds[i];
                 }
                 subCmd.parse(rest);
+            } catch (CLISubCommandDoesNotExistsException e) {
+                getOutput().printf("No sub command %s", cmds[0]);
+                getOutput().println();
             }
-
         } else {
             executeSecure(cmds);
         }

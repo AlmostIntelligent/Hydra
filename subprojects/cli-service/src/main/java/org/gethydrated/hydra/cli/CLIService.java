@@ -5,8 +5,11 @@ import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;
 import org.gethydrated.hydra.cli.commands.CLICommandEcho;
+import org.gethydrated.hydra.cli.commands.CLICommandHelp;
 import org.gethydrated.hydra.cli.commands.CLICommandRoot;
 import org.gethydrated.hydra.cli.commands.CLICommandShutdown;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * CLI Service.
@@ -16,6 +19,11 @@ import org.gethydrated.hydra.cli.commands.CLICommandShutdown;
  * 
  */
 public class CLIService {
+    
+    /**
+     * 
+     */
+    private Logger log = LoggerFactory.getLogger(CLIService.class);
 
     /**
      * 
@@ -37,6 +45,8 @@ public class CLIService {
         commands.addSubCommand(new CLICommandEcho(ctx));
         commands.addSubCommand(new CLICommandConfig(ctx));
         commands.addSubCommand(new CLICommandShutdown(ctx));
+        commands.addSubCommand(new CLICommandHelp(ctx, commands));
+        log.info("CLI Service initialised.");
     }
 
     /**
@@ -80,7 +90,10 @@ public class CLIService {
         }
     }
 
-    public void stop() {
+    /**
+     * Stops the service.
+     */
+    public final void stop() {
         running = false;
     }
 

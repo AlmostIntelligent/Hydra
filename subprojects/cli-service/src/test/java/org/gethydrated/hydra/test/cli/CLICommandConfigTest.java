@@ -77,7 +77,7 @@ public class CLICommandConfigTest {
     @Test
     public final void testGetEmptyKey() {
         dut.parse("get");
-        assertEquals("No key given.", ctx.getOutput());
+        assertEquals("No key given." + System.getProperty("line.separator"), ctx.getOutput());
     }
 
     /**
@@ -86,7 +86,7 @@ public class CLICommandConfigTest {
     @Test
     public final void testListEmptyKey() {
         dut.parse("list");
-        assertEquals("No key given.", ctx.getOutput());
+        assertEquals("No key given." + System.getProperty("line.separator"), ctx.getOutput());
     }
 
     /**
@@ -95,7 +95,7 @@ public class CLICommandConfigTest {
     @Test
     public final void testSetEmptyKey() {
         dut.parse("set");
-        assertEquals("Not enough parameters.", ctx.getOutput());
+        assertEquals("Not enough parameters." + System.getProperty("line.separator"), ctx.getOutput());
     }
 
 }
