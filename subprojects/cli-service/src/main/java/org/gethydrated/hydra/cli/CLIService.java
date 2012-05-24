@@ -45,7 +45,7 @@ public class CLIService {
      *            command String
      */
     public final void handleInputString(final String str) {
-        commands.parseCommand(str);
+        commands.parse(str);
     }
 
     /**

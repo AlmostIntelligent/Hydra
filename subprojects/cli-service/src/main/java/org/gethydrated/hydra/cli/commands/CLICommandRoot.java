@@ -29,7 +29,7 @@ public class CLICommandRoot extends CLICommand {
     }
 
     @Override
-    public final void executeCommand(final String[] args) {
+    public final void execute(final String[] args) {
         getOutput().println("");
 
     }

@@ -32,7 +32,7 @@ public class CLICommandConfigGet extends CLICommand {
     }
 
     @Override
-    public final void executeCommand(final String[] args) {
+    public final void execute(final String[] args) {
         if (args.length >= 1) {
             try {
                 getOutput().printf("%s",

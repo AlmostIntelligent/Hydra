@@ -42,7 +42,7 @@ public class CLICommandConfigTest {
      */
     @Test
     public final void testSet() {
-        dut.parseCommand("set Network.Host localhost");
+        dut.parse("set Network.Host localhost");
         assertEquals("Network.Host = localhost", ctx.getOutput());
         try {
             assertEquals("localhost",
@@ -57,7 +57,7 @@ public class CLICommandConfigTest {
      */
     @Test
     public final void testGet() {
-        dut.parseCommand("get Network.Port");
+        dut.parse("get Network.Port");
         assertEquals("1337", ctx.getOutput());
     }
 
@@ -66,7 +66,7 @@ public class CLICommandConfigTest {
      */
     @Test
     public final void testList() {
-        dut.parseCommand("list Network");
+        dut.parse("list Network");
         assertEquals("Port" + System.getProperty("line.separator") + "Host"
                 + System.getProperty("line.separator"), ctx.getOutput());
     }
@@ -76,7 +76,7 @@ public class CLICommandConfigTest {
          */
     @Test
     public final void testGetEmptyKey() {
-        dut.parseCommand("get");
+        dut.parse("get");
         assertEquals("No key given.", ctx.getOutput());
     }
 
@@ -85,7 +85,7 @@ public class CLICommandConfigTest {
          */
     @Test
     public final void testListEmptyKey() {
-        dut.parseCommand("list");
+        dut.parse("list");
         assertEquals("No key given.", ctx.getOutput());
     }
 
@@ -94,7 +94,7 @@ public class CLICommandConfigTest {
          */
     @Test
     public final void testSetEmptyKey() {
-        dut.parseCommand("set");
+        dut.parse("set");
         assertEquals("Not enough parameters.", ctx.getOutput());
     }
 

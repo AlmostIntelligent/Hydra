@@ -32,7 +32,7 @@ public class CLICommandConfigSet extends CLICommand {
     }
 
     @Override
-    public final void executeCommand(final String[] args) {
+    public final void execute(final String[] args) {
         if (args.length >= 2) {
             getContext().getConfigurationSetter().set(args[0], args[1]);
             try {

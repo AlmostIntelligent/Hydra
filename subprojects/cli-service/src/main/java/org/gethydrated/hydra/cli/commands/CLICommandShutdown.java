@@ -38,7 +38,7 @@ public class CLICommandShutdown extends CLICommand {
     }
 
     @Override
-    public final void executeCommand(final String[] args) {
+    public final void execute(final String[] args) {
         System.exit(0);
     }
 

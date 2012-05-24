@@ -51,7 +51,7 @@ public class CLICommandEchoTest {
     public final void testExecuteCommand() {
         String[] s = new String[1];
         s[0] = "Test Execute Echo";
-        dut.executeCommand(s);
+        dut.execute(s);
         assertEquals(s[0], ctx.getOutput().trim());
     }
 
@@ -61,7 +61,7 @@ public class CLICommandEchoTest {
     @Test
     public final void testParseCommandString() {
         String s = "Test Parse Echo";
-        dut.parseCommand(s);
+        dut.parse(s);
         assertEquals(s, ctx.getOutput().trim());
     }
 }

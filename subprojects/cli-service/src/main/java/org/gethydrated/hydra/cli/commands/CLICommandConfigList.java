@@ -48,7 +48,7 @@ public class CLICommandConfigList extends CLICommand {
     }
 
     @Override
-    public final void executeCommand(final String[] args) {
+    public final void execute(final String[] args) {
         if (args.length >= 1) {
             List<String> l;
             try {

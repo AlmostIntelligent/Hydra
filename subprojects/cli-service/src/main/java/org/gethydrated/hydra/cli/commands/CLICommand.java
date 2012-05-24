@@ -133,16 +133,16 @@ public abstract class CLICommand {
      * @param args
      *            Array with arguments.
      */
-    public abstract void executeCommand(final String[] args);
+    public abstract void execute(final String[] args);
 
     /**
      * 
      * @param args
      *            Array with arguments.
      */
-    private void executeCommandSecure(final String[] args) {
+    private void executeSecure(final String[] args) {
         try {
-            executeCommand(args);
+            execute(args);
         } catch (Exception e) {
             getOutput().println("Caught exception in command execution!");
             e.printStackTrace(getOutput());
@@ -195,7 +195,7 @@ public abstract class CLICommand {
      * @param cmd
      *            The command string.
      */
-    public final void parseCommand(final String cmd) {
+    public final void parse(final String cmd) {
         if (cmd.contains("\"")) {
             String[] parts = cmd.split("\"");
             int i = 0;
@@ -212,7 +212,7 @@ public abstract class CLICommand {
                 }
             }
         } else {
-            parseCommand(cmd.split(" "));
+            parse(cmd.split(" "));
         }
     }
 
@@ -221,7 +221,7 @@ public abstract class CLICommand {
      * @param cmds
      *            .
      */
-    public final void parseCommand(final String[] cmds) {
+    public final void parse(final String[] cmds) {
         if (cmds.length > 0
                 && (cmds[0].equalsIgnoreCase("-help")
                         || cmds[0].equalsIgnoreCase("--h") 
@@ -235,11 +235,11 @@ public abstract class CLICommand {
                 for (i = 1; i < cmds.length; i++) {
                     rest[i - 1] = cmds[i];
                 }
-                subCmd.parseCommand(rest);
+                subCmd.parse(rest);
             }
 
         } else {
-            executeCommandSecure(cmds);
+            executeSecure(cmds);
         }
 
     }
