@@ -137,7 +137,8 @@ public abstract class CLICommand {
 
     /**
      * 
-     * @param args Array with arguments.
+     * @param args
+     *            Array with arguments.
      */
     private void executeCommandSecure(final String[] args) {
         try {
@@ -147,11 +148,11 @@ public abstract class CLICommand {
             e.printStackTrace(getOutput());
         }
     }
-    
+
     /**
-         * 
-         */
-    private void displayHelp() {
+     * Displays the help text.
+     */
+    public final void displayHelp() {
         getOutput().printf("Help for command %s - ", getCommandWord());
         getOutput().println(getShortDescription());
         getOutput().println();
@@ -169,7 +170,7 @@ public abstract class CLICommand {
             }
             getOutput().println();
         }
-        getOutput().println("Type '<command> help' for further information");
+        getOutput().println("Type '<command> -help' for further information");
         getOutput().println();
     }
 
@@ -221,7 +222,10 @@ public abstract class CLICommand {
      *            .
      */
     public final void parseCommand(final String[] cmds) {
-        if (cmds.length > 0 && cmds[0].equalsIgnoreCase("help")) {
+        if (cmds.length > 0
+                && (cmds[0].equalsIgnoreCase("-help")
+                        || cmds[0].equalsIgnoreCase("--h") 
+                        || cmds[0].equalsIgnoreCase("-?"))) {
             displayHelp();
         } else if (cmds.length > 0 && hasSubCommands()) {
             CLICommand subCmd = isSubCommand(cmds[0]);
