@@ -10,10 +10,10 @@ public interface Hydra extends HydraApi {
     /**
      * Starts the Hydra.
      */
-    public void start();
+    void start();
 
     /**
      * Stops the Hydra.
      */
-    public void stop();
+    void stop();
 }

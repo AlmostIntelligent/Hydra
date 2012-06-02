@@ -21,11 +21,27 @@ public interface ServiceContext extends ServiceApi {
      */
     Service getService();
 
+    /**
+     * Returns system output stream.
+     * @return PrintStream.
+     */
     PrintStream getOutputStream();
 
+    /**
+     * Returns system input stream.
+     * @return InputStream.
+     */
     InputStream getInputStream();
 
+    /**
+     * 
+     * @return ConfigurationsGetter
+     */
     ConfigurationGetter getConfigurationGetter();
 
+    /**
+     * 
+     * @return ConfigurationSetter
+     */
     ConfigurationSetter getConfigurationSetter();
 }

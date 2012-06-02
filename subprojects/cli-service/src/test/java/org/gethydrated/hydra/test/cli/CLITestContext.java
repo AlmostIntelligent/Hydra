@@ -21,17 +21,17 @@ public class CLITestContext implements ServiceContext {
     /**
          * 
          */
-    private PrintStream ps;
+    private final PrintStream ps;
 
     /**
          * 
          */
-    private ByteArrayOutputStream output;
+    private final ByteArrayOutputStream output;
 
     /**
          * 
          */
-    private Configuration testConfig;
+    private final Configuration testConfig;
 
     /**
      * 
@@ -54,37 +54,39 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public final void registerLocal(final String name, final Object obj) {
+    public final void registerLocal(final String name, final Long id) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public final void registerGlobal(final String name, final Object obj) {
+    public final void registerGlobal(final String name, final Long id) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public final void getLocalService(final String name) {
+    public final Long getLocalService(final String name) {
+        return null;
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public final void getGlobalService(final String name) {
+    public final Long getGlobalService(final String name) {
+        return null;
         // TODO Auto-generated method stub
 
     }
 
     @Override
-    public final void startService(final String name) throws HydraException {
+    public final Long startService(final String name) throws HydraException {
         // TODO Auto-generated method stub
-
+        return null;
     }
 
     @Override
-    public final void stopService(final String name) throws HydraException {
+    public final void stopService(final Long id) throws HydraException {
         // TODO Auto-generated method stub
 
     }

@@ -2,13 +2,40 @@ package org.gethydrated.hydra.api.service;
 
 import org.gethydrated.hydra.api.HydraApi;
 
+/**
+ * Service related api.
+ * 
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
 public interface ServiceApi extends HydraApi {
 
-    void registerLocal(String name, Object obj);
+    /**
+     * Registers a service to local name resolution.
+     * @param name service name.
+     * @param id service id.
+     */
+    void registerLocal(String name, Long id);
 
-    void registerGlobal(String name, Object obj);
+    /**
+     * Registers a service to global name resolution.
+     * @param name service name.
+     * @param id service id.
+     */
+    void registerGlobal(String name, Long id);
 
-    void getLocalService(String name);
+    /**
+     * Requests a local service.
+     * @param name service name.
+     * @return TODO
+     */
+    Long getLocalService(String name);
 
-    void getGlobalService(String name);
+    /**
+     * Requests a global service.
+     * @param name service name.
+     * @return TODO
+     */
+    Long getGlobalService(String name);
 }

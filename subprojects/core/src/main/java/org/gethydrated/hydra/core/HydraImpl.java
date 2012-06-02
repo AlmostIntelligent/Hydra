@@ -1,7 +1,9 @@
 package org.gethydrated.hydra.core;
 
 import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.core.api.HydraApiImpl;
 import org.gethydrated.hydra.core.config.Configuration;
 import org.gethydrated.hydra.core.service.ServiceManager;
 import org.slf4j.Logger;
@@ -35,6 +37,11 @@ public final class HydraImpl implements Hydra {
      * ServiceManager.
      */
     private final ServiceManager sm;
+    
+    /**
+     * 
+     */
+    private final HydraApi api;
 
     /**
      * Constructor.
@@ -44,7 +51,8 @@ public final class HydraImpl implements Hydra {
      */
     public HydraImpl(final Configuration cfg) {
         this.cfg = cfg;
-        this.sm = new ServiceManager(cfg);
+        this.sm = new ServiceManager(this.cfg);
+        this.api = new HydraApiImpl(sm);
     }
 
     @Override
@@ -61,14 +69,13 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
-    public void startService(final String name) throws HydraException {
-        sm.startService(name);
+    public Long startService(final String name) throws HydraException {
+        return api.startService(name);
     }
 
     @Override
-    public void stopService(final String name) throws HydraException {
-        // TODO Auto-generated method stub
-
+    public void stopService(final Long id) throws HydraException {
+        api.stopService(id);
     }
 
 }

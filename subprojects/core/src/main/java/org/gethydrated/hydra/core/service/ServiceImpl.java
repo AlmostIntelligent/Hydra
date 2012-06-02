@@ -24,14 +24,27 @@ public class ServiceImpl implements Service {
      */
     private final ServiceActivator activator;
 
-    private final ServiceInfo serviceInfo;
-
+    /**
+     * Service classloader.
+     */
     private final ClassLoader cl;
 
+    /**
+     * Service threadpool.
+     */
     private final ExecutorService threadpool = Executors.newCachedThreadPool();
+    
+    /**
+     * Threadpool timeout.
+     */
+    private static final int TIMEOUT = 5;
 
-    public ServiceImpl(ServiceInfo si) throws ServiceException {
-        serviceInfo = si;
+    /**
+     * Constructor.
+     * @param si Service informations.
+     * @throws ServiceException on failure.
+     */
+    public ServiceImpl(final ServiceInfo si) throws ServiceException {
         cl = new URLClassLoader(si.getServiceJars(),
                 ServiceImpl.class.getClassLoader());
         try {
@@ -54,7 +67,7 @@ public class ServiceImpl implements Service {
                 @Override
                 public void run() {
                     try {
-                        activator.start(new ServiceContextImpl());
+                        activator.start(new ServiceContextImpl(null));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -71,7 +84,7 @@ public class ServiceImpl implements Service {
         threadpool.shutdown();
         try {
             activator.stop(null);
-            threadpool.awaitTermination(5, TimeUnit.SECONDS);
+            threadpool.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -79,7 +92,7 @@ public class ServiceImpl implements Service {
     }
 
     @Override
-    public Long getId() {
+    public final Long getId() {
         // TODO Auto-generated method stub
         return (long) 0;
     }

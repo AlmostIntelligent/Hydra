@@ -10,25 +10,46 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * Launcher tests.
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
 public class LauncherTest {
 
+    /**
+     * System.out buffer.
+     */
     private final ByteArrayOutputStream output = new ByteArrayOutputStream();
 
-    private static final String lineSep = System.getProperty("line.separator");
+    /**
+     * Line seperator.
+     */
+    private static final String LINESEP = System.getProperty("line.separator");
 
+    /**
+     * Reset System.out to buffer.
+     */
     @Before
-    public void setup() {
+    public final void setup() {
         System.setOut(new PrintStream(output));
     }
 
+    /**
+     * Test Usage.
+     */
     @Test
-    public void testUsage() {
+    public final void testUsage() {
         Launcher.printUsage();
-        assertTrue(output.toString().equals("Hydra Usage:" + lineSep));
+        assertTrue(output.toString().equals("Hydra Usage:" + LINESEP));
     }
 
+    /**
+     * Unregister buffer.
+     */
     @After
-    public void teardown() {
+    public final void teardown() {
         System.setOut(null);
     }
 }

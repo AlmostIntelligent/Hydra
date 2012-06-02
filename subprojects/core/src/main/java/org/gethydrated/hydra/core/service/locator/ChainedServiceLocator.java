@@ -1,6 +1,5 @@
 package org.gethydrated.hydra.core.service.locator;
 
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 

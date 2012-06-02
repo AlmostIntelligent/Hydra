@@ -17,7 +17,7 @@ public interface ServiceLocator {
      * @param name
      *            Service name.
      * @return URL to service jar file.
-     * @throws IOException
+     * @throws IOException on io failure.
      */
     ServiceInfo locate(String name) throws IOException;
 
@@ -29,7 +29,7 @@ public interface ServiceLocator {
      * @param version
      *            Serive version.
      * @return URL to service jar file.
-     * @throws IOException
+     * @throws IOException on io failure.
      */
     ServiceInfo locate(String name, String version) throws IOException;
 }

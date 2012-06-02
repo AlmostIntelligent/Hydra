@@ -6,8 +6,17 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DummyTest {
+/**
+ * Dummy test class.
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
+public final class DummyTest {
 
+    /**
+     * Dummy test.
+     */
     @Test
     public void dummyTest() {
         Logger logger = LoggerFactory.getLogger(DummyTest.class);

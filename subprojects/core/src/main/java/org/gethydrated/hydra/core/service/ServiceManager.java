@@ -1,8 +1,8 @@
 package org.gethydrated.hydra.core.service;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.Service;
@@ -35,7 +35,7 @@ public class ServiceManager {
     /**
      * List of loaded services.
      */
-    private final List<Service> services = new LinkedList<>();
+    private final Map<Long, Service> services = new HashMap<>();
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public class ServiceManager {
             if (si != null) {
                 Service s = new ServiceImpl(si);
                 synchronized (this) {
-                    services.add(s);
+                    services.put(null, s);
                 }
                 s.start();
                 return s.getId();
@@ -75,8 +75,25 @@ public class ServiceManager {
         }
     }
 
-    public void shutdown() {
-        for (Service s : services) {
+    /**
+     * Stops a service with a given id. If the id is not used,
+     * the action will be ignored.
+     * 
+     * @param id Service id.
+     * @throws HydraException on failure.
+     */
+    public final void stopService(final Long id) throws HydraException {
+        Service s = services.get(id);
+        if (s != null) {
+            s.stop();
+        }
+    }
+
+    /**
+     * Stops all services.
+     */
+    public final void shutdown() {
+        for (Service s : services.values()) {
             try {
                 s.stop();
             } catch (ServiceException e) {

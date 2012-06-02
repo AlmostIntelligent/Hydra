@@ -13,12 +13,27 @@ import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 
-public class LogbackConfigurator {
+/**
+ * Utilityclass for Logback configuration.
+ * 
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
+public final class LogbackConfigurator {
 
+    /**
+     * Hide constructor to prevent instanziation.
+     */
     private LogbackConfigurator() {
     }
 
-    public static void configure(String confFile, Map<String, String> properties) {
+    /**
+     * 
+     * @param confFile config file name.
+     * @param properties additional properties.
+     */
+    public static void configure(final String confFile, final Map<String, String> properties) {
         try (FileInputStream input = new FileInputStream(confFile)) {
             configure(input, properties);
         } catch (IOException e) {
@@ -27,7 +42,12 @@ public class LogbackConfigurator {
         }
     }
 
-    public static void configure(URL file, Map<String, String> properties) {
+    /**
+     * 
+     * @param file config file.
+     * @param properties additional properties.
+     */
+    public static void configure(final URL file, final Map<String, String> properties) {
         try (InputStream input = file.openStream()) {
             configure(input, properties);
         } catch (IOException e) {
@@ -36,8 +56,13 @@ public class LogbackConfigurator {
         }
     }
 
-    public static void configure(InputStream input,
-            Map<String, String> properties) {
+    /**
+     * 
+     * @param input config data.
+     * @param properties additional properties.
+     */
+    public static void configure(final InputStream input,
+            final Map<String, String> properties) {
         LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
         try {
             JoranConfigurator configurator = new JoranConfigurator();
@@ -49,8 +74,14 @@ public class LogbackConfigurator {
         StatusPrinter.printInCaseOfErrorsOrWarnings(lc);
     }
 
-    private static LoggerContext configureContext(LoggerContext context,
-            Map<String, String> properties) {
+    /**
+     * 
+     * @param context Initial logger context.
+     * @param properties additional properties.
+     * @return logger context.
+     */
+    private static LoggerContext configureContext(final LoggerContext context,
+            final Map<String, String> properties) {
         context.reset();
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             context.putProperty(entry.getKey(), entry.getValue());

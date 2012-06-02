@@ -44,6 +44,7 @@ public class SystemServiceLocator implements ServiceLocator {
     @Override
     public final ServiceInfo locate(final String name, final String version)
             throws IOException {
+        LOG.debug("Trying to locate service - name: {} version: {}", name, version);
         File[] dir = new File(systemServiceDir).listFiles(new FileFilter() {
             public boolean accept(final File file) {
                 if (file.getAbsolutePath().endsWith(".jar")) {
@@ -72,6 +73,8 @@ public class SystemServiceLocator implements ServiceLocator {
      *            file
      * @param name
      *            service name
+     * @param version
+     *            service version
      * @return true if service name is found
      */
     private ServiceInfo checkJarInfo(final File f, final String name,

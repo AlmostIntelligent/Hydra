@@ -3,18 +3,35 @@ package org.gethydrated.hydra.launcher;
 import java.io.File;
 import java.net.URISyntaxException;
 
-public class Launcher {
+/**
+ * Simple Hydra launch application.
+ * 
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
+public final class Launcher {
+    
+    /**
+     * Hide constructor to prevent instanciation.
+     */
+    private Launcher() {
+    }
 
     /**
-     * @param args
-     * @throws Exception
+     * @param args arguments
+     * @throws Exception on failure.
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(final String[] args) throws Exception {
         File hydraHome = getWorkingDirectory();
         System.setProperty("hydra.home", hydraHome.getPath());
         BootStrapper.bootstrap(args, hydraHome);
     }
 
+    /**
+     * Detects Hydra home directory.
+     * @return Hydra home directory.
+     */
     private static File getWorkingDirectory() {
         try {
             File path = new File(Launcher.class.getProtectionDomain()
@@ -26,6 +43,9 @@ public class Launcher {
         }
     }
 
+    /**
+     * Prints hydra usage.
+     */
     public static void printUsage() {
         System.out.println("Hydra Usage:");
     }

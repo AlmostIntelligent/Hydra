@@ -1,22 +1,44 @@
 package org.gethydrated.hydra.api;
 
+/**
+ * Hydra exception hierarchy root.
+ * 
+ * @author Christian Kulpa
+ * @since 0.1.0
+ * 
+ */
 public class HydraException extends Exception {
 
-    public HydraException(Throwable e) {
+    /**
+     * Constructor.
+     * 
+     * @param e
+     *            Throwable e.
+     */
+    public HydraException(final Throwable e) {
         super(e);
     }
 
-    public HydraException(String m) {
+    /**
+     * Constructor.
+     * @param m Message m.
+     */
+    public HydraException(final String m) {
         super(m);
     }
 
-    public HydraException(String m, Throwable e) {
+    /**
+     * Constructor.
+     * @param m Message m.
+     * @param e Throwable e.
+     */
+    public HydraException(final String m, final Throwable e) {
         super(m, e);
     }
 
     /**
-     * 
-	 */
+     * Serialization id.
+     */
     private static final long serialVersionUID = 9050861266290634703L;
 
 }

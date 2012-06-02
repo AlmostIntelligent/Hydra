@@ -13,7 +13,13 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class ServiceInfoParser {
+/**
+ * Parses service informations xml file.
+ * @author Christian Kulpa
+ * @since 0.1.0
+ *
+ */
+public final class ServiceInfoParser {
 
     /**
      * Logger.
@@ -21,6 +27,12 @@ public class ServiceInfoParser {
     private static final Logger LOG = LoggerFactory
             .getLogger(ServiceInfoParser.class);
 
+    /**
+     * Hide constructor to prevent instanciation.
+     */
+    private ServiceInfoParser() {
+    }
+    
     /**
      * Parses service.xml informations.
      * 
