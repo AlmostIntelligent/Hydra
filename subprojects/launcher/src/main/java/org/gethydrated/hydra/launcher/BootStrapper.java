@@ -13,10 +13,10 @@ import java.util.List;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public final class BootStrapper {
-    
+
     /**
      * Hide constructor to prevent instanciation.
      */
@@ -26,9 +26,12 @@ public final class BootStrapper {
     /**
      * Gathers all Hydra related jars and attemps to lauch afterwards.
      * 
-     * @param args arguments.
-     * @param hydraHome hydra home directory.
-     * @throws Exception on failure while loading or starting Hydra.
+     * @param args
+     *            arguments.
+     * @param hydraHome
+     *            hydra home directory.
+     * @throws Exception
+     *             on failure while loading or starting Hydra.
      */
     public static void bootstrap(final String[] args, final File hydraHome)
             throws Exception {
@@ -44,7 +47,9 @@ public final class BootStrapper {
             urls[i++] = file.toURI().toURL();
         }
 
-        URLClassLoader rootLoader = new URLClassLoader(urls, null);
+        URLClassLoader rootLoader = new URLClassLoader(urls, ClassLoader
+                .getSystemClassLoader().getParent());
+
         Class<?> mainClass = rootLoader
                 .loadClass("org.gethydrated.hydra.launcher.HydraStarter");
         Method mainMethod = mainClass.getMethod("start", String[].class);
@@ -55,9 +60,12 @@ public final class BootStrapper {
     /**
      * Adds files from an directory to a file list based on given file endings.
      * 
-     * @param fileSet file list.
-     * @param target target directory.
-     * @param endings file endings.
+     * @param fileSet
+     *            file list.
+     * @param target
+     *            target directory.
+     * @param endings
+     *            file endings.
      */
     private static void addFileSet(final List<File> fileSet, final File target,
             final String... endings) {
