@@ -46,7 +46,7 @@ public class ServiceImpl implements Service {
      */
     public ServiceImpl(final ServiceInfo si) throws ServiceException {
         cl = new URLClassLoader(si.getServiceJars(),
-                ServiceImpl.class.getClassLoader());
+                ServiceImpl.class.getClassLoader().getParent());
         try {
             Class<?> clzz = cl.loadClass(si.getActivator());
             if (clzz == null) {

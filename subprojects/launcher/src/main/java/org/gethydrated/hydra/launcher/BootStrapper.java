@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -40,16 +41,22 @@ public final class BootStrapper {
         addFileSet(systemJars, new File(hydraHome, "lib"), ".jar");
 
         systemJars.add(new File(hydraHome, "conf"));
-
-        int i = 0;
-        URL[] urls = new URL[systemJars.size()];
+        
+        List<URL> hydra = new LinkedList<>();
+        List<URL> commons = new LinkedList<>();
+        
         for (File file : systemJars) {
-            urls[i++] = file.toURI().toURL();
+            if (file.getName().contains("hydra-api") || !file.getName().contains("hydra")) {
+                commons.add(file.toURI().toURL());
+            } else {
+                hydra.add(file.toURI().toURL());
+            }
         }
 
-        URLClassLoader rootLoader = new URLClassLoader(urls, ClassLoader
+        URLClassLoader commonsLoader = new URLClassLoader(convertList(commons), ClassLoader
                 .getSystemClassLoader().getParent());
-
+        URLClassLoader rootLoader = new URLClassLoader(convertList(hydra), commonsLoader);
+        
         Class<?> mainClass = rootLoader
                 .loadClass("org.gethydrated.hydra.launcher.HydraStarter");
         Method mainMethod = mainClass.getMethod("start", String[].class);
@@ -83,5 +90,19 @@ public final class BootStrapper {
         for (File f : files) {
             fileSet.add(f);
         }
+    }
+    
+    /**
+     * Converts a list of URL to an arry.
+     * @param list URL list.
+     * @return URL array.
+     */
+    private static URL[] convertList(final List<URL> list) {
+        URL[] array = new URL[list.size()];
+        int i = 0;
+        for (URL u : list) {
+            array[i++] = u;
+        }
+        return array;
     }
 }
