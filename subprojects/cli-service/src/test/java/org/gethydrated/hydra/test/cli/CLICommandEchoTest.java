@@ -64,4 +64,46 @@ public class CLICommandEchoTest {
         dut.parse(s);
         assertEquals(s, ctx.getOutput().trim());
     }
+    
+    /**
+     * Test method for empty string.
+     */
+    @Test
+    public final void testParseEmptyString() {
+        String s = "";
+        dut.parse(s);
+        assertEquals(s, ctx.getOutput().trim());
+    }
+    
+    /**
+     * Test method for empty string.
+     */
+    @Test
+    public final void testExecuteEmptyString() {
+        String[] s = new String[1];
+        s[0] = "";
+        dut.execute(s);
+        assertEquals("", ctx.getOutput().trim());
+    }
+    
+    /**
+     * Test method for empty string.
+     */
+    @Test
+    public final void testParseBlankString() {
+        String s = " ";
+        dut.parse(s);
+        assertEquals("", ctx.getOutput().trim());
+    }
+    
+    /**
+     * Test method for empty string.
+     */
+    @Test
+    public final void testExecuteBlankString() {
+        String[] s = new String[1];
+        s[0] = " ";
+        dut.execute(s);
+        assertEquals("", ctx.getOutput().trim());
+    }
 }

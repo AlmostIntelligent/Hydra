@@ -32,10 +32,10 @@ public class CLICommandEcho extends CLICommand {
     @Override
     public final void execute(final String[] args) {
         int i = 0;
-        for (i = 0; i < args.length - 1; i++) {
+        for (i = 0; i < args.length; i++) {
             getOutput().printf("%s ", args[i]);
         }
-        getOutput().println(args[args.length - 1]);
+        getOutput().println();
     }
 
     @Override
