@@ -43,7 +43,7 @@ public class CLICommandConfigTest {
     @Test
     public final void testSet() {
         dut.parse("set Network.Host localhost");
-        assertEquals("Network.Host = localhost", ctx.getOutput());
+        assertEquals("Network.Host = localhost" + System.getProperty("line.separator"), ctx.getOutput());
         try {
             assertEquals("localhost",
                     ctx.getConfigurationGetter().getString("Network.Host"));
@@ -58,7 +58,7 @@ public class CLICommandConfigTest {
     @Test
     public final void testGet() {
         dut.parse("get Network.Port");
-        assertEquals("1337", ctx.getOutput());
+        assertEquals("1337" + System.getProperty("line.separator"), ctx.getOutput());
     }
 
     /**

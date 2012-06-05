@@ -38,6 +38,7 @@ public class CLICommandConfigSet extends CLICommand {
             try {
                 getOutput().printf("%s = %s", args[0],
                         getContext().getConfigurationGetter().get(args[0]));
+                getOutput().println();
             } catch (ConfigItemNotFoundException e) {
                 getOutput().printf(
                         "Encountered an exception, while setting %s to %s",

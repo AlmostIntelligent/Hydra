@@ -173,39 +173,43 @@ public abstract class CLICommand {
         getOutput().println("Type '<command> -help' for further information");
         getOutput().println();
     }
-    
+
     /**
      * 
-     * @param str possible command word.
+     * @param str
+     *            possible command word.
      * @return True, if "str" is a sub command.
      */
     public final Boolean hasSubCommand(final String str) {
-        for (CLICommand c: subCommands) {
+        for (CLICommand c : subCommands) {
             if (c.testString(str)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     /**
      * Tests if the given String is this command.
-     * @param str the string
+     * 
+     * @param str
+     *            the string
      * @return True, if the String is this command.
      */
     public final Boolean testString(final String str) {
         return getCommandWord().equalsIgnoreCase(str)
                 || getCommandShort().equals(str);
     }
-    
+
     /**
      * 
      * @param str
      *            String.
      * @return True, if the String is a sub command.
-     * @throws CLISubCommandDoesNotExistsException 
+     * @throws CLISubCommandDoesNotExistsException
      */
-    public final CLICommand isSubCommand(final String str) throws CLISubCommandDoesNotExistsException {
+    public final CLICommand isSubCommand(final String str)
+            throws CLISubCommandDoesNotExistsException {
         for (CLICommand cmd : subCommands) {
             if (cmd.testString(str)) {
                 return cmd;
@@ -248,8 +252,8 @@ public abstract class CLICommand {
     public final void parse(final String[] cmds) {
         if (cmds.length > 0
                 && (cmds[0].equalsIgnoreCase("-help")
-                        || cmds[0].equalsIgnoreCase("--h") 
-                        || cmds[0].equalsIgnoreCase("-?"))) {
+                        || cmds[0].equalsIgnoreCase("--h") || cmds[0]
+                            .equalsIgnoreCase("-?"))) {
             displayHelp();
         } else if (cmds.length > 0 && hasSubCommands()) {
             CLICommand subCmd;
