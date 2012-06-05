@@ -3,8 +3,7 @@ package org.gethydrated.hydra.api.service;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
+import org.gethydrated.hydra.api.configuration.Configuration;
 
 /**
  * Service context.
@@ -35,13 +34,8 @@ public interface ServiceContext extends ServiceApi {
 
     /**
      * 
-     * @return ConfigurationsGetter
+     * @return Configurations
      */
-    ConfigurationGetter getConfigurationGetter();
-
-    /**
-     * 
-     * @return ConfigurationSetter
-     */
-    ConfigurationSetter getConfigurationSetter();
+    Configuration getConfiguration();
 }
+

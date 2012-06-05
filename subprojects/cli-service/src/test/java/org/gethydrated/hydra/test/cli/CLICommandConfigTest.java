@@ -46,7 +46,7 @@ public class CLICommandConfigTest {
         assertEquals("Network.Host = localhost" + System.getProperty("line.separator"), ctx.getOutput());
         try {
             assertEquals("localhost",
-                    ctx.getConfigurationGetter().getString("Network.Host"));
+                    ctx.getConfiguration().getString("Network.Host"));
         } catch (ConfigItemNotFoundException e) {
             fail("Configuration Item not found");
         }

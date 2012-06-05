@@ -5,11 +5,10 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 import org.gethydrated.hydra.api.HydraException;
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.core.config.Configuration;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 
 /**
  * 
@@ -31,7 +30,7 @@ public class CLITestContext implements ServiceContext {
     /**
          * 
          */
-    private final Configuration testConfig;
+    private final ConfigurationImpl testConfig;
 
     /**
      * 
@@ -47,7 +46,7 @@ public class CLITestContext implements ServiceContext {
     public CLITestContext() {
         output = new ByteArrayOutputStream();
         ps = new PrintStream(output);
-        testConfig = new Configuration();
+        testConfig = new ConfigurationImpl();
         testConfig.setString("Name", "Test");
         testConfig.setInteger("Network.Port", 1337);
         testConfig.setString("Network.Host", "local");
@@ -108,14 +107,9 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public final ConfigurationGetter getConfigurationGetter() {
+    public final Configuration getConfiguration() {
         // TODO Auto-generated method stub
         return testConfig;
     }
 
-    @Override
-    public final ConfigurationSetter getConfigurationSetter() {
-        // TODO Auto-generated method stub
-        return testConfig;
-    }
 }

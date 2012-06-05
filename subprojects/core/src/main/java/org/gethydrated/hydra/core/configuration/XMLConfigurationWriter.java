@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import java.io.PrintStream;
 
@@ -15,7 +15,7 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
      * @param cfg
      *            Configuration.
      */
-    public XMLConfigurationWriter(final Configuration cfg) {
+    public XMLConfigurationWriter(final ConfigurationImpl cfg) {
         super(cfg);
     }
 

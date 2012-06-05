@@ -7,7 +7,7 @@ import java.util.Map;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceException;
-import org.gethydrated.hydra.core.config.Configuration;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.service.locator.ServiceLocator;
 import org.gethydrated.hydra.core.service.locator.SystemServiceLocator;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class ServiceManager {
     /**
      * Configuration.
      */
-    private final Configuration cfg;
+    private final ConfigurationImpl cfg;
     
     /**
      * Constructor.
@@ -48,7 +48,7 @@ public class ServiceManager {
      * @param cfg
      *            Configuration.
      */
-    public ServiceManager(final Configuration cfg) {
+    public ServiceManager(final ConfigurationImpl cfg) {
         sl = new SystemServiceLocator(cfg);
         this.cfg = cfg;
     }

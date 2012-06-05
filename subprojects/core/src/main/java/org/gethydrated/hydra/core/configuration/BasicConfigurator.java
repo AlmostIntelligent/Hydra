@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 
@@ -23,7 +23,7 @@ public final class BasicConfigurator {
      *            Configuration .
      * @throws ConfigItemNotFoundException .
      */
-    public static void configure(final Configuration cfg)
+    public static void configure(final ConfigurationImpl cfg)
             throws ConfigItemNotFoundException {
         // TO-DO: initialize standard config values
         cfg.setString("test", "test");

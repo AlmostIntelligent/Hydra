@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 
@@ -13,14 +13,14 @@ public class ConfigurationInitializer {
     /**
      * @var configuration.
      */
-    private Configuration cfg;
+    private ConfigurationImpl cfg;
 
     /**
      * 
      * @param config
      *            .
      */
-    public ConfigurationInitializer(final Configuration config) {
+    public ConfigurationInitializer(final ConfigurationImpl config) {
         this.cfg = config;
     }
 

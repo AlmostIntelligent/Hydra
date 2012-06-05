@@ -1,9 +1,10 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
 import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
 
@@ -13,7 +14,7 @@ import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
  * @since 0.1.0
  * 
  */
-public class Configuration implements ConfigurationSetter, ConfigurationGetter {
+public class ConfigurationImpl implements Configuration {
 
     /**
      * 
@@ -28,7 +29,7 @@ public class Configuration implements ConfigurationSetter, ConfigurationGetter {
     /**
      * 
      */
-    public Configuration() {
+    public ConfigurationImpl() {
         root = new ConfigList("Configuration");
     }
 
@@ -55,7 +56,7 @@ public class Configuration implements ConfigurationSetter, ConfigurationGetter {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        Configuration other = (Configuration) obj;
+        ConfigurationImpl other = (ConfigurationImpl) obj;
         if (root == null) {
             if (other.root != null) {
                 return false;
@@ -86,8 +87,8 @@ public class Configuration implements ConfigurationSetter, ConfigurationGetter {
      * 
      * @return copy of this configuration.
      */
-    public final Configuration copy() {
-        Configuration cp = new Configuration();
+    public final ConfigurationImpl copy() {
+        ConfigurationImpl cp = new ConfigurationImpl();
         for (ConfigurationItem itm : getRoot().getChilds()) {
             cp.getRoot().getChilds().add(itm.copy());
         }

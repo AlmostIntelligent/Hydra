@@ -4,7 +4,7 @@ import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.core.api.HydraApiImpl;
-import org.gethydrated.hydra.core.config.Configuration;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.service.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public final class HydraImpl implements Hydra {
     /**
      * Hydra configuration.
      */
-    private final Configuration cfg;
+    private final ConfigurationImpl cfg;
 
     /**
      * ServiceManager.
@@ -49,7 +49,7 @@ public final class HydraImpl implements Hydra {
      * @param cfg
      *            Hydra configuration.
      */
-    public HydraImpl(final Configuration cfg) {
+    public HydraImpl(final ConfigurationImpl cfg) {
         this.cfg = cfg;
         this.sm = new ServiceManager(this.cfg);
         this.api = new HydraApiImpl(sm);

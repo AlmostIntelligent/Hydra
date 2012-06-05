@@ -7,9 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
-import org.gethydrated.hydra.core.config.Configuration;
-import org.gethydrated.hydra.core.config.PlainConfigurationWriter;
-import org.gethydrated.hydra.core.config.XMLConfigurationWriter;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.core.configuration.PlainConfigurationWriter;
+import org.gethydrated.hydra.core.configuration.XMLConfigurationWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class ConfigurationWriterTest {
     /**
      * @var Configuration.
      */
-    private Configuration cfg;
+    private ConfigurationImpl cfg;
 
     /**
      * Test setup.
@@ -32,7 +32,7 @@ public class ConfigurationWriterTest {
      */
     @Before
     public final void setUp() throws Exception {
-        cfg = new Configuration();
+        cfg = new ConfigurationImpl();
         cfg.set("Name", "test");
         cfg.set("Network.Port", 1337);
         cfg.set("Network.Host", "local");

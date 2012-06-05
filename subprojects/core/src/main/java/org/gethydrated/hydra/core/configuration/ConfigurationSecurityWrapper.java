@@ -1,29 +1,27 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
+import org.gethydrated.hydra.api.configuration.Configuration;
 
 /**
  * 
  * @author Hanno Sternberg
  * @since 0.1.0 TO-DO Create real security implementation
  */
-public class ConfigurationSecurityWrapper implements ConfigurationGetter,
-        ConfigurationSetter {
+public class ConfigurationSecurityWrapper implements Configuration {
 
     /**
      * @var Reference to the core configuration.
      */
-    private Configuration coreConfiguration;
+    private ConfigurationImpl coreConfiguration;
 
     /**
      * 
      * @return core Configuration
      */
-    private Configuration getCoreConfiguration() {
+    private ConfigurationImpl getCoreConfiguration() {
         return coreConfiguration;
     }
 
@@ -32,7 +30,7 @@ public class ConfigurationSecurityWrapper implements ConfigurationGetter,
      * @param coreConfig
      *            Core Configuration.
      */
-    private void setCoreConfiguration(final Configuration coreConfig) {
+    private void setCoreConfiguration(final ConfigurationImpl coreConfig) {
         this.coreConfiguration = coreConfig;
     }
 
@@ -41,7 +39,7 @@ public class ConfigurationSecurityWrapper implements ConfigurationGetter,
      * @param coreConfig
      *            core Configuration
      */
-    public ConfigurationSecurityWrapper(final Configuration coreConfig) {
+    public ConfigurationSecurityWrapper(final ConfigurationImpl coreConfig) {
         setCoreConfiguration(coreConfig);
     }
 

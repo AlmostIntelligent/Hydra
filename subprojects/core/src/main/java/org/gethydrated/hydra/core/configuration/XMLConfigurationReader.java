@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -86,7 +86,7 @@ public class XMLConfigurationReader {
     /**
      * @var The configuration.
      */
-    private Configuration cfg;
+    private ConfigurationImpl cfg;
 
     /**
      * 
@@ -97,12 +97,12 @@ public class XMLConfigurationReader {
      * @throws IOException .
      * @throws ParserConfigurationException .
      */
-    public final Configuration load(final String filename) throws SAXException,
+    public final ConfigurationImpl load(final String filename) throws SAXException,
             IOException, ParserConfigurationException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
 
-        cfg = new Configuration();
+        cfg = new ConfigurationImpl();
         stack = new StringStack();
 
         DefaultHandler handler = new DefaultHandler() {
@@ -155,26 +155,26 @@ public class XMLConfigurationReader {
                 if (!s.trim().isEmpty()) {
                     /* Boolean */
                     if (s.equalsIgnoreCase("TRUE")) {
-                        cfg.setBoolean(stack.toString(Configuration
+                        cfg.setBoolean(stack.toString(ConfigurationImpl
                                 .getConfigSeparator()), true);
                     } else if (s.equalsIgnoreCase("FALSE")) {
-                        cfg.setBoolean(stack.toString(Configuration
+                        cfg.setBoolean(stack.toString(ConfigurationImpl
                                 .getConfigSeparator()), false);
                     } else {
                         /* Integer */
                         try {
                             int i = Integer.parseInt(s);
-                            cfg.setInteger(stack.toString(Configuration
+                            cfg.setInteger(stack.toString(ConfigurationImpl
                                     .getConfigSeparator()), i);
                         } catch (Exception e) {
                             try {
                                 /* Double */
                                 Double d = Double.parseDouble(s);
-                                cfg.setFloat(stack.toString(Configuration
+                                cfg.setFloat(stack.toString(ConfigurationImpl
                                         .getConfigSeparator()), d);
                             } catch (Exception ee) {
                                 /* String */
-                                cfg.setString(stack.toString(Configuration
+                                cfg.setString(stack.toString(ConfigurationImpl
                                         .getConfigSeparator()), s);
                             }
                         }

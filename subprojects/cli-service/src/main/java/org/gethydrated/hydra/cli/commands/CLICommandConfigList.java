@@ -52,7 +52,7 @@ public class CLICommandConfigList extends CLICommand {
         if (args.length >= 1) {
             List<String> l;
             try {
-                l = getContext().getConfigurationGetter().list(args[0]);
+                l = getContext().getConfiguration().list(args[0]);
                 for (String s : l) {
                     getOutput().println(s);
                 }

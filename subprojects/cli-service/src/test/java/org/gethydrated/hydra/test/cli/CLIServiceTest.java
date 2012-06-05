@@ -63,7 +63,7 @@ public class CLIServiceTest {
         assertEquals("Network.Host = localhost", ctx.getOutput());
         try {
             assertEquals("localhost",
-                    ctx.getConfigurationGetter().getString("Network.Host"));
+                    ctx.getConfiguration().getString("Network.Host"));
         } catch (ConfigItemNotFoundException e) {
             fail("Configuration Item not found");
         }

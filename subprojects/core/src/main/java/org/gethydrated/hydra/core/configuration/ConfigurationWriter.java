@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.config;
+package org.gethydrated.hydra.core.configuration;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -14,7 +14,7 @@ public abstract class ConfigurationWriter {
     /**
      * @var The configuration.
      */
-    private Configuration cfg;
+    private ConfigurationImpl cfg;
 
     /**
      * Constructor.
@@ -22,7 +22,7 @@ public abstract class ConfigurationWriter {
      * @param config
      *            .
      */
-    public ConfigurationWriter(final Configuration config) {
+    public ConfigurationWriter(final ConfigurationImpl config) {
         cfg = config;
     }
 
@@ -30,7 +30,7 @@ public abstract class ConfigurationWriter {
      * 
      * @return Configuration.
      */
-    public final Configuration getCfg() {
+    public final ConfigurationImpl getCfg() {
         return cfg;
     }
 
@@ -39,7 +39,7 @@ public abstract class ConfigurationWriter {
      * @param config
      *            .
      */
-    public final void setCfg(final Configuration config) {
+    public final void setCfg(final ConfigurationImpl config) {
         this.cfg = config;
     }
 

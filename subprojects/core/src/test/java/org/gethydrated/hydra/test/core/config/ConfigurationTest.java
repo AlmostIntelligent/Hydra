@@ -10,10 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.core.config.Configuration;
-import org.gethydrated.hydra.core.config.ConfigurationItem;
-import org.gethydrated.hydra.core.config.ConfigList;
-import org.gethydrated.hydra.core.config.ConfigValue;
+import org.gethydrated.hydra.core.configuration.ConfigList;
+import org.gethydrated.hydra.core.configuration.ConfigValue;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.core.configuration.ConfigurationItem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,14 +28,14 @@ public class ConfigurationTest {
     /**
      * @var Test configuration.
      */
-    private Configuration cfg;
+    private ConfigurationImpl cfg;
 
     /**
      * @throws java.lang.Exception .
      */
     @Before
     public final void setUp() throws Exception {
-        cfg = new Configuration();
+        cfg = new ConfigurationImpl();
     }
 
     /**
@@ -48,7 +48,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#set(java.lang.String, java.lang.Object)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#set(java.lang.String, java.lang.Object)}
      * .
      */
     @Test
@@ -63,7 +63,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#set(java.lang.String, java.lang.Object)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#set(java.lang.String, java.lang.Object)}
      * .
      */
     @Test
@@ -97,7 +97,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#list(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#list(java.lang.String)}
      * .
      */
     @Test
@@ -112,7 +112,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#get(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#get(java.lang.String)}
      * . .
      */
     @Test
@@ -132,7 +132,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#setBoolean(java.lang.String, java.lang.Boolean)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#setBoolean(java.lang.String, java.lang.Boolean)}
      * .
      */
     @SuppressWarnings("unchecked")
@@ -149,7 +149,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#getBoolean(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#getBoolean(java.lang.String)}
      * .
      */
     @Test
@@ -164,7 +164,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#setInteger(java.lang.String, java.lang.Integer)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#setInteger(java.lang.String, java.lang.Integer)}
      * .
      */
     @SuppressWarnings("unchecked")
@@ -183,7 +183,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#getInteger(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#getInteger(java.lang.String)}
      * .
      */
     @Test
@@ -198,7 +198,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#setFloat(java.lang.String, java.lang.Double)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#setFloat(java.lang.String, java.lang.Double)}
      * .
      */
     @SuppressWarnings("unchecked")
@@ -217,7 +217,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#getFloat(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#getFloat(java.lang.String)}
      * .
      */
     @SuppressWarnings("unchecked")
@@ -236,7 +236,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#setString(java.lang.String, java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#setString(java.lang.String, java.lang.String)}
      * .
      */
     @SuppressWarnings("unchecked")
@@ -255,7 +255,7 @@ public class ConfigurationTest {
 
     /**
      * Test method for
-     * {@link org.gethydrated.hydra.core.config.Configuration#getString(java.lang.String)}
+     * {@link org.gethydrated.hydra.core.configuration.ConfigurationImpl#getString(java.lang.String)}
      * .
      */
     @Test
@@ -273,7 +273,7 @@ public class ConfigurationTest {
      */
     @Test
     public final void testCopy() {
-        Configuration cp = cfg.copy();
+        ConfigurationImpl cp = cfg.copy();
         assertFalse(cp == cfg);
         assertEquals(cfg, cp);
     }

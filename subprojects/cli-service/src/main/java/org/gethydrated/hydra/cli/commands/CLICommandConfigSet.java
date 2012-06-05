@@ -34,10 +34,10 @@ public class CLICommandConfigSet extends CLICommand {
     @Override
     public final void execute(final String[] args) {
         if (args.length >= 2) {
-            getContext().getConfigurationSetter().set(args[0], args[1]);
+            getContext().getConfiguration().set(args[0], args[1]);
             try {
                 getOutput().printf("%s = %s", args[0],
-                        getContext().getConfigurationGetter().get(args[0]));
+                        getContext().getConfiguration().get(args[0]));
                 getOutput().println();
             } catch (ConfigItemNotFoundException e) {
                 getOutput().printf(

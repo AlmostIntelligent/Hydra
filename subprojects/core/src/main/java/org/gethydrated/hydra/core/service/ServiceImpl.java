@@ -10,7 +10,7 @@ import org.gethydrated.hydra.api.service.ServiceActivator;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.ServiceException;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
-import org.gethydrated.hydra.core.config.Configuration;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 
 /**
  * Service implementation.
@@ -53,7 +53,7 @@ public class ServiceImpl implements Service {
      * @param sm Service manager.
      * @throws ServiceException on failure.
      */
-    public ServiceImpl(final ServiceInfo si, final ServiceManager sm, final Configuration cfg) throws ServiceException {
+    public ServiceImpl(final ServiceInfo si, final ServiceManager sm, final ConfigurationImpl cfg) throws ServiceException {
         cl = new URLClassLoader(si.getServiceJars(),
                 ServiceImpl.class.getClassLoader().getParent());
         ctx = new ServiceContextImpl(sm, this, cfg);

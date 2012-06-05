@@ -2,8 +2,8 @@ package org.gethydrated.hydra.core;
 
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.core.config.Configuration;
-import org.gethydrated.hydra.core.config.ConfigurationInitializer;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
 
 /**
  * 
@@ -15,7 +15,7 @@ public final class HydraFactory {
     /**
      * Default configuration.
      */
-    private static final Configuration DEFAULTCFG = new Configuration();
+    private static final ConfigurationImpl DEFAULTCFG = new ConfigurationImpl();
 
     /**
      * Factory state.

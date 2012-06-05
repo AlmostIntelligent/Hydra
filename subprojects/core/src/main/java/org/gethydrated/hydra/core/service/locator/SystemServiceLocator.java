@@ -5,7 +5,8 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.jar.JarFile;
-import org.gethydrated.hydra.core.config.Configuration;
+
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.service.ServiceInfo;
 import org.gethydrated.hydra.core.service.ServiceInfoParser;
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ public class SystemServiceLocator implements ServiceLocator {
      * @param cfg
      *            Configuration
      */
-    public SystemServiceLocator(final Configuration cfg) {
+    public SystemServiceLocator(final ConfigurationImpl cfg) {
         systemServiceDir = System.getProperty("hydra.home") + "/service/system";
     }
 

@@ -36,7 +36,7 @@ public class CLICommandConfigGet extends CLICommand {
         if (args.length >= 1) {
             try {
                 getOutput().printf("%s",
-                        getContext().getConfigurationGetter().get(args[0]));
+                        getContext().getConfiguration().get(args[0]));
                 getOutput().println();
             } catch (ConfigItemNotFoundException e) {
                 getOutput().printf("Configuration item %s not found", args[0]);

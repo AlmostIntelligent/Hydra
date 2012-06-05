@@ -3,12 +3,11 @@ package org.gethydrated.hydra.core.api;
 import java.io.InputStream;
 import java.io.PrintStream;
 
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.core.config.Configuration;
-import org.gethydrated.hydra.core.config.ConfigurationSecurityWrapper;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.core.configuration.ConfigurationSecurityWrapper;
 import org.gethydrated.hydra.core.service.ServiceManager;
 
 /**
@@ -28,7 +27,7 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     /**
      * Configuration.
      */
-    private Configuration cfg;
+    private ConfigurationImpl cfg;
     
     /**
      * Constructor.
@@ -36,7 +35,7 @@ public class ServiceContextImpl extends ServiceApiImpl implements
      * @param s Service.
      * @param cfg Configuration.
      */
-    public ServiceContextImpl(final ServiceManager sm, final Service s, final Configuration cfg) {
+    public ServiceContextImpl(final ServiceManager sm, final Service s, final ConfigurationImpl cfg) {
         super(sm);
         service = s;
         this.cfg = cfg;
@@ -58,13 +57,9 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     }
 
     @Override
-    public final ConfigurationGetter getConfigurationGetter() {
-        return new ConfigurationSecurityWrapper(cfg);
-    }
-
-    @Override
-    public final ConfigurationSetter getConfigurationSetter() {
+    public final Configuration getConfiguration() {
         return new ConfigurationSecurityWrapper(cfg);
     }
 
 }
+
