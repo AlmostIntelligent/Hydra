@@ -206,7 +206,7 @@ public abstract class CLICommand {
      * @param str
      *            String.
      * @return True, if the String is a sub command.
-     * @throws CLISubCommandDoesNotExistsException
+     * @throws CLISubCommandDoesNotExistsException .
      */
     public final CLICommand isSubCommand(final String str)
             throws CLISubCommandDoesNotExistsException {
