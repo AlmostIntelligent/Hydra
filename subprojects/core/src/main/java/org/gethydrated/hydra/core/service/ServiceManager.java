@@ -38,6 +38,11 @@ public class ServiceManager {
     private final Map<Long, Service> services = new HashMap<>();
 
     /**
+     * Configuration.
+     */
+    private final Configuration cfg;
+    
+    /**
      * Constructor.
      * 
      * @param cfg
@@ -45,6 +50,7 @@ public class ServiceManager {
      */
     public ServiceManager(final Configuration cfg) {
         sl = new SystemServiceLocator(cfg);
+        this.cfg = cfg;
     }
 
     /**
@@ -60,7 +66,7 @@ public class ServiceManager {
         try {
             ServiceInfo si = sl.locate(name);
             if (si != null) {
-                Service s = new ServiceImpl(si);
+                Service s = new ServiceImpl(si, this, cfg);
                 synchronized (this) {
                     services.put(null, s);
                 }

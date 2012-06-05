@@ -7,8 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceActivator;
+import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.ServiceException;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
+import org.gethydrated.hydra.core.config.Configuration;
 
 /**
  * Service implementation.
@@ -24,6 +26,11 @@ public class ServiceImpl implements Service {
      */
     private final ServiceActivator activator;
 
+    /**
+     * Service context.
+     */
+    private final ServiceContext ctx;
+    
     /**
      * Service classloader.
      */
@@ -42,11 +49,14 @@ public class ServiceImpl implements Service {
     /**
      * Constructor.
      * @param si Service informations.
+     * @param cfg Configuration.
+     * @param sm Service manager.
      * @throws ServiceException on failure.
      */
-    public ServiceImpl(final ServiceInfo si) throws ServiceException {
+    public ServiceImpl(final ServiceInfo si, final ServiceManager sm, final Configuration cfg) throws ServiceException {
         cl = new URLClassLoader(si.getServiceJars(),
                 ServiceImpl.class.getClassLoader().getParent());
+        ctx = new ServiceContextImpl(sm, this, cfg);
         try {
             Class<?> clzz = cl.loadClass(si.getActivator());
             if (clzz == null) {
@@ -67,7 +77,7 @@ public class ServiceImpl implements Service {
                 @Override
                 public void run() {
                     try {
-                        activator.start(new ServiceContextImpl(null));
+                        activator.start(ctx);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -83,7 +93,7 @@ public class ServiceImpl implements Service {
     public final void stop() throws ServiceException {
         threadpool.shutdown();
         try {
-            activator.stop(null);
+            activator.stop(ctx);
             threadpool.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
         } catch (Exception e) {
             throw new ServiceException(e);

@@ -26,5 +26,6 @@ public final class BasicConfigurator {
     public static void configure(final Configuration cfg)
             throws ConfigItemNotFoundException {
         // TO-DO: initialize standard config values
+        cfg.setString("test", "test");
     }
 }

@@ -7,6 +7,8 @@ import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
 import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.core.config.Configuration;
+import org.gethydrated.hydra.core.config.ConfigurationSecurityWrapper;
 import org.gethydrated.hydra.core.service.ServiceManager;
 
 /**
@@ -19,41 +21,50 @@ public class ServiceContextImpl extends ServiceApiImpl implements
         ServiceContext {
 
     /**
+     * Service.
+     */
+    private Service service;
+    
+    /**
+     * Configuration.
+     */
+    private Configuration cfg;
+    
+    /**
      * Constructor.
      * @param sm ServiceManager.
+     * @param s Service.
+     * @param cfg Configuration.
      */
-    public ServiceContextImpl(final ServiceManager sm) {
+    public ServiceContextImpl(final ServiceManager sm, final Service s, final Configuration cfg) {
         super(sm);
+        service = s;
+        this.cfg = cfg;
     }
 
     @Override
     public final Service getService() {
-        // TODO Auto-generated method stub
-        return null;
+        return service;
     }
 
     @Override
     public final PrintStream getOutputStream() {
-        // TODO Auto-generated method stub
         return System.out;
     }
 
     @Override
     public final InputStream getInputStream() {
-        // TODO Auto-generated method stub
         return System.in;
     }
 
     @Override
     public final ConfigurationGetter getConfigurationGetter() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ConfigurationSecurityWrapper(cfg);
     }
 
     @Override
     public final ConfigurationSetter getConfigurationSetter() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ConfigurationSecurityWrapper(cfg);
     }
 
 }
