@@ -8,8 +8,8 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
-import org.gethydrated.hydra.core.configuration.PlainConfigurationWriter;
-import org.gethydrated.hydra.core.configuration.XMLConfigurationWriter;
+import org.gethydrated.hydra.core.configuration.files.PlainConfigurationWriter;
+import org.gethydrated.hydra.core.configuration.files.XMLConfigurationWriter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

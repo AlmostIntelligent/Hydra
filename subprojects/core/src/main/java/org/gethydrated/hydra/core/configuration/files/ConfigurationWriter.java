@@ -1,7 +1,9 @@
-package org.gethydrated.hydra.core.configuration;
+package org.gethydrated.hydra.core.configuration.files;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 
 /**
  * 

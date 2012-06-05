@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
-import org.gethydrated.hydra.api.configuration.ConfigurationGetter;
-import org.gethydrated.hydra.api.configuration.ConfigurationSetter;
+import org.gethydrated.hydra.core.configuration.tree.ConfigList;
+import org.gethydrated.hydra.core.configuration.tree.ConfigValue;
+import org.gethydrated.hydra.core.configuration.tree.ConfigurationItem;
 
 /**
  * 

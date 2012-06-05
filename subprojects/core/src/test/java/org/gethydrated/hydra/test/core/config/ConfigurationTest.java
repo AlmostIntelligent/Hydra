@@ -10,10 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.core.configuration.ConfigList;
-import org.gethydrated.hydra.core.configuration.ConfigValue;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
-import org.gethydrated.hydra.core.configuration.ConfigurationItem;
+import org.gethydrated.hydra.core.configuration.tree.ConfigList;
+import org.gethydrated.hydra.core.configuration.tree.ConfigValue;
+import org.gethydrated.hydra.core.configuration.tree.ConfigurationItem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

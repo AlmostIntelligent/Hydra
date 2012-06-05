@@ -1,6 +1,11 @@
-package org.gethydrated.hydra.core.configuration;
+package org.gethydrated.hydra.core.configuration.files;
 
 import java.io.PrintStream;
+
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.core.configuration.tree.ConfigList;
+import org.gethydrated.hydra.core.configuration.tree.ConfigValue;
+import org.gethydrated.hydra.core.configuration.tree.ConfigurationItem;
 
 /**
  * 

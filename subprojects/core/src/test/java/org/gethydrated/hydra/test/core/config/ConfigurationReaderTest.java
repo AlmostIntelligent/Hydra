@@ -9,7 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
-import org.gethydrated.hydra.core.configuration.XMLConfigurationReader;
+import org.gethydrated.hydra.core.configuration.files.XMLConfigurationReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

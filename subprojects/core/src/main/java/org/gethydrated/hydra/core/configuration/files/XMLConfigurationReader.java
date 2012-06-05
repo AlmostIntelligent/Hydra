@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.configuration;
+package org.gethydrated.hydra.core.configuration.files;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -7,6 +7,8 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

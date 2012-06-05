@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.configuration;
+package org.gethydrated.hydra.core.configuration.tree;
 
 import java.util.LinkedList;
 import java.util.List;
