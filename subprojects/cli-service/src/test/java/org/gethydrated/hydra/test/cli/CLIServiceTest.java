@@ -71,15 +71,6 @@ public class CLIServiceTest {
         dut.handleInputString("echo ");
         assertEquals("", ctx.getOutput().trim());
     }   
-    
-    /**
-     * 
-     */
-    @Test
-    public final void testEchoString() {
-        dut.handleInputString("echo \"Test\"");
-        assertEquals("Test", ctx.getOutput().trim());
-    }
 
     /**
          * 
