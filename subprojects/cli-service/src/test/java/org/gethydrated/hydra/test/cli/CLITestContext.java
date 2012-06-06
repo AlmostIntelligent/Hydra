@@ -54,45 +54,38 @@ public class CLITestContext implements ServiceContext {
 
     @Override
     public final void registerLocal(final String name, final Long id) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public final void registerGlobal(final String name, final Long id) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public final Long getLocalService(final String name) {
         return null;
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public final Long getGlobalService(final String name) {
         return null;
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public final Long startService(final String name) throws HydraException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public final void stopService(final Long id) throws HydraException {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public final Service getService() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -108,7 +101,7 @@ public class CLITestContext implements ServiceContext {
 
     @Override
     public final Configuration getConfiguration() {
-        // TODO Auto-generated method stub
+        
         return testConfig;
     }
 

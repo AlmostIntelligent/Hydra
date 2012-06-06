@@ -53,6 +53,33 @@ public class CLIServiceTest {
         dut.handleInputString("echo Hallo");
         assertEquals("Hallo", ctx.getOutput().trim());
     }
+    
+    /**
+     * 
+     */
+    @Test
+    public final void testEchoEmpty() {
+        dut.handleInputString("echo");
+        assertEquals("", ctx.getOutput().trim());
+    }
+    
+    /**
+     * 
+     */
+    @Test
+    public final void testEchoBlank() {
+        dut.handleInputString("echo ");
+        assertEquals("", ctx.getOutput().trim());
+    }   
+    
+    /**
+     * 
+     */
+    @Test
+    public final void testEchoString() {
+        dut.handleInputString("echo \"Test\"");
+        assertEquals("Test", ctx.getOutput().trim());
+    }
 
     /**
          * 
@@ -60,7 +87,7 @@ public class CLIServiceTest {
     @Test
     public final void testConfigSet() {
         dut.handleInputString("configuration set Network.Host localhost");
-        assertEquals("Network.Host = localhost", ctx.getOutput());
+        assertEquals("Network.Host = localhost", ctx.getOutput().trim());
         try {
             assertEquals("localhost",
                     ctx.getConfiguration().getString("Network.Host"));
@@ -75,7 +102,7 @@ public class CLIServiceTest {
     @Test
     public final void testConfigGet() {
         dut.handleInputString("configuration get Network.Port");
-        assertEquals("1337", ctx.getOutput());
+        assertEquals("1337", ctx.getOutput().trim());
     }
 
     /**

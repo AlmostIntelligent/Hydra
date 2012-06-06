@@ -20,7 +20,6 @@ public class CLICommandConfigList extends CLICommand {
      */
     public CLICommandConfigList(final ServiceContext ctx) {
         super(ctx);
-        // TODO Auto-generated constructor stub
     }
 
     @Override

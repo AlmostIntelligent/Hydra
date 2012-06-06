@@ -42,3 +42,4 @@ public class CLISubCommandDoesNotExistsException extends Exception {
         this.subCommand = subCommand;
     }
 }
+
