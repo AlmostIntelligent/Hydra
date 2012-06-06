@@ -1,0 +1,14 @@
+
+
+include 'api'
+include 'core'
+include 'launcher'
+include 'cli-service'
+
+rootProject.name = 'hydra'
+rootProject.children.each { project ->
+	String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
+	String projectDirName = "subprojects/$fileBaseName"
+	project.projectDir = new File(settingsDir, projectDirName)
+	assert project.projectDir.isDirectory()
+}

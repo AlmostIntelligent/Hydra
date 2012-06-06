@@ -1,0 +1,56 @@
+configure(allprojects) {
+	apply plugin: 'java'
+}
+
+configure(subprojects) { subproject ->
+	
+	configurations { jacoco
+	}
+
+	dependencies {
+		jacoco group: "org.jacoco", name: "org.jacoco.agent", version: "0.5.7.201204190339", classifier: "runtime"
+	}
+	test.doFirst { jvmArgs "-javaagent:${configurations.jacoco.asPath}=destfile=${rootProject.buildDir}/coverage-results/jacoco.exec,includes=org.gethydrated.hydra.*,excludes=org.gethydrated.hydra.test.*" }
+	
+}
+
+configure(rootProject) {
+	configurations { jacocoant
+	}
+
+	dependencies {
+		jacocoant group: "org.jacoco", name: "org.jacoco.ant", version: "0.5.7.201204190339"
+	}
+
+	task generateCoverageReport << {
+		ant {
+			taskdef(name:'jacocoreport', classname: 'org.jacoco.ant.ReportTask') { classpath path: "${configurations.jacocoant.asPath}" }
+
+			mkdir dir: "${rootProject.buildDir}/reports/coverage"
+			mkdir dir: "${rootProject.buildDir}/reports/coverage-xml"
+
+			jacocoreport {
+				executiondata {
+					ant.file file: "${rootProject.buildDir}/coverage-results/jacoco.exec"
+				}
+
+				structure(name: "Hydra Coverage Reports") {
+
+					classfiles {
+						files(subprojects.collect { project ->
+							fileset dir: "${project.projectDir.path}/build/classes/main"
+						}) }
+
+					sourcefiles(encoding: 'UTF-8') {
+						files(subprojects.collect { project ->
+							fileset dir: "${project.projectDir.path}/src/main/java"
+						}) }
+
+				}
+
+				xml  destfile: "${rootProject.buildDir}/reports/coverage-xml/jacoco.xml"
+				html destdir: "${rootProject.buildDir}/reports/coverage"
+			}
+		}
+	}
+}
