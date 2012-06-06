@@ -1,0 +1,79 @@
+apply from: "${rootProject.projectDir}/gradle/dist.gradle"
+apply from: "${rootProject.projectDir}/gradle/coverage.gradle"
+apply from: "${rootProject.projectDir}/gradle/codequality.gradle"
+
+defaultTasks 'build'
+
+configure(allprojects) {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+
+	group = 'org.gethydrated'
+
+	sourceCompatibility=1.7
+	targetCompatibility=1.7
+
+	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+	repositories { mavenCentral() }
+
+	dependencies {
+		compile 	"org.slf4j:slf4j-api:1.6.4"
+		testCompile "junit:junit:4.10"
+		testCompile "ch.qos.logback:logback-classic:1.0.1"
+	}
+
+	clean.dependsOn subprojects.collect { "$it.path:clean" }
+	build.dependsOn subprojects.collect { "$it.path:build" }
+}
+
+configure(subprojects) { subproject ->	
+	jar {
+		manifest.attributes['Implementation-Title'] = subproject.name
+		manifest.attributes['Implementation-Version'] = subproject.version
+	}
+
+	test.ignoreFailures=true
+	archivesBaseName = 'hydra-' + subproject.name
+}
+
+project("api") { description = 'Hydra API' }
+
+project("launcher") {
+	description = 'Hydra Launcher'
+	jar {
+		manifest.attributes['Main-Class'] = mainClass
+	}
+
+	dependencies {
+		compile project(':core')
+		compile "ch.qos.logback:logback-classic:1.0.1"
+	}
+}
+
+project("core") {
+	description = 'Hydra Core'
+
+	dependencies { compile project(':api') }
+
+}
+
+project("cli-service") {
+	description = 'Hydra CLI'
+
+	dependencies { 
+	   compile project(':api')
+	   testCompile project(':core') 
+	}
+}
+
+configure(rootProject) {
+	configurations { jacocoant }
+
+	description = 'Hydra'	
+
+	task wrapper(type: Wrapper) {
+		description = 'Generates gradlew[.bat] scripts'
+		gradleVersion = '1.0-rc-1'
+	}
+}

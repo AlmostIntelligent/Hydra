@@ -1,0 +1,7 @@
+<service>
+	<name>CLI</name>
+	<version>0.0.0</version>
+	<activators>
+		<activator>org.gethydrated.hydra.cli.CLIServiceActivator</activator>
+	</activators>
+</service>
