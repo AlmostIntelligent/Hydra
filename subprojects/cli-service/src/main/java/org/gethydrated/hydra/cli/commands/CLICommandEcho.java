@@ -6,7 +6,7 @@ import org.gethydrated.hydra.api.service.ServiceContext;
  * A simple echo command, simply prints out what comes in.
  * 
  * @author Hanno Sternberg
- * 
+ * @since 0.1.0
  */
 public class CLICommandEcho extends CLICommand {
 

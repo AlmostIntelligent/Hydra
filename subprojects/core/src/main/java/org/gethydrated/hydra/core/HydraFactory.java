@@ -7,7 +7,7 @@ import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
 
 /**
  * 
- * @author chris
+ * @author Christian Kulpa
  * @since 0.1.0
  */
 public final class HydraFactory {

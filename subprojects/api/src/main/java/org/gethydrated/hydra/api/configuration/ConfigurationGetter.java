@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * 
  * @author Hanno Sternberg
- * 
+ * @since 0.1.0
  */
 public interface ConfigurationGetter {
 

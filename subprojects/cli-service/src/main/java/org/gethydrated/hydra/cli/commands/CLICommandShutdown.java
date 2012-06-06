@@ -5,6 +5,7 @@ import org.gethydrated.hydra.api.service.ServiceContext;
 /**
  * 
  * @author Christian Kulpa
+ * @since 0.1.0
  *
  */
 public class CLICommandShutdown extends CLICommand {
