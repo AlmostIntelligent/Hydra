@@ -4,6 +4,7 @@ import org.gethydrated.hydra.api.HydraException;
 
 /**
  * Hydra service exception.
+ * 
  * @author Christian Kulpa
  * @since 0.1.0
  *

@@ -4,7 +4,8 @@ import org.gethydrated.hydra.api.service.ServiceContext;
 
 /**
  * 
- * @author Hanno
+ * @author Hanno Sternberg
+ * @since 0.1.0
  * 
  */
 public class CLICommandRoot extends CLICommand {

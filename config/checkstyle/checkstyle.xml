@@ -64,7 +64,11 @@
     </module>
     <module name="MagicNumber"/>
     <module name="MissingSwitchDefault"/>
-    <module name="RedundantThrows"/>
+    <module name="RedundantThrows">
+    <!-- Disabled due to classpath bug: Exceptions can not be found. -->
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+	</module>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="DesignForExtension"/>
@@ -81,7 +85,10 @@
     <property name="file" value="${config_loc}/suppressions.xml"/>
   </module>
   <module name="JavadocPackage"/>
-  <module name="NewlineAtEndOfFile"/>
+  <module name="NewlineAtEndOfFile">
+	<property name="severity" value="ignore"/>
+	<metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+  </module>
   <module name="Translation"/>
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>

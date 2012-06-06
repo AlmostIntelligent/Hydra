@@ -2,7 +2,7 @@ package org.gethydrated.hydra.api;
 
 /**
  * 
- * @author chris
+ * @author Christian Kulpa
  * @since 0.1.0
  */
 public interface Hydra extends HydraApi {
