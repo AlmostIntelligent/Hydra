@@ -91,10 +91,10 @@ public class ServiceImpl implements Service {
 
     @Override
     public final void stop() throws ServiceException {
-        threadpool.shutdown();
         try {
             activator.stop(ctx);
-            threadpool.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+            threadpool.shutdownNow();
+            while(!threadpool.awaitTermination(TIMEOUT, TimeUnit.SECONDS));
         } catch (Exception e) {
             throw new ServiceException(e);
         }
