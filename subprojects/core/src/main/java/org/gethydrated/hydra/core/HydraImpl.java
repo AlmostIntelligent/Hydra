@@ -5,6 +5,8 @@ import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.core.api.HydraApiImpl;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.core.events.EventManager;
+import org.gethydrated.hydra.core.messages.MessageQueue;
 import org.gethydrated.hydra.core.service.ServiceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,10 @@ public final class HydraImpl implements Hydra {
      */
     private final HydraApi api;
 
+    private EventManager em;
+
+    private MessageQueue messageQueue;
+
     /**
      * Constructor.
      * 
@@ -53,12 +59,15 @@ public final class HydraImpl implements Hydra {
         this.cfg = cfg;
         this.sm = new ServiceManager(this.cfg);
         this.api = new HydraApiImpl(sm);
+        this.messageQueue = new MessageQueue();
+        this.em = new EventManager(messageQueue);
     }
 
     @Override
     public void start() {
         LOG.info("Starting Hydra.");
         shutdownhook.register();
+        em.start();
     }
 
     @Override
@@ -66,6 +75,7 @@ public final class HydraImpl implements Hydra {
         LOG.info("Stopping Hydra.");
         shutdownhook.unregister();
         sm.shutdown();
+        em.stop();
     }
 
     @Override
