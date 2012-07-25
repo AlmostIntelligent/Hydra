@@ -6,7 +6,7 @@ package org.gethydrated.hydra.api.message;
  * @author Hanno Sternberg
  *
  */
-public interface Sendable {
+public interface Sendable extends Message {
 
     /**
      * 

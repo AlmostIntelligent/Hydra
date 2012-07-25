@@ -9,23 +9,42 @@ import org.gethydrated.hydra.api.node.Node;
  */
 public class USID {
 
+    /**
+     * ID.
+     */
     private Long id;
     
+    /**
+     * Executing node.
+     */
     private Node node;
     
-    public USID(Long id, Node n) {
-        if(id == null || n == null) {
-            throw new IllegalStateException("One argument was null: id: "+id+" node: "+n);
+    /**
+     * 
+     * @param id Service ID.
+     * @param n executing node.
+     */
+    public USID(final Long id, final Node n) {
+        if (id == null || n == null) {
+            throw new IllegalStateException("One argument was null: id: " + id + " node: " + n);
         }
         this.id = id;
         this.node = n;
     }
     
-    public Long getID() {
+    /**
+     * 
+     * @return Service ID.
+     */
+    public final Long getID() {
         return id;
     }
     
-    public Node getNode() {
+    /**
+     * 
+     * @return Executing node.
+     */
+    public final Node getNode() {
         return node;
     }
     

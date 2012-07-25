@@ -5,15 +5,33 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.gethydrated.hydra.api.message.Message;
 
+/**
+ * Message Queue.
+ * 
+ * @author Christian Kulpa
+ *
+ */
 public class MessageQueue {
     
+    /**
+     * Queue.
+     */
     private BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
     
-    public void addMessage(Message e) {
+    /**
+     * Adds a Message to the queue.
+     * @param e Message.
+     */
+    public final void addMessage(final Message e) {
         queue.offer(e);
     }
     
-    public Message getMessage() throws InterruptedException {
+    /**
+     * Takes one message from the queue.
+     * @return Message.
+     * @throws InterruptedException 
+     */
+    public final Message getMessage() throws InterruptedException {
         return queue.take();
     }
 }
