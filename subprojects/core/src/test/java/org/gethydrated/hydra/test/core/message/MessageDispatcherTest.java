@@ -49,10 +49,10 @@ public class MessageDispatcherTest {
 
             @Override
             public void run() {
-                for(int i = 0; i<1000; i++) {
+                for (int i = 0; i < 1000; i++) {
                     mq.addMessage(new TestMessage(id));
                 }
-            }}).start();
+            } }).start();
         Thread.sleep(1000);
         assertTrue(th.count == 1000);
     }
@@ -82,8 +82,13 @@ public class MessageDispatcherTest {
         }
 
         @Override
-        public USID getTarget() {
+        public USID getDestination() {
             return id;
+        }
+        
+        @Override
+        public USID getSource() {
+            return null;
         }
         
     }
