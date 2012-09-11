@@ -33,7 +33,14 @@ configure(subprojects) { subproject ->
 		manifest.attributes['Implementation-Version'] = subproject.version
 	}
 
-	test.ignoreFailures=true
+	test {
+		ignoreFailures=true
+		testLogging {
+			exceptionFormat "full"
+			events "started", "passed", "skipped", "failed", "standardOut", "standardError"
+			minGranularity 0
+		}
+	}
 	archivesBaseName = 'hydra-' + subproject.name
 }
 
@@ -49,6 +56,10 @@ project("launcher") {
 		compile project(':core')
 		compile "ch.qos.logback:logback-classic:1.0.1"
 	}
+}
+
+project("actors") {
+	description = 'Hydra Actor implementation'
 }
 
 project("core") {

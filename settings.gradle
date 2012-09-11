@@ -1,6 +1,7 @@
 
 
 include 'api'
+include 'actors'
 include 'core'
 include 'launcher'
 include 'cli-service'
