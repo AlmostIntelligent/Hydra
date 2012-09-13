@@ -23,7 +23,7 @@ public final class HydraFactory {
     private static boolean initialized = false;
 
     /**
-     * Hide constructor to prevent instanciation.
+     * Hide constructor to prevent instantiation.
      */
     private HydraFactory() {
     }

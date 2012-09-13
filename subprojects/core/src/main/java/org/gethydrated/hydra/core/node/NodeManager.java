@@ -1,5 +1,10 @@
 package org.gethydrated.hydra.core.node;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import org.gethydrated.hydra.api.node.Node;
+
 /**
  * 
  * @author Christian Kulpa
@@ -7,4 +12,12 @@ package org.gethydrated.hydra.core.node;
  */
 public class NodeManager {
 
+	private Connector connector;
+	
+	private List<Node> nodes = new LinkedList<>();
+	
+	public NodeManager() {
+		connector = new Connector();
+	}
+	
 }
