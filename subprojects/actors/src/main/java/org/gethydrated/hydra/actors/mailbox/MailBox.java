@@ -1,14 +1,15 @@
-package org.gethydrated.hydra.actors;
+package org.gethydrated.hydra.actors.mailbox;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
 
 /**
  * 
  * @author Christian Kulpa
  *
  */
-public class MessageBox {
+public class MailBox {
 
     /**
      * Message fifo queue.

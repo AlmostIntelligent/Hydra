@@ -5,6 +5,10 @@ package org.gethydrated.hydra.actors;
  * @author Christian Kulpa
  *
  */
-public class ActorContext {
+public interface Reference {
+
+    String getName();
+    
+    Address getAddress();
 
 }
