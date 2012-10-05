@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.node;
+package org.gethydrated.hydra.actors;
 
 /**
  * 

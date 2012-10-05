@@ -1,6 +1,6 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.node.StandardActorFactory;
+import org.gethydrated.hydra.actors.cell.StandardActorFactory;
 
 /**
  * 

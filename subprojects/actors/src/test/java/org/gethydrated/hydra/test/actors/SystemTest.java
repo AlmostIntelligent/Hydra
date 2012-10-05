@@ -11,31 +11,31 @@ import org.junit.Test;
 /**
  * 
  * @author Christian Kulpa
- *
+ * 
  */
 public final class SystemTest {
 
     private System actorSystem;
-    
+
     @Before
     public void setup() {
         actorSystem = System.createSystem();
     }
-    
+
     @After
     public void teardown() {
         actorSystem.shutdown();
         actorSystem.await();
     }
-    
+
     @Test
     public void testActorSystemShutdown() {
         assertFalse(actorSystem.isTerminated());
-        
+
         actorSystem.shutdown();
         actorSystem.await();
-        
+
         assertTrue(actorSystem.isTerminated());
     }
-    
+
 }
