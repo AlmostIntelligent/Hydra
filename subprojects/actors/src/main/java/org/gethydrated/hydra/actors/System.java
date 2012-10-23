@@ -16,6 +16,17 @@ public final class System {
     }
     
     public void shutdown() {
+    	//create EventStream
+    	//create Logger
+    	//start RootGuardian
+    	//start	 SysGuardian
+    	//start		Logger
+    	//start	 AppGuardian
+    	
+    	//start eventhandling
+    	
+    	//on failure
+    	// dump eventstream to logger
         running = false;
     }
 
