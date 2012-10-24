@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.actors;
 
 import org.gethydrated.hydra.actors.cell.StandardActorFactory;
+import org.gethydrated.hydra.actors.event.SystemEventStream;
 
 /**
  * 
@@ -11,8 +12,11 @@ public final class System {
 
     boolean running;
     
+    SystemEventStream eventStream = new SystemEventStream();
+    
     private System(String name) {
         running = true;
+
     }
     
     public void shutdown() {
