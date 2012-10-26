@@ -6,26 +6,28 @@ import org.slf4j.Marker;
 
 public class LoggingAdapter implements Logger{
 
-	public LoggingAdapter(EventStream e) {
-		
+    private final String name;
+    
+    private final LogLevel loglevel;
+    
+	public LoggingAdapter(String name, LogLevel loglevel, EventStream e) {
+		this.name = name;
+		this.loglevel = loglevel;
 	}
 	
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 	@Override
 	public boolean isTraceEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+		return loglevel.compareTo(LogLevel.TRACE) <= 0;
 	}
 
 	@Override
 	public void trace(String msg) {
-		// TODO Auto-generated method stub
-		
+		filterAndTrace(null, msg, null, null, null, null);
 	}
 
 	@Override
@@ -54,8 +56,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isTraceEnabled(Marker marker) {
-		// TODO Auto-generated method stub
-		return false;
+		return isTraceEnabled();
 	}
 
 	@Override
@@ -87,11 +88,10 @@ public class LoggingAdapter implements Logger{
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
 	public boolean isDebugEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+	    return loglevel.compareTo(LogLevel.DEBUG) <= 0;
 	}
 
 	@Override
@@ -126,8 +126,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isDebugEnabled(Marker marker) {
-		// TODO Auto-generated method stub
-		return false;
+		return isDebugEnabled();
 	}
 
 	@Override
@@ -162,8 +161,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isInfoEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+	    return loglevel.compareTo(LogLevel.INFO) <= 0;
 	}
 
 	@Override
@@ -198,8 +196,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isInfoEnabled(Marker marker) {
-		// TODO Auto-generated method stub
-		return false;
+		return isInfoEnabled();
 	}
 
 	@Override
@@ -234,8 +231,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isWarnEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+	    return loglevel.compareTo(LogLevel.WARN) <= 0;
 	}
 
 	@Override
@@ -270,8 +266,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isWarnEnabled(Marker marker) {
-		// TODO Auto-generated method stub
-		return false;
+		return isWarnEnabled();
 	}
 
 	@Override
@@ -306,8 +301,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isErrorEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+	    return loglevel.compareTo(LogLevel.ERROR) <= 0;
 	}
 
 	@Override
@@ -342,8 +336,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isErrorEnabled(Marker marker) {
-		// TODO Auto-generated method stub
-		return false;
+		return isErrorEnabled();
 	}
 
 	@Override
@@ -376,4 +369,10 @@ public class LoggingAdapter implements Logger{
 		
 	}
 
+	private void filterAndTrace(Marker marker, String msg, Object arg1, Object arg2, Object[] argArray, Throwable t) {
+	    if(isTraceEnabled()) {
+	        
+	    }
+	}
+	
 }
