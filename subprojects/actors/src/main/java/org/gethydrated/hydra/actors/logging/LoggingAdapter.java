@@ -1,18 +1,23 @@
 package org.gethydrated.hydra.actors.logging;
 
+import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.event.EventStream;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
 public class LoggingAdapter implements Logger{
 
     private final String name;
     
-    private final LogLevel loglevel;
+    private final EventStream eventStream;
     
-	public LoggingAdapter(String name, LogLevel loglevel, EventStream e) {
+    private final Logger logger;
+    
+	public LoggingAdapter(String name, ActorSystem system) {
 		this.name = name;
-		this.loglevel = loglevel;
+		logger = LoggerFactory.getLogger(name);
+		eventStream = system.getEventStream();
 	}
 	
 	@Override
@@ -22,12 +27,11 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isTraceEnabled() {
-		return loglevel.compareTo(LogLevel.TRACE) <= 0;
+		return logger.isTraceEnabled();
 	}
 
 	@Override
 	public void trace(String msg) {
-		filterAndTrace(null, msg, null, null, null, null);
 	}
 
 	@Override
@@ -56,7 +60,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isTraceEnabled(Marker marker) {
-		return isTraceEnabled();
+		return logger.isTraceEnabled(marker);
 	}
 
 	@Override
@@ -91,7 +95,7 @@ public class LoggingAdapter implements Logger{
 	
 	@Override
 	public boolean isDebugEnabled() {
-	    return loglevel.compareTo(LogLevel.DEBUG) <= 0;
+	    return logger.isDebugEnabled();
 	}
 
 	@Override
@@ -126,7 +130,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isDebugEnabled(Marker marker) {
-		return isDebugEnabled();
+		return isDebugEnabled(marker);
 	}
 
 	@Override
@@ -161,7 +165,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isInfoEnabled() {
-	    return loglevel.compareTo(LogLevel.INFO) <= 0;
+	    return logger.isInfoEnabled();
 	}
 
 	@Override
@@ -196,7 +200,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isInfoEnabled(Marker marker) {
-		return isInfoEnabled();
+		return logger.isInfoEnabled(marker);
 	}
 
 	@Override
@@ -231,7 +235,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isWarnEnabled() {
-	    return loglevel.compareTo(LogLevel.WARN) <= 0;
+	    return logger.isWarnEnabled();
 	}
 
 	@Override
@@ -266,7 +270,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isWarnEnabled(Marker marker) {
-		return isWarnEnabled();
+		return logger.isWarnEnabled(marker);
 	}
 
 	@Override
@@ -301,7 +305,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isErrorEnabled() {
-	    return loglevel.compareTo(LogLevel.ERROR) <= 0;
+	    return logger.isErrorEnabled();
 	}
 
 	@Override
@@ -336,7 +340,7 @@ public class LoggingAdapter implements Logger{
 
 	@Override
 	public boolean isErrorEnabled(Marker marker) {
-		return isErrorEnabled();
+		return logger.isErrorEnabled(marker);
 	}
 
 	@Override
@@ -369,10 +373,5 @@ public class LoggingAdapter implements Logger{
 		
 	}
 
-	private void filterAndTrace(Marker marker, String msg, Object arg1, Object arg2, Object[] argArray, Throwable t) {
-	    if(isTraceEnabled()) {
-	        
-	    }
-	}
 	
 }

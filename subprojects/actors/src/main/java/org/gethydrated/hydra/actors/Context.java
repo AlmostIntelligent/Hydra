@@ -10,5 +10,5 @@ import org.slf4j.Logger;
 public abstract class Context {
 	public abstract Logger getLogger();
 	
-	public abstract System getSystem();
+	public abstract ActorSystem getSystem();
 }

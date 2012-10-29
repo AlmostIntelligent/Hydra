@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.actors;
 
+import java.util.concurrent.Future;
+
 /**
  * 
  * @author Christian Kulpa
@@ -11,4 +13,7 @@ public interface Reference {
     
     Address getAddress();
 
+    void tell(Object o);
+    
+    Future<?> ask(Object o);
 }

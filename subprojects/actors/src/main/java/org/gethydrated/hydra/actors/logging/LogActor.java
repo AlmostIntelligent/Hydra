@@ -5,5 +5,5 @@ import org.slf4j.LoggerFactory;
 
 public class LogActor {
 
-	private static final Logger logger = LoggerFactory.getLogger(LogActor.class);
+	private final Logger logger = LoggerFactory.getLogger(LogActor.class);
 }

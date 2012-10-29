@@ -5,7 +5,7 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.Context;
 import org.gethydrated.hydra.actors.Reference;
-import org.gethydrated.hydra.actors.System;
+import org.gethydrated.hydra.actors.ActorSystem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,11 +17,11 @@ import org.junit.Test;
  */
 public final class ActorTest {
 
-    private System actorSystem;
+    private ActorSystem actorSystem;
 
     @Before
     public void setup() {
-        System.createSystem("testSystem");
+        ActorSystem.createSystem("testSystem");
     }
 
     @After

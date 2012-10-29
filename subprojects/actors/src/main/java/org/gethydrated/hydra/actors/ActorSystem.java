@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.actors;
 
 import org.gethydrated.hydra.actors.cell.StandardActorFactory;
+import org.gethydrated.hydra.actors.event.EventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
 
 /**
@@ -8,13 +9,13 @@ import org.gethydrated.hydra.actors.event.SystemEventStream;
  * @author Christian Kulpa
  * 
  */
-public final class System {
+public final class ActorSystem {
 
     boolean running;
     
     SystemEventStream eventStream = new SystemEventStream();
     
-    private System(String name) {
+    private ActorSystem(String name) {
         running = true;
 
     }
@@ -51,12 +52,16 @@ public final class System {
         return null;
     }
     
-    public static System createSystem() {
+	public EventStream getEventStream() {
+		return eventStream;
+	}    
+    
+    public static ActorSystem createSystem() {
         return createSystem("default");
     }
     
-    public static System createSystem(String name) {
-        return new System(name);
+    public static ActorSystem createSystem(String name) {
+        return new ActorSystem(name);
     }
-    
+
 }
