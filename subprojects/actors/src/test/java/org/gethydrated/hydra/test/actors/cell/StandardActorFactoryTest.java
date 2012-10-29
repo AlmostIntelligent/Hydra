@@ -93,18 +93,10 @@ public class StandardActorFactoryTest {
      * @author Christian Kulpa
      *
      */
-    public static class StaticActor implements Actor {
+    public static class StaticActor extends Actor {
 
         @Override
-        public void receive(Object message, Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStart(Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStop(Context ctx) throws Exception {
+        public void onReceive(Object message, Context ctx) throws Exception {
         }
     }
 
@@ -113,18 +105,10 @@ public class StandardActorFactoryTest {
      * @author Christian Kulpa
      *
      */
-    public class NonStaticActor implements Actor {
+    public class NonStaticActor extends Actor {
 
         @Override
-        public void receive(Object message, Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStart(Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStop(Context ctx) throws Exception {
+        public void onReceive(Object message, Context ctx) throws Exception {
         }
 
     }
@@ -134,18 +118,10 @@ public class StandardActorFactoryTest {
      * @author Christian Kulpa
      *
      */
-    private static class PrivateActor implements Actor {
+    private static class PrivateActor extends Actor {
 
         @Override
-        public void receive(Object message, Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStart(Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStop(Context ctx) throws Exception {
+        public void onReceive(Object message, Context ctx) throws Exception {
         }
     }
 }

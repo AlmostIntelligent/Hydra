@@ -49,18 +49,10 @@ public final class ActorTest {
         assertEquals(actor.getName(), "test");
     }
 
-    public static class TestActor implements Actor {
+    public static class TestActor extends Actor {
 
         @Override
-        public void receive(Object message, Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStart(Context ctx) throws Exception {
-        }
-
-        @Override
-        public void onStop(Context ctx) throws Exception {
+        public void onReceive(Object message, Context ctx) throws Exception {
         }
 
     }

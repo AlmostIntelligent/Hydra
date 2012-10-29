@@ -5,7 +5,7 @@ package org.gethydrated.hydra.actors;
  * @author Christian Kulpa
  * 
  */
-public interface Actor {
+public abstract class Actor {
 
     /**
      * Message callback. Invoked on message received.
@@ -13,19 +13,19 @@ public interface Actor {
      * @param ctx Actor context.
      * @throws Exception on failure.
      */
-    void receive(Object message, Context ctx) throws Exception;
+    public abstract void onReceive(Object message, Context ctx) throws Exception;
     
     /**
      * Startup callback. Gets called before message processing starts.
      * @param ctx Actor context.
      * @throws Exception on failure.
      */
-    void onStart(Context ctx) throws Exception;
+    public void onStart(Context ctx) throws Exception {}
     
     /**
      * Shutdown callback. Gets called after message processing stops.
      * @param ctx Actor context.
      * @throws Exception on failure.
      */
-    void onStop(Context ctx) throws Exception;
+    public void onStop(Context ctx) throws Exception {}
 }
