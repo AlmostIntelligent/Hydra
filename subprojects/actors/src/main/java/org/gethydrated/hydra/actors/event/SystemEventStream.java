@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.gethydrated.hydra.actors.Reference;
+import org.gethydrated.hydra.actors.ActorRef;
 
 public class SystemEventStream implements EventStream {
 
@@ -23,7 +23,7 @@ public class SystemEventStream implements EventStream {
 	Map<Class<?>, List<EventListener>> listeners = new ConcurrentHashMap<>();
 	
 	@Override
-	public boolean subscribe(Reference subscriber, Class<?> classifier) {
+	public boolean subscribe(ActorRef subscriber, Class<?> classifier) {
 		//TODO:
 		return false;
 	}
@@ -47,7 +47,7 @@ public class SystemEventStream implements EventStream {
 	}
 
 	@Override
-	public boolean unsubscribe(Reference subscriber, Class<?> classifier) {
+	public boolean unsubscribe(ActorRef subscriber, Class<?> classifier) {
 		//TODO:
 		return false;
 	}
@@ -59,7 +59,7 @@ public class SystemEventStream implements EventStream {
 	}
 
 	@Override
-	public boolean unsubscribe(Reference subscriber) {
+	public boolean unsubscribe(ActorRef subscriber) {
 		//TODO:
 		return false;
 	}

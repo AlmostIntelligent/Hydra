@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.test.actors.cell;
+package org.gethydrated.hydra.test.actors.node;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -7,7 +7,7 @@ import static org.junit.Assert.assertFalse;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.Context;
-import org.gethydrated.hydra.actors.cell.StandardActorFactory;
+import org.gethydrated.hydra.actors.node.StandardActorFactory;
 import org.junit.Test;
 
 /**

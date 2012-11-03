@@ -7,11 +7,11 @@ import java.util.concurrent.Future;
  * @author Christian Kulpa
  *
  */
-public interface Reference {
+public interface ActorRef {
 
     String getName();
     
-    Address getAddress();
+    ActorURI getAddress();
 
     void tell(Object o);
     

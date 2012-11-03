@@ -19,7 +19,7 @@ public class LoggingAdapterLevelTest {
     
     @Before
     public void setup() {
-    	testSystem = ActorSystem.createSystem();
+    	testSystem = ActorSystem.create();
     }
     
     @After

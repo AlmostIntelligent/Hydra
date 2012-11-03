@@ -19,7 +19,7 @@ public final class SystemTest {
 
     @Before
     public void setup() {
-        actorSystem = ActorSystem.createSystem();
+        actorSystem = ActorSystem.create();
     }
 
     @After

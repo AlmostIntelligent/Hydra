@@ -1,8 +1,8 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.cell.StandardActorFactory;
 import org.gethydrated.hydra.actors.event.EventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
+import org.gethydrated.hydra.actors.node.StandardActorFactory;
 
 /**
  * 
@@ -15,7 +15,7 @@ public final class ActorSystem {
     
     SystemEventStream eventStream = new SystemEventStream();
     
-    private ActorSystem(String name) {
+    private ActorSystem() {
         running = true;
 
     }
@@ -43,25 +43,21 @@ public final class ActorSystem {
         return !running;
     }
 
-    public Reference spawnActor(Class<? extends Actor> actorClass, String name) {
+    public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
         ActorFactory actorFactory = new StandardActorFactory(actorClass);
         return spawnActor(actorFactory, name);
     }
     
-    public Reference spawnActor(ActorFactory actorFactory, String name) {
+    public ActorRef spawnActor(ActorFactory actorFactory, String name) {
         return null;
     }
     
 	public EventStream getEventStream() {
 		return eventStream;
-	}    
-    
-    public static ActorSystem createSystem() {
-        return createSystem("default");
-    }
-    
-    public static ActorSystem createSystem(String name) {
-        return new ActorSystem(name);
+	}
+
+    public static ActorSystem create() {
+        return new ActorSystem();
     }
 
 }

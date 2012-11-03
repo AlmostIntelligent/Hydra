@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.Context;
-import org.gethydrated.hydra.actors.Reference;
+import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.junit.After;
 import org.junit.Before;
@@ -21,7 +21,7 @@ public final class ActorTest {
 
     @Before
     public void setup() {
-        ActorSystem.createSystem("testSystem");
+        actorSystem = ActorSystem.create();
     }
 
     @After
@@ -32,14 +32,14 @@ public final class ActorTest {
 
     @Test
     public void testActorClassCreation() {
-        Reference actor = actorSystem.spawnActor(TestActor.class, "test");
+        ActorRef actor = actorSystem.spawnActor(TestActor.class, "test");
 
         assertEquals(actor.getName(), "test");
     }
 
     @Test
     public void testActorFactoryCreation() {
-        Reference actor = actorSystem.spawnActor(new ActorFactory() {
+        ActorRef actor = actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() {
                 return new TestActor();

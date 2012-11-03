@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.cell;
+package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;

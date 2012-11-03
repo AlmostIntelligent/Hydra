@@ -5,4 +5,4 @@
  * @author Christian Kulpa
  *
  */
-package org.gethydrated.hydra.test.actors.cell;
+package org.gethydrated.hydra.test.actors.node;
