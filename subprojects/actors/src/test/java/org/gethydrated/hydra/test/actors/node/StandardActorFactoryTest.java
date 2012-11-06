@@ -6,7 +6,6 @@ import static org.junit.Assert.assertFalse;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.Context;
 import org.gethydrated.hydra.actors.node.StandardActorFactory;
 import org.junit.Test;
 
@@ -96,7 +95,7 @@ public class StandardActorFactoryTest {
     public static class StaticActor extends Actor {
 
         @Override
-        public void onReceive(Object message, Context ctx) throws Exception {
+        public void onReceive(Object message) throws Exception {
         }
     }
 
@@ -108,7 +107,7 @@ public class StandardActorFactoryTest {
     public class NonStaticActor extends Actor {
 
         @Override
-        public void onReceive(Object message, Context ctx) throws Exception {
+        public void onReceive(Object message) throws Exception {
         }
 
     }
@@ -121,7 +120,7 @@ public class StandardActorFactoryTest {
     private static class PrivateActor extends Actor {
 
         @Override
-        public void onReceive(Object message, Context ctx) throws Exception {
+        public void onReceive(Object message) throws Exception {
         }
     }
 }

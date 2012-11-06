@@ -13,7 +13,11 @@ public interface ActorRef {
     
     ActorURI getAddress();
 
-    void tell(Object o);
+	void tell(Object o, ActorRef sender);
+    
+    void forward(Object o, ActorRef ref);
     
     Future<?> ask(Object o);
+
+
 }

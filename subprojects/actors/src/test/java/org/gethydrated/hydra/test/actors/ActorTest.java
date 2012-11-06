@@ -3,7 +3,6 @@ package org.gethydrated.hydra.test.actors;
 import static org.junit.Assert.assertEquals;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.Context;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.junit.After;
@@ -52,7 +51,7 @@ public final class ActorTest {
     public static class TestActor extends Actor {
 
         @Override
-        public void onReceive(Object message, Context ctx) throws Exception {
+        public void onReceive(Object message) throws Exception {
         }
 
     }

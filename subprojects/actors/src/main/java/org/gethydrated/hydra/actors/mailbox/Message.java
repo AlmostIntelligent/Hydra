@@ -3,6 +3,8 @@
  */
 package org.gethydrated.hydra.actors.mailbox;
 
+import java.util.Objects;
+
 import org.gethydrated.hydra.actors.ActorRef;
 
 /**
@@ -16,11 +18,6 @@ public final class Message {
      * Message object.
      */
     private final Object message;
-
-    /**
-     * Target actor.
-     */
-    private final ActorRef target;
 
     /**
      * Source actor.
@@ -42,8 +39,8 @@ public final class Message {
      * @param sender
      *            Source actor.
      */
-    public Message(final Object message, final ActorRef target, final ActorRef sender) {
-        this(message, target, sender, 0);
+    public Message(final Object message, final ActorRef sender) {
+        this(message, sender, 0);
     }
 
     /**
@@ -59,24 +56,10 @@ public final class Message {
      * @param id
      *            Message id.
      */
-    public Message(final Object message, final ActorRef target,
-            final ActorRef sender, final Integer id) {
-        if (target == null || sender == null) {
-            throw new IllegalArgumentException(
-                    "Target or sender reference was null");
-        }
+    public Message(final Object message, final ActorRef sender, final Integer id) {
         this.id = id;
-        this.message = message;
+        this.message = Objects.requireNonNull(message);
         this.sender = sender;
-        this.target = target;
-    }
-
-    /**
-     * 
-     * @return target actor.
-     */
-    public ActorRef getTarget() {
-        return target;
     }
 
     /**

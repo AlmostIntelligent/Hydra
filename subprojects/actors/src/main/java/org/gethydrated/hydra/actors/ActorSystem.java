@@ -2,37 +2,40 @@ package org.gethydrated.hydra.actors;
 
 import org.gethydrated.hydra.actors.event.EventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
-import org.gethydrated.hydra.actors.node.StandardActorFactory;
+import org.gethydrated.hydra.actors.logging.LoggingAdapter;
+import org.gethydrated.hydra.actors.node.*;
+import org.gethydrated.hydra.actors.internal.*;
+import org.slf4j.Logger;
 
 /**
  * 
  * @author Christian Kulpa
  * 
  */
-public final class ActorSystem {
-
-    boolean running;
+public final class ActorSystem implements ActorSource{
     
-    SystemEventStream eventStream = new SystemEventStream();
+    private final SystemEventStream eventStream = new SystemEventStream();
+    
+    private final Logger logger =new LoggingAdapter(ActorSystem.class,this);; 
+    
+    private final ActorNode rootGuardian;
+    
+    private final ActorNode sysGuardian;
+    
+    private final ActorNode appGuardian;
     
     private ActorSystem() {
-        running = true;
-
+    	logger.info("Creating actor system.");
+    	rootGuardian = new ActorNode("", new StandardActorFactory(RootGuardian.class), null, this);
+    	sysGuardian = rootGuardian.getChildByName("sys");
+    	appGuardian = rootGuardian.getChildByName("app");
+    	eventStream.startEventHandling(1);
     }
     
     public void shutdown() {
-    	//create EventStream
-    	//create Logger
-    	//start RootGuardian
-    	//start	 SysGuardian
-    	//start		Logger
-    	//start	 AppGuardian
+    	eventStream.stopEventHandling();
+    	rootGuardian.stop();
     	
-    	//start eventhandling
-    	
-    	//on failure
-    	// dump eventstream to logger
-        running = false;
     }
 
     public void await() {
@@ -40,16 +43,7 @@ public final class ActorSystem {
     }
 
     public boolean isTerminated() {
-        return !running;
-    }
-
-    public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
-        ActorFactory actorFactory = new StandardActorFactory(actorClass);
-        return spawnActor(actorFactory, name);
-    }
-    
-    public ActorRef spawnActor(ActorFactory actorFactory, String name) {
-        return null;
+        return rootGuardian.isTerminated();
     }
     
 	public EventStream getEventStream() {
@@ -59,5 +53,29 @@ public final class ActorSystem {
     public static ActorSystem create() {
         return new ActorSystem();
     }
+
+	@Override
+	public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ActorRef spawnActor(ActorFactory actorFactory, String name) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ActorRef getActor(String uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ActorRef getActor(ActorURI uri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

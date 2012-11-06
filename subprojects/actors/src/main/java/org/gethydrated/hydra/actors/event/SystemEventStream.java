@@ -23,9 +23,12 @@ public class SystemEventStream implements EventStream {
 	Map<Class<?>, List<EventListener>> listeners = new ConcurrentHashMap<>();
 	
 	@Override
-	public boolean subscribe(ActorRef subscriber, Class<?> classifier) {
-		//TODO:
-		return false;
+	public boolean subscribe(final ActorRef subscriber, Class<?> classifier) {
+		return subscribe(new EventListener() {
+			@Override
+			public void handle(Object event) {
+				subscriber.tell(event, null);
+			}}, classifier);
 	}
 
 	@Override

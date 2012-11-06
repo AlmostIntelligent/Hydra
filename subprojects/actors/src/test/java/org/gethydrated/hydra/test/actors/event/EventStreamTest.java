@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.gethydrated.hydra.actors.event.EventListener;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
-import org.gethydrated.hydra.actors.logging.LogEvent.LogDebug;
 import org.junit.Test;
 
 public class EventStreamTest {
@@ -22,7 +21,6 @@ public class EventStreamTest {
 		eventStream.publish(new Object());
 		eventStream.publish(new String());
 		eventStream.publish(new Integer(1));
-		eventStream.publish(new LogDebug());
 		eventStream.publish(new Object());
 		Thread.sleep(1000);
 		eventStream.stopEventHandling();
