@@ -3,15 +3,14 @@ package org.gethydrated.hydra.actors.logging;
 import org.gethydrated.hydra.actors.Actor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 public class LogActor extends Actor {
-
-	private final Logger logger = LoggerFactory.getLogger(LogActor.class);
 
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if (message instanceof LogEvent) {
-			((LogEvent) message).logInto(logger);
+			((LogEvent) message).logInto(LoggerFactory.getLogger(((LogEvent) message).getSource()));
 		} 
 	}
 

@@ -56,14 +56,12 @@ public final class ActorSystem implements ActorSource{
 
 	@Override
 	public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return appGuardian.spawnActor(actorClass, name);
 	}
 
 	@Override
 	public ActorRef spawnActor(ActorFactory actorFactory, String name) {
-		// TODO Auto-generated method stub
-		return null;
+		return appGuardian.spawnActor(actorFactory, name);
 	}
 
 	@Override

@@ -341,7 +341,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndTrace(String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isTraceEnabled()) {
-			LogTrace l = new LogTrace(msg, null, arg1, arg2, argArray, t);
+			LogTrace l = new LogTrace(name, msg, null, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -349,7 +349,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndTraceM(Marker m, String msg, Object arg1,
 			Object arg2, Object[] argArray, Throwable t) {
 		if(isTraceEnabled(m)) {
-			LogEvent l = new LogTrace(msg, m, arg1, arg2, argArray, t);
+			LogEvent l = new LogTrace(name, msg, m, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -357,7 +357,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndDebug(String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isDebugEnabled()) {
-			LogEvent l = new LogDebug(msg, null, arg1, arg2, argArray, t);
+			LogEvent l = new LogDebug(name, msg, null, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -365,7 +365,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndDebugM(Marker m, String msg, Object arg1,
 			Object arg2, Object[] argArray, Throwable t) {
 		if(isDebugEnabled(m)) {
-			LogEvent l = new LogDebug(msg, m, arg1, arg2, argArray, t);
+			LogEvent l = new LogDebug(name, msg, m, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -373,7 +373,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndInfo(String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isInfoEnabled()) {
-			LogEvent l = new LogInfo(msg, null, arg1, arg2, argArray, t);
+			LogEvent l = new LogInfo(name, msg, null, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -381,7 +381,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndInfoM(Marker m, String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isInfoEnabled(m)) {
-			LogEvent l = new LogInfo(msg, m, arg1, arg2, argArray, t);
+			LogEvent l = new LogInfo(name, msg, m, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -389,7 +389,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndWarn(String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isWarnEnabled()) {
-			LogEvent l = new LogWarn(msg, null, arg1, arg2, argArray, t);
+			LogEvent l = new LogWarn(name, msg, null, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -397,7 +397,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndWarnM(Marker m, String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isWarnEnabled(m)) {
-			LogEvent l = new LogWarn(msg, m, arg1, arg2, argArray, t);
+			LogEvent l = new LogWarn(name, msg, m, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -405,7 +405,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndError(String msg, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
 		if(isErrorEnabled()) {
-			LogEvent l = new LogError(msg, null, arg1, arg2, argArray, t);
+			LogEvent l = new LogError(name, msg, null, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}
@@ -413,7 +413,7 @@ public class LoggingAdapter implements Logger {
 	private void filterAndErrorM(Marker m, String msg, Object arg1,
 			Object arg2, Object[] argArray, Throwable t) {
 		if(isErrorEnabled(m)) {
-			LogEvent l = new LogError(msg, m, arg1, arg2, argArray, t);
+			LogEvent l = new LogError(name, msg, m, arg1, arg2, argArray, t);
 			eventStream.publish(l);
 		}
 	}

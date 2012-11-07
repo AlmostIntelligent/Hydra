@@ -1,11 +1,14 @@
 package org.gethydrated.hydra.actors.logging;
 
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 import org.slf4j.Marker;
 
 public abstract class LogEvent {
 
 	protected final String threadname = Thread.currentThread().getName();
+	
+	protected final String source;
 
 	protected final Marker marker;
 
@@ -19,8 +22,9 @@ public abstract class LogEvent {
 
 	protected final Throwable throwable;
 
-	public LogEvent(String msg, Marker m, Object arg1, Object arg2,
+	public LogEvent(String source, String msg, Marker m, Object arg1, Object arg2,
 			Object[] argArray, Throwable t) {
+		this.source = source;
 		message = msg;
 		marker = m;
 		this.arg1 = arg1;
@@ -32,18 +36,33 @@ public abstract class LogEvent {
 	public String getMessage() {
 		return message;
 	}
+	
+	public String getSource() {
+		return source;
+	}
+	
+	public void logInto(Logger logger) {
+		setMDC();
+		log(logger);
+		MDC.clear();
+	}
 
-	public abstract void logInto(Logger logger);
-
+	protected abstract void log(Logger logger);
+	
+	private void setMDC() {
+		MDC.put("sourceThread", threadname);
+		MDC.put("source", source);
+	}
+	
 	public static class LogError extends LogEvent {
 
-		public LogError(String msg, Marker m, Object arg1, Object arg2,
+		public LogError(String source, String msg, Marker m, Object arg1, Object arg2,
 				Object[] argArray, Throwable t) {
-			super(msg, m, arg1, arg2, argArray, t);
+			super(source, msg, m, arg1, arg2, argArray, t);
 		}
 
 		@Override
-		public void logInto(Logger logger) {
+		protected void log(Logger logger) {
 			if (marker != null) {
 				if (arg2 != null) {
 					logger.error(marker, message, arg1, arg2);
@@ -75,13 +94,13 @@ public abstract class LogEvent {
 
 	public static class LogWarn extends LogEvent {
 
-		public LogWarn(String msg, Marker m, Object arg1, Object arg2,
+		public LogWarn(String source, String msg, Marker m, Object arg1, Object arg2,
 				Object[] argArray, Throwable t) {
-			super(msg, m, arg1, arg2, argArray, t);
+			super(source, msg, m, arg1, arg2, argArray, t);
 		}
 
 		@Override
-		public void logInto(Logger logger) {
+		protected void log(Logger logger) {
 			if (marker != null) {
 				if (arg2 != null) {
 					logger.warn(marker, message, arg1, arg2);
@@ -113,13 +132,13 @@ public abstract class LogEvent {
 
 	public static class LogInfo extends LogEvent {
 
-		public LogInfo(String msg, Marker m, Object arg1, Object arg2,
+		public LogInfo(String source, String msg, Marker m, Object arg1, Object arg2,
 				Object[] argArray, Throwable t) {
-			super(msg, m, arg1, arg2, argArray, t);
+			super(source, msg, m, arg1, arg2, argArray, t);
 		}
 
 		@Override
-		public void logInto(Logger logger) {
+		protected void log(Logger logger) {
 			if (marker != null) {
 				if (arg2 != null) {
 					logger.info(marker, message, arg1, arg2);
@@ -151,13 +170,13 @@ public abstract class LogEvent {
 
 	public static class LogDebug extends LogEvent {
 
-		public LogDebug(String msg, Marker m, Object arg1, Object arg2,
+		public LogDebug(String source, String msg, Marker m, Object arg1, Object arg2,
 				Object[] argArray, Throwable t) {
-			super(msg, m, arg1, arg2, argArray, t);
+			super(source, msg, m, arg1, arg2, argArray, t);
 		}
 
 		@Override
-		public void logInto(Logger logger) {
+		protected void log(Logger logger) {
 			if (marker != null) {
 				if (arg2 != null) {
 					logger.debug(marker, message, arg1, arg2);
@@ -189,13 +208,13 @@ public abstract class LogEvent {
 
 	public static class LogTrace extends LogEvent {
 
-		public LogTrace(String msg, Marker m, Object arg1, Object arg2,
+		public LogTrace(String source, String msg, Marker m, Object arg1, Object arg2,
 				Object[] argArray, Throwable t) {
-			super(msg, m, arg1, arg2, argArray, t);
+			super(source, msg, m, arg1, arg2, argArray, t);
 		}
 
 		@Override
-		public void logInto(Logger logger) {
+		protected void log(Logger logger) {
 			if (marker != null) {
 				if (arg2 != null) {
 					logger.trace(marker, message, arg1, arg2);
