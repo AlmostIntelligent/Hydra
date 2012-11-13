@@ -21,6 +21,7 @@ configure(allprojects) {
 		compile 	"org.slf4j:slf4j-api:1.6.4"
 		testCompile "junit:junit:4.10"
 		testCompile "ch.qos.logback:logback-classic:1.0.1"
+		testCompile "com.googlecode.jmockit:jmockit:0.999.18"
 	}
 
 	clean.dependsOn subprojects.collect { "$it.path:clean" }

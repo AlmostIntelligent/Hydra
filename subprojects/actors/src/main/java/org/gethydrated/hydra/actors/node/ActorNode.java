@@ -1,8 +1,8 @@
 package org.gethydrated.hydra.actors.node;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,7 +30,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private final String name;
 	
-	private final Map<String, ActorNode> children = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, ActorNode> children = new ConcurrentHashMap<>();
 	
 	private final ExecutorService threadpool = Executors.newSingleThreadExecutor();
 	
@@ -134,13 +134,11 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	private ActorNode createChild(String name, ActorFactory factory) {
-		if (!children.containsKey(Objects.requireNonNull(name))) {
-			ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system);
-			children.put(name, node);
-			return node;
-		} else {
+		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system);
+		if(children.putIfAbsent(name, node) != null) {
 			throw new RuntimeException("Actorname '" + name + "' already in use");
 		}
+		return node;
 	}
 	
 	public static ActorNode getLocalActorNode() {
