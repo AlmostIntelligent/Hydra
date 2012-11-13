@@ -2,6 +2,7 @@ package org.gethydrated.hydra.actors;
 
 import org.gethydrated.hydra.actors.event.EventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
+import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.node.*;
 import org.gethydrated.hydra.actors.internal.*;
@@ -20,14 +21,11 @@ public final class ActorSystem implements ActorSource{
     
     private final ActorNode rootGuardian;
     
-    private final ActorNode sysGuardian;
-    
     private final ActorNode appGuardian;
     
     private ActorSystem() {
     	logger.info("Creating actor system.");
     	rootGuardian = new ActorNode("", new StandardActorFactory(RootGuardian.class), null, this);
-    	sysGuardian = rootGuardian.getChildByName("sys");
     	appGuardian = rootGuardian.getChildByName("app");
     	eventStream.startEventHandling(1);
     }
@@ -35,7 +33,10 @@ public final class ActorSystem implements ActorSource{
     public void shutdown() {
     	eventStream.stopEventHandling();
     	rootGuardian.stop();
-    	
+    	logger.info("Actor system stopped.");
+    	if(eventStream.hasRemainingEvents()) {
+    		FallbackLogger.log(eventStream.getRemainingEvents());
+    	}
     }
 
     public void await() {
@@ -66,14 +67,18 @@ public final class ActorSystem implements ActorSource{
 
 	@Override
 	public ActorRef getActor(String uri) {
-		// TODO Auto-generated method stub
-		return null;
+		if(uri.startsWith("/")) {
+			return rootGuardian.getActor(uri.substring(1));
+		} else if(uri.startsWith("..")) {
+			throw new RuntimeException("Actor not found.");
+		} else {
+			return rootGuardian.getActor(uri);
+		}
 	}
 
 	@Override
 	public ActorRef getActor(ActorURI uri) {
-		// TODO Auto-generated method stub
-		return null;
+		return getActor(uri.toString());
 	}
 
 }

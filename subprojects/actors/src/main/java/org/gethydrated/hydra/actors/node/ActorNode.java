@@ -73,14 +73,39 @@ public class ActorNode implements ActorSource, ActorContext {
 
 	@Override
 	public ActorRef getActor(String uri) {
-		// TODO Auto-generated method stub
-		return null;
+		if(uri.startsWith("/")) {
+			return system.getActor(uri);
+		} else if (uri.startsWith("../")) {
+			if(parent != null) {
+				return parent.getActor(uri.substring(3));
+			} else {
+				throw new RuntimeException("Actor not found.");
+			}
+		} else {
+			int del = uri.indexOf('/');
+			if(del == -1) {
+				ActorNode n = children.get(uri);
+				if(n != null) {
+					return n.getRef();
+				} else {
+					throw new RuntimeException("Actor not found.");
+				}
+			} else {
+				String child = uri.substring(0, del-1);
+				String remain = uri.substring(del);
+				ActorNode n = children.get(child);
+				if(n != null) {
+					return n.getActor(remain);
+				} else {
+					throw new RuntimeException("Actor not found.");
+				}
+			}
+		}
 	}
 
 	@Override
 	public ActorRef getActor(ActorURI uri) {
-		// TODO Auto-generated method stub
-		return null;
+		return getActor(uri.toString());
 	}
 	
 	@Override
