@@ -26,7 +26,7 @@ public class PingPongTest {
 	@Test
 	public void testPingPong() throws InterruptedException {
 		ActorRef pp = system.spawnActor(PingPong.class, "pingpong");
-		//Thread.sleep(1000);
+		Thread.sleep(1000);
 		pp.tell("start", null);
 	}
 	

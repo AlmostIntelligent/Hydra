@@ -3,5 +3,8 @@
 .project
 .gradle
 .settings
+.idea
+*.iml
 bin
 build
+out
