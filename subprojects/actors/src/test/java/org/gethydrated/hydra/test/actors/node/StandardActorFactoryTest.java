@@ -4,18 +4,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import mockit.NonStrict;
-import mockit.NonStrictExpectations;
 import mockit.integration.junit4.JMockit;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
+import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.node.ActorNode;
-import org.gethydrated.hydra.actors.node.StandardActorFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +33,6 @@ public class StandardActorFactoryTest {
 		new MockUp<ActorNode>() {
 			
 			@Mock ActorNode getLocalActorNode() {
-				System.out.println("dero");
 				return m;
 			}
 		};
@@ -104,11 +100,11 @@ public class StandardActorFactoryTest {
         Actor ac1 = af.create();
         Actor ac2 = af.create();
 
-        //assertNotNull(ac1);
-        //assertNotNull(ac2);
-        //assertTrue(ac1 instanceof StaticActor);
-        //assertTrue(ac2 instanceof StaticActor);
-        //assertFalse(ac1 == ac2);
+        assertNotNull(ac1);
+        assertNotNull(ac2);
+        assertTrue(ac1 instanceof StaticActor);
+        assertTrue(ac2 instanceof StaticActor);
+        assertFalse(ac1 == ac2);
     }
 
     /**

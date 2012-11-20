@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.logging;
+package org.gethydrated.hydra.api.events;
 
 import org.slf4j.Logger;
 import org.slf4j.MDC;

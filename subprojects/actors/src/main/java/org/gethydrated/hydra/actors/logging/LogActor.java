@@ -1,9 +1,8 @@
 package org.gethydrated.hydra.actors.logging;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.slf4j.Logger;
+import org.gethydrated.hydra.api.events.LogEvent;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 public class LogActor extends Actor {
 

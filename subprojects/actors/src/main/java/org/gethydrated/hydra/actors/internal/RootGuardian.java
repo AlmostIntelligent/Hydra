@@ -16,7 +16,7 @@ public class RootGuardian extends Actor {
 	@Override
 	public void onStart() {
 		logger.info("Root guardian started.");
-		getContext().spawnActor(SysGuardian.class, "sys");
+		getContext().spawnActor(SysGuardian.class, "system");
 		getContext().spawnActor(AppGuardian.class, "app");
 	}
 }

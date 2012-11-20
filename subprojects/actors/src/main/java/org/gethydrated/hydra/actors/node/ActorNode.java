@@ -13,6 +13,7 @@ import org.gethydrated.hydra.actors.ActorSource;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.ActorURI;
 import org.gethydrated.hydra.actors.internal.ActorRefImpl;
+import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.mailbox.MailBox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 
@@ -32,7 +33,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private final ConcurrentMap<String, ActorNode> children = new ConcurrentHashMap<>();
 	
-	private final ExecutorService threadpool = Executors.newSingleThreadExecutor();
+	private final ExecutorService threadpool = Executors.newCachedThreadPool();
 	
 	private Dispatcher dispatcher;
 	
@@ -127,6 +128,10 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	public MailBox getMailbox() {
 		return mailbox;
+	}
+	
+	public ExecutorService getExecutor() {
+		return threadpool;
 	}
 	
 	public ActorNode getChildByName(String name) {

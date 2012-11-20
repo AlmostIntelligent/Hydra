@@ -1,7 +1,8 @@
-package org.gethydrated.hydra.actors.node;
+package org.gethydrated.hydra.actors.internal;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
+
 
 /**
  * Standard ActorFactory implementation for a given class.

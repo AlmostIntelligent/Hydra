@@ -61,6 +61,10 @@ project("launcher") {
 
 project("actors") {
 	description = 'Hydra Actor implementation'
+	
+	dependencies {
+		compile project(':api')
+	}
 }
 
 project("core") {
