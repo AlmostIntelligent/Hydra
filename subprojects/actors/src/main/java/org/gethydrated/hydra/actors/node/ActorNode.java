@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
@@ -14,8 +15,10 @@ import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.ActorURI;
 import org.gethydrated.hydra.actors.internal.ActorRefImpl;
 import org.gethydrated.hydra.actors.internal.StandardActorFactory;
+import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.MailBox;
 import org.gethydrated.hydra.actors.mailbox.Message;
+import org.slf4j.Logger;
 
 /**
  * @author Christian Kulpa
@@ -30,6 +33,8 @@ public class ActorNode implements ActorSource, ActorContext {
 	private final ActorFactory factory;
 	
 	private final String name;
+	
+	private final Logger logger;
 	
 	private final ConcurrentMap<String, ActorNode> children = new ConcurrentHashMap<>();
 	
@@ -50,6 +55,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		this.factory = factory;
 		this.parent = parent;
 		this.system = system;
+		logger = new LoggingAdapter(ActorNode.class, system);
 		start();
 	}
 	
@@ -92,8 +98,8 @@ public class ActorNode implements ActorSource, ActorContext {
 					throw new RuntimeException("Actor not found.");
 				}
 			} else {
-				String child = uri.substring(0, del-1);
-				String remain = uri.substring(del);
+				String child = uri.substring(0, del);
+				String remain = uri.substring(del+1);
 				ActorNode n = children.get(child);
 				if(n != null) {
 					return n.getActor(remain);
@@ -149,6 +155,12 @@ public class ActorNode implements ActorSource, ActorContext {
 		dispatcher.stop();
 		stopChildren();
 		threadpool.shutdownNow();
+		try {
+		    actor.onStop();
+        } catch (Exception e) {
+            logger.error("Error shutding down actor ", e);
+        }
+		
 	}
 	
 	public boolean isTerminated() {

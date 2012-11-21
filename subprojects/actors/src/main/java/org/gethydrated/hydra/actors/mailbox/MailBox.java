@@ -29,7 +29,16 @@ public class MailBox {
      * @return first message of the mailbox.
      * @throws InterruptedException on interrupt.
      */
-    public final Message get() throws InterruptedException {
+    public final Message take() throws InterruptedException {
         return mbox.take();
     }
+    
+    public final Message get() {
+        return mbox.poll();
+    }
+    
+    public final boolean hasMessages() {
+        return !mbox.isEmpty();
+    }
+    
 }

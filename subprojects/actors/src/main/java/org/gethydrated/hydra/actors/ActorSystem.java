@@ -23,8 +23,11 @@ public final class ActorSystem implements ActorSource{
     
     private final ActorNode appGuardian;
     
+    private final Object awaitLock;
+    
     private ActorSystem() {
     	logger.info("Creating actor system.");
+    	awaitLock = new Object();
     	rootGuardian = new ActorNode("", new StandardActorFactory(RootGuardian.class), null, this);
     	appGuardian = rootGuardian.getChildByName("app");
     	eventStream.startEventHandling(1);
@@ -37,10 +40,17 @@ public final class ActorSystem implements ActorSource{
     	if(eventStream.hasRemainingEvents()) {
     		FallbackLogger.log(eventStream.getRemainingEvents());
     	}
+    	synchronized(awaitLock) {
+    	    awaitLock.notifyAll();
+    	}
     }
 
-    public void await() {
-        
+    public void await() throws InterruptedException {
+        synchronized(awaitLock) {
+            if(!isTerminated()) {
+                awaitLock.wait();
+            }
+        }
     }
 
     public boolean isTerminated() {

@@ -1,5 +1,6 @@
 package org.gethydrated.hydra.core;
 
+import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
@@ -34,20 +35,8 @@ public final class HydraImpl implements Hydra {
      * Hydra configuration.
      */
     private final ConfigurationImpl cfg;
-
-    /**
-     * ServiceManager.
-     */
-    private final ServiceManager sm;
     
-    /**
-     * 
-     */
-    private final HydraApi api;
-
-    private final MessageDispatcher messageDispatcher;
-
-    private final MessageQueue messageQueue;
+    private final ActorSystem actorSystem;
 
     /**
      * Constructor.
@@ -57,35 +46,30 @@ public final class HydraImpl implements Hydra {
      */
     public HydraImpl(final ConfigurationImpl cfg) {
         this.cfg = cfg;
-        this.sm = new ServiceManager(this.cfg);
-        this.api = new HydraApiImpl(sm);
-        this.messageQueue = new MessageQueue();
-        this.messageDispatcher = new MessageDispatcher(this.messageQueue);
+        actorSystem = ActorSystem.create();
     }
 
     @Override
     public void start() {
         LOG.info("Starting Hydra.");
         shutdownhook.register();
-        messageDispatcher.start();
     }
 
     @Override
     public void stop() {
         LOG.info("Stopping Hydra.");
         shutdownhook.unregister();
-        sm.shutdown();
-        messageDispatcher.stop();
+        actorSystem.shutdown();
     }
 
     @Override
     public Long startService(final String name) throws HydraException {
-        return api.startService(name);
+        return null;
     }
 
     @Override
     public void stopService(final Long id) throws HydraException {
-        api.stopService(id);
+        
     }
 
 }

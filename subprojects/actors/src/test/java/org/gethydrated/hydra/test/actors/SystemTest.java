@@ -23,13 +23,13 @@ public final class SystemTest {
     }
 
     @After
-    public void teardown() {
+    public void teardown() throws InterruptedException {
         actorSystem.shutdown();
         actorSystem.await();
     }
 
     @Test
-    public void testActorSystemShutdown() {
+    public void testActorSystemShutdown() throws InterruptedException {
         assertFalse(actorSystem.isTerminated());
 
         actorSystem.shutdown();

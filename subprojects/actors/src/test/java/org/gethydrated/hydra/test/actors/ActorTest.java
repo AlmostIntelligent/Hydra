@@ -24,7 +24,7 @@ public final class ActorTest {
     }
 
     @After
-    public void teardown() {
+    public void teardown() throws InterruptedException {
         actorSystem.shutdown();
         actorSystem.await();
     }

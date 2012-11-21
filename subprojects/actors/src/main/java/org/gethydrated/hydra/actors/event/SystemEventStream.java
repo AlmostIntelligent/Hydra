@@ -128,7 +128,6 @@ public class SystemEventStream implements EventStream {
 		@Override
 		public void run() {
 		    t = Thread.currentThread();
-		    System.out.println(t.getName());
 			while (running.get()) {
 				try {
 					Object o = events.take();

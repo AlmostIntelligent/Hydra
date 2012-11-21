@@ -21,7 +21,7 @@ public class Dispatcher implements Runnable {
 	public void run() {
 		while (running.get()) {
 			try {
-				an.process(mb.get());
+				an.process(mb.take());
 			} catch (InterruptedException e) {
 			}
 		}

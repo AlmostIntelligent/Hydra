@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.actors.internal;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.api.events.InputEvent;
+import org.gethydrated.hydra.api.events.OutputEvent;
 
 public class StdOutActor extends Actor {
 
@@ -12,6 +12,6 @@ public class StdOutActor extends Actor {
 
 	@Override
 	public void onStart() {
-		getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
+		getSystem().getEventStream().subscribe(getSelf(), OutputEvent.class);
 	}
 }

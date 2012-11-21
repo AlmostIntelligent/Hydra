@@ -3,32 +3,17 @@ package org.gethydrated.hydra.test.actors;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 
 public class PingPongTest {
-
-	ActorSystem system;
 	
-	@Before
-	public void setup() {
-		system = ActorSystem.create();
-	}
-	
-	@After
-	public void teardown() {
-		system.shutdown();
-		system.await();
-	}
-	
-	@Test
-	public void testPingPong() throws InterruptedException {
-		ActorRef pp = system.spawnActor(PingPong.class, "pingpong");
-		Thread.sleep(1000);
-		pp.tell("start", null);
-	}
+	public static void main(String [] args) throws InterruptedException {
+        ActorSystem as = ActorSystem.create();
+        ActorRef r = as.spawnActor(PingPong.class, "pingpong");
+        //Thread.sleep(1000);
+        r.tell("start", null);
+        as.await();
+    }
 	
 	public static class PingPong extends Actor {
 
@@ -70,6 +55,7 @@ public class PingPongTest {
 					break;
 				case "pong":
 					log.info("pong received");
+					getSystem().shutdown();
 				}
 			}
 		}

@@ -2,7 +2,7 @@ package org.gethydrated.hydra.api.events;
 
 public final class InputEvent {
 
-	final String input;
+	private final String input;
 	
 	public InputEvent(String s) {
 		input = s;

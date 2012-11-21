@@ -70,7 +70,10 @@ project("actors") {
 project("core") {
 	description = 'Hydra Core'
 
-	dependencies { compile project(':api') }
+	dependencies { 
+		compile project(':api') 
+		compile project(':actors')
+	}
 
 }
 

@@ -1,20 +1,20 @@
 package org.gethydrated.hydra.actors.internal;
 
-import java.util.Scanner;
-
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.events.InputEvent;
+import org.slf4j.Logger;
 
 public class StdInActor extends Actor {
 
 	private volatile boolean running = true;
 	
+	private final Logger logger = getLogger(StdInActor.class);
+	
 	@Override
 	public void onReceive(Object message) throws Exception {
-	    if(((String)message).equals("stop")) {
-	        getSystem().shutdown();
-	    }
-	    
 		if(message instanceof String) {
 			getSystem().getEventStream().publish(new InputEvent((String) message));
 		}
@@ -26,12 +26,21 @@ public class StdInActor extends Actor {
 
 			@Override
 			public void run() {
-				Scanner sc = new Scanner(System.in);
+			    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 				while (running) {
-					String line = sc.nextLine();
-					getSelf().tell(line, null);
+					String line;
+                    try {
+                        line = in.readLine();
+                        if(line == null) {
+                            running = false;
+                        } else {
+                            getSelf().tell(line, null);
+                        }
+                    } catch (IOException e) {
+                        logger.warn("Error reading system.in.", e);
+                        running = false;
+                    }
 				}
-				sc.close();
 			}
 			
 		};
