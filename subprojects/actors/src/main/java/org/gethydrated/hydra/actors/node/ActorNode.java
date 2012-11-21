@@ -146,6 +146,9 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	public void stop() {
 		running = false;
+		dispatcher.stop();
+		stopChildren();
+		threadpool.shutdownNow();
 	}
 	
 	public boolean isTerminated() {
@@ -164,11 +167,21 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	private ActorNode createChild(String name, ActorFactory factory) {
-		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system);
-		if(children.putIfAbsent(name, node) != null) {
-			throw new RuntimeException("Actorname '" + name + "' already in use");
-		}
-		return node;
+	    if(running) {
+    		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system);
+    		if(children.putIfAbsent(name, node) != null) {
+    			throw new RuntimeException("Actorname '" + name + "' already in use");
+    		}
+    		return node;
+	    } else {
+	        throw new IllegalStateException("Actor not running");
+	    }
+	}
+	
+	private void stopChildren() {
+	    for(ActorNode n : children.values()) {
+	        n.stop();
+	    }
 	}
 	
 	public static ActorNode getLocalActorNode() {

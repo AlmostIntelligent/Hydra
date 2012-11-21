@@ -83,7 +83,7 @@ public class SystemEventStream implements EventStream {
 			threadpool = Executors.newCachedThreadPool();
 			for(int i = 0; i < d; i++) {
 				EventDispatcher e = new EventDispatcher();
-				dispatchers.add(new EventDispatcher());
+				dispatchers.add(e);
 				threadpool.execute(e);
 			}
 		}
@@ -104,7 +104,9 @@ public class SystemEventStream implements EventStream {
 	}
 	
 	public List<Object> getRemainingEvents() {
-		return new LinkedList<>(events);
+	    List<Object> l = new LinkedList<>();
+	    events.drainTo(l);
+		return l;
 	}
 	
 	private void dispatch(Object event) {
@@ -121,8 +123,12 @@ public class SystemEventStream implements EventStream {
 
 		private AtomicBoolean running = new AtomicBoolean(true);
 		
+		private volatile Thread t;
+		
 		@Override
 		public void run() {
+		    t = Thread.currentThread();
+		    System.out.println(t.getName());
 			while (running.get()) {
 				try {
 					Object o = events.take();

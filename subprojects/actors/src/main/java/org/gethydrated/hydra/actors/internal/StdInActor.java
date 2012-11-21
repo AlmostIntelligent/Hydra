@@ -11,6 +11,10 @@ public class StdInActor extends Actor {
 	
 	@Override
 	public void onReceive(Object message) throws Exception {
+	    if(((String)message).equals("stop")) {
+	        getSystem().shutdown();
+	    }
+	    
 		if(message instanceof String) {
 			getSystem().getEventStream().publish(new InputEvent((String) message));
 		}
@@ -31,7 +35,9 @@ public class StdInActor extends Actor {
 			}
 			
 		};
-		getContext().getExecutor().execute( r );
+		Thread t = new Thread(r);
+		t.setDaemon(true);
+		t.start();
 	}
 	
 	@Override
