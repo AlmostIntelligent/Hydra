@@ -1,8 +1,16 @@
-apply from: "${rootProject.projectDir}/gradle/dist.gradle"
-apply from: "${rootProject.projectDir}/gradle/coverage.gradle"
-apply from: "${rootProject.projectDir}/gradle/codequality.gradle"
+apply from: "gradle/dist.gradle"
+apply from: "gradle/coverage.gradle"
+apply from: "gradle/codequality.gradle"
+apply from: "gradle/idea.gradle"
 
-defaultTasks 'build'
+defaultTasks 'tasks'
+
+ext {
+    jvm = org.gradle.internal.jvm.Jvm.current()
+    javaVersion = JavaVersion.current()
+
+    javaProjects = subprojects.findAll { !(it.name in ["doc"])}
+}
 
 configure(allprojects) {
 	apply plugin: 'java'
@@ -20,7 +28,7 @@ configure(allprojects) {
 	dependencies {
 		compile 	"org.slf4j:slf4j-api:1.6.4"
 		testCompile "junit:junit:4.10"
-		testCompile "ch.qos.logback:logback-classic:1.0.1"
+		testCompile "ch.qos.logback:logback-classic:1.0.7"
 		testCompile "com.googlecode.jmockit:jmockit:0.999.18"
 	}
 
@@ -93,6 +101,6 @@ configure(rootProject) {
 
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
-		gradleVersion = '1.2'
+		gradleVersion = '1.3'
 	}
 }

@@ -5,6 +5,8 @@
 .settings
 .idea
 *.iml
+*.ipr
+*.iws
 bin
 build
 out
