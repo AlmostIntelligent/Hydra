@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
@@ -16,7 +15,8 @@ import org.gethydrated.hydra.actors.ActorURI;
 import org.gethydrated.hydra.actors.internal.ActorRefImpl;
 import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
-import org.gethydrated.hydra.actors.mailbox.MailBox;
+import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
+import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.slf4j.Logger;
 
@@ -42,7 +42,9 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private Dispatcher dispatcher;
 	
-	private final MailBox mailbox = new MailBox();
+	private final Mailbox mailbox = new BlockingQueueMailbox();
+
+    private final Mailbox systemMailbox = new BlockingQueueMailbox();
 	
 	private Actor actor;
 	
@@ -67,7 +69,11 @@ public class ActorNode implements ActorSource, ActorContext {
 			e.printStackTrace();
 		}
 	}
-	
+
+    public void processSystem(Message message) {
+
+    }
+
 	@Override
 	public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
 		return spawnActor(new StandardActorFactory(actorClass), name);
@@ -132,7 +138,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		return system;
 	}
 	
-	public MailBox getMailbox() {
+	public Mailbox getMailbox() {
 		return mailbox;
 	}
 	
@@ -158,7 +164,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		try {
 		    actor.onStop();
         } catch (Exception e) {
-            logger.error("Error shutding down actor ", e);
+            logger.error("Error shutting down actor ", e);
         }
 		
 	}
@@ -182,7 +188,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	    if(running) {
     		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system);
     		if(children.putIfAbsent(name, node) != null) {
-    			throw new RuntimeException("Actorname '" + name + "' already in use");
+    			throw new RuntimeException("Actor name '" + name + "' already in use");
     		}
     		return node;
 	    } else {

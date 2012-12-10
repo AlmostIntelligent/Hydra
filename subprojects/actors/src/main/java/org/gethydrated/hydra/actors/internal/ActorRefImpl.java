@@ -5,20 +5,25 @@ import java.util.concurrent.Future;
 
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorURI;
+import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.actors.node.ActorNode;
 
 public class ActorRefImpl implements ActorRef{
 	
-	public final ActorNode node;
+	public final String name;
+
+    public final Mailbox mailbox;
 	
 	public ActorRefImpl(ActorNode node) {
-		this.node = Objects.requireNonNull(node);
+		Objects.requireNonNull(node);
+        name = node.getName();
+        mailbox = node.getMailbox();
 	}
 
 	@Override
 	public String getName() {
-		return node.getName();
+		return name;
 	}
 
 	@Override
@@ -29,17 +34,16 @@ public class ActorRefImpl implements ActorRef{
 
 	@Override
 	public void tell(Object o, ActorRef sender) {
-		node.getMailbox().put(new Message(o, sender));
+		mailbox.offer(new Message(o, sender));
 	}
 
 	@Override
-	public void forward(Object o, ActorRef ref) {
-		// TODO Auto-generated method stub
-		
+	public void forward(Message m) {
+		mailbox.offer(m);
 	}
 
-	@Override
-	public Future<?> ask(Object o) {
+	@Override()
+	public Future<?> ask(Object o, ActorRef ref) {
 		// TODO Auto-generated method stub
 		return null;
 	}

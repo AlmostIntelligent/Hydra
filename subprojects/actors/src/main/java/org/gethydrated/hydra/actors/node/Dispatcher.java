@@ -2,17 +2,18 @@ package org.gethydrated.hydra.actors.node;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.gethydrated.hydra.actors.mailbox.MailBox;
+import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
+import org.gethydrated.hydra.actors.mailbox.Mailbox;
 
 public class Dispatcher implements Runnable {
 
 	private AtomicBoolean running = new AtomicBoolean(true);
 	
-	private final MailBox mb;
+	private final Mailbox mb;
 	
 	private final ActorNode an;
 	
-	public Dispatcher(MailBox mb, ActorNode an) {
+	public Dispatcher(Mailbox mb, ActorNode an) {
 		this.mb = mb;
 		this.an = an;
 	}

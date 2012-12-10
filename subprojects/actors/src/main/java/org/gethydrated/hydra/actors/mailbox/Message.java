@@ -34,8 +34,6 @@ public final class Message {
      * 
      * @param message
      *            Message object.
-     * @param target
-     *            Target actor.
      * @param sender
      *            Source actor.
      */
@@ -49,8 +47,6 @@ public final class Message {
      * 
      * @param message
      *            Message object.
-     * @param target
-     *            Target actor.
      * @param sender
      *            Source actor.
      * @param id

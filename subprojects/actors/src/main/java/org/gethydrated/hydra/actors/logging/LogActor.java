@@ -1,7 +1,8 @@
 package org.gethydrated.hydra.actors.logging;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.actors.mailbox.MailBox;
+import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
+import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.actors.node.ActorNode;
 import org.gethydrated.hydra.api.events.LogEvent;
@@ -24,9 +25,9 @@ public class LogActor extends Actor {
 	
 	public void onStop() throws Exception {
 	    //Hack until async shutdown
-	    MailBox m = ((ActorNode)getContext()).getMailbox();
+	    Mailbox m = ((ActorNode)getContext()).getMailbox();
 	    while(m.hasMessages()) {
-	        Message me = m.get();
+	        Message me = m.poll();
 	        if(me != null) {
 	            onReceive(me.getMessage());
 	        }

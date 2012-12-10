@@ -43,7 +43,7 @@ public class PingPongTest {
 	
 	public static class Ping extends Actor {
 
-		private Logger log = getLogger(Pong.class);
+		private Logger log = getLogger(Ping.class);
 		
 		@Override
 		public void onReceive(Object message) throws Exception {
@@ -55,7 +55,8 @@ public class PingPongTest {
 					break;
 				case "pong":
 					log.info("pong received");
-					getSystem().shutdown();
+					//getSystem().shutdown();
+                    getContext().getActor("../pong").tell("ping", getSelf());
 				}
 			}
 		}
@@ -68,7 +69,7 @@ public class PingPongTest {
 	
 	public static class Pong extends Actor {
 
-		private Logger log = getLogger(Ping.class);
+		private Logger log = getLogger(Pong.class);
 		
 		@Override
 		public void onReceive(Object message) throws Exception {

@@ -1,5 +1,14 @@
 package org.gethydrated.hydra.actors.event;
 
+/**
+ * Event listener interface for event stream.
+ */
 public interface EventListener {
-	public void handle(Object event);
+
+    /**
+     * Handler for the registered event.
+     *
+     * @param event Event object.
+     */
+    void handle(Object event);
 }
