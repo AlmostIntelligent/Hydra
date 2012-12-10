@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.actors.mailbox;
 
+import org.gethydrated.hydra.actors.dispatch.Dispatcher;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,29 +16,73 @@ public class BlockingQueueMailbox implements Mailbox {
     /**
      * Message fifo queue.
      */
-    private final BlockingQueue<Message> mbox = new LinkedBlockingQueue<>();
-    
-    /**
-     * Retrieves a message from the mailbox. 
-     * @return first message of the mailbox.
-     * @throws InterruptedException on interrupt.
-     */
-    public final Message take() throws InterruptedException {
-        return mbox.take();
+    private final BlockingQueue<Message> messages = new LinkedBlockingQueue<>();
+
+    private final BlockingQueue<Message> systemMessages = new LinkedBlockingQueue<>();
+
+    private final Dispatcher dispatcher;
+
+    private volatile boolean closed = false;
+
+    private volatile boolean scheduled = false;
+
+    public BlockingQueueMailbox(final Dispatcher dispatcher) {
+        this.dispatcher = dispatcher;
     }
 
     @Override
     public final Message poll() {
-        return mbox.poll();
+        return messages.poll();
+    }
+
+    @Override
+    public Message pollSystem() {
+        return systemMessages.poll();
     }
 
     @Override
     public final void offer(Message m) {
-        mbox.offer(m);
+        messages.offer(m);
+        if(!scheduled) {
+            dispatcher.registerForExecution(this);
+        }
     }
-    
+
+    @Override
+    public void offerSystem(Message m) {
+        systemMessages.offer(m);
+        if(!scheduled) {
+            dispatcher.registerForExecution(this);
+        }
+    }
+
     public final boolean hasMessages() {
-        return !mbox.isEmpty();
+        return !messages.isEmpty();
     }
-    
+
+    @Override
+    public boolean hasSystemMessages() {
+        return !systemMessages.isEmpty();
+    }
+
+    @Override
+    public boolean isScheduled() {
+        return scheduled;
+    }
+
+    @Override
+    public void setScheduled(boolean state) {
+        scheduled = state;
+    }
+
+    @Override
+    public void close() {
+        closed = true;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+
 }

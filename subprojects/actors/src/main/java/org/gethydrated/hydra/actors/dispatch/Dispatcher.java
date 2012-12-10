@@ -7,4 +7,7 @@ import org.gethydrated.hydra.actors.node.ActorNode;
 
 public interface Dispatcher extends MailboxFactory {
 
+    void registerForExecution(Mailbox mb);
+
+    void shutdown();
 }

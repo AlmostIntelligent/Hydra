@@ -8,5 +8,4 @@ public interface ActorContext extends ActorSource {
 
 	String getName();
 
-	ExecutorService getExecutor();
 }

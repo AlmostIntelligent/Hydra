@@ -52,7 +52,7 @@ public final class ActorSystem implements ActorSource {
     private ActorSystem() {
         logger.info("Creating actor system.");
         awaitLock = new Object();
-        rootGuardian = new ActorNode("", new StandardActorFactory(RootGuardian.class), null, this);
+        rootGuardian = new ActorNode("", new StandardActorFactory(RootGuardian.class), null, this, defaultDispatcher);
         appGuardian = rootGuardian.getChildByName("app");
         eventStream.startEventHandling(1);
     }
@@ -63,6 +63,7 @@ public final class ActorSystem implements ActorSource {
     public void shutdown() {
         eventStream.stopEventHandling();
         rootGuardian.stop();
+        //defaultDispatcher.shutdown();
         logger.info("Actor system stopped.");
         if (eventStream.hasRemainingEvents()) {
             FallbackLogger.log(eventStream.getRemainingEvents());

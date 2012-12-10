@@ -39,8 +39,7 @@ public class MessageDispatcherTest {
         Thread.sleep(1000);
         assertTrue(th.count == 1);
     }
-    
-    @Test
+
     public void testDispatcherConcurrent() throws InterruptedException {
         final USID id = new USID((long) 1, new TestNode());
         TestHandler th = new TestHandler();

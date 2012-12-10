@@ -16,4 +16,14 @@ public class BalancingDispatcher implements Dispatcher {
     public boolean closeMailbox(ActorNode actorNode) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    @Override
+    public void registerForExecution(Mailbox mb) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void shutdown() {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

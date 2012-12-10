@@ -12,6 +12,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSource;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.ActorURI;
+import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.internal.ActorRefImpl;
 import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
@@ -37,14 +38,10 @@ public class ActorNode implements ActorSource, ActorContext {
 	private final Logger logger;
 	
 	private final ConcurrentMap<String, ActorNode> children = new ConcurrentHashMap<>();
-	
-	private final ExecutorService threadpool = Executors.newCachedThreadPool();
-	
-	private Dispatcher dispatcher;
-	
-	private final Mailbox mailbox = new BlockingQueueMailbox();
 
-    private final Mailbox systemMailbox = new BlockingQueueMailbox();
+    private final Dispatcher dispatcher;
+	
+	private final Mailbox mailbox;
 	
 	private Actor actor;
 	
@@ -52,11 +49,13 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private boolean running = true;
 	
-	public ActorNode(String name, ActorFactory factory, ActorNode parent, ActorSystem system) {
+	public ActorNode(String name, ActorFactory factory, ActorNode parent, ActorSystem system, Dispatcher dispatcher) {
 		this.name = Objects.requireNonNull(name);
 		this.factory = factory;
 		this.parent = parent;
 		this.system = system;
+        this.dispatcher = dispatcher;
+        this.mailbox = dispatcher.createMailbox(this);
 		logger = new LoggingAdapter(ActorNode.class, system);
 		start();
 	}
@@ -142,25 +141,17 @@ public class ActorNode implements ActorSource, ActorContext {
 		return mailbox;
 	}
 	
-	public ExecutorService getExecutor() {
-		return threadpool;
-	}
-	
 	public ActorNode getChildByName(String name) {
 		return children.get(name);
 	}
 	
 	private void start() {
 		createActor();
-		dispatcher = new Dispatcher(mailbox, this);
-		threadpool.submit(dispatcher);
 	}
 	
 	public void stop() {
 		running = false;
-		dispatcher.stop();
 		stopChildren();
-		threadpool.shutdownNow();
 		try {
 		    actor.onStop();
         } catch (Exception e) {
@@ -186,7 +177,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private ActorNode createChild(String name, ActorFactory factory) {
 	    if(running) {
-    		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system);
+    		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system, dispatcher);
     		if(children.putIfAbsent(name, node) != null) {
     			throw new RuntimeException("Actor name '" + name + "' already in use");
     		}
