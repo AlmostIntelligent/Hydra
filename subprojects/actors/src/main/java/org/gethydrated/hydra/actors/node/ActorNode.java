@@ -1,10 +1,8 @@
 package org.gethydrated.hydra.actors.node;
 
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
@@ -14,12 +12,10 @@ import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.ActorURI;
 import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
-import org.gethydrated.hydra.actors.internal.ActorRefImpl;
 import org.gethydrated.hydra.actors.internal.InternalRef;
 import org.gethydrated.hydra.actors.internal.InternalRefImpl;
 import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
-import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.slf4j.Logger;
@@ -44,6 +40,10 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private final ConcurrentMap<String, InternalRef> children = new ConcurrentHashMap<>();
 
+    private final Set<ActorRef> watchers = new HashSet<>();
+
+    private final Set<ActorRef> watched = new HashSet<>();
+
     private final Dispatcher dispatcher;
 	
 	private final Mailbox mailbox;
@@ -67,6 +67,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	public void process(Message message) {
 		try {
+            handleInternal(message.getMessage());
 			actor.onReceive(message.getMessage());
 		} catch (Exception e) {
 			logger.error("Error processing message: ", e);
@@ -74,11 +75,21 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 
     public void processSystem(Message message) {
-        handleInternal(message.getMessage());
+        Object o = message.getMessage();
+        if(o instanceof Stop) {
+            stop();
+        } else if (o instanceof Pause) {
+            pause();
+        } else if (o instanceof Resume) {
+            resume();
+        } else if(o instanceof Watch) {
+            addWatcher(((Watch)o).getTarget());
+        } else if (o instanceof UnWatch) {
+            deleteWatcher(((Watch) o).getTarget());
+        }
     }
 
-    private boolean handleInternal(Object o) {
-        return false;
+    private void handleInternal(Object o) {
     }
 
 	@Override
@@ -131,10 +142,39 @@ public class ActorNode implements ActorSource, ActorContext {
 	@Override
 	public String getName() {
 		return name;
-	}	
-	
-	public ActorRef getRef() {
-		return new ActorRefImpl(this);
+	}
+
+    @Override
+    public void watch(ActorRef target) {
+        if(target != self) {
+            synchronized (watched) {
+                if(!watched.contains(target)) {
+                    watched.add(target);
+                    ((InternalRef)target).tellSystem(new Watch(self));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void unwatch(ActorRef target) {
+        if(target != self) {
+            synchronized (watched) {
+                if(watched.contains(target)) {
+                    watched.remove(target);
+                    ((InternalRef)target).tellSystem(new UnWatch(self));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void stop(ActorRef target) {
+        ((InternalRef)target).tellSystem(new Stop());
+    }
+
+    public ActorRef getRef() {
+		return self;
 	}
 
 	public ActorContext getContext() {
@@ -158,17 +198,26 @@ public class ActorNode implements ActorSource, ActorContext {
         mailbox.setSuspended(false);
 	}
 	
-	public void stop() {
+	private void stop() {
 		running = false;
+        mailbox.setSuspended(true);
 		stopChildren();
 		try {
 		    actor.onStop();
         } catch (Exception e) {
             logger.error("Error shutting down actor ", e);
         }
-		
+		informWatchers();
 	}
-	
+
+    private void pause() {
+        mailbox.setSuspended(true);
+    }
+
+    private void resume() {
+        mailbox.setSuspended(false);
+    }
+
 	public boolean isTerminated() {
 		return !running;
 	}
@@ -199,10 +248,33 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private void stopChildren() {
 	    for(InternalRef n : children.values()) {
-	        n.stop();
+            n.stop();
 	    }
 	}
-	
+
+    private void addWatcher(ActorRef target) {
+        synchronized (watchers) {
+            watchers.add(target);
+        }
+        if(!running) {
+            target.tell(new Stopped(self), self);
+        }
+    }
+
+    private void deleteWatcher(ActorRef target) {
+        synchronized (watchers) {
+            watchers.remove(target);
+        }
+    }
+
+    private void informWatchers() {
+        synchronized (watchers) {
+            for(ActorRef r : watchers) {
+                r.tell(new Stopped(self), self);
+            }
+        }
+    }
+
 	public static ActorNode getLocalActorNode() {
 		return nodeRef.get();
 	}
