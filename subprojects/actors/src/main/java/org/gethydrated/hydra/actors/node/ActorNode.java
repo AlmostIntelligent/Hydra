@@ -12,8 +12,11 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSource;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.ActorURI;
+import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.internal.ActorRefImpl;
+import org.gethydrated.hydra.actors.internal.InternalRef;
+import org.gethydrated.hydra.actors.internal.InternalRefImpl;
 import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
@@ -29,7 +32,9 @@ public class ActorNode implements ActorSource, ActorContext {
     
 	private final ActorSystem system;
 	
-	private final ActorNode parent;
+	private final InternalRef parent;
+
+    private final InternalRef self;
 	
 	private final ActorFactory factory;
 	
@@ -37,7 +42,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private final Logger logger;
 	
-	private final ConcurrentMap<String, ActorNode> children = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, InternalRef> children = new ConcurrentHashMap<>();
 
     private final Dispatcher dispatcher;
 	
@@ -49,28 +54,31 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private boolean running = true;
 	
-	public ActorNode(String name, ActorFactory factory, ActorNode parent, ActorSystem system, Dispatcher dispatcher) {
+	public ActorNode(String name, ActorFactory factory, InternalRef parent, InternalRef self, ActorSystem system, Dispatcher dispatcher) {
 		this.name = Objects.requireNonNull(name);
 		this.factory = factory;
 		this.parent = parent;
+        this.self = self;
 		this.system = system;
         this.dispatcher = dispatcher;
         this.mailbox = dispatcher.createMailbox(this);
 		logger = new LoggingAdapter(ActorNode.class, system);
-		start();
 	}
 	
 	public void process(Message message) {
 		try {
 			actor.onReceive(message.getMessage());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error processing message: ", e);
 		}
 	}
 
     public void processSystem(Message message) {
+        handleInternal(message.getMessage());
+    }
 
+    private boolean handleInternal(Object o) {
+        return false;
     }
 
 	@Override
@@ -80,7 +88,7 @@ public class ActorNode implements ActorSource, ActorContext {
 
 	@Override
 	public ActorRef spawnActor(ActorFactory actorFactory, String name) {
-		return createChild(name, actorFactory).getRef();
+		return createChild(name, actorFactory);
 	}
 
 	@Override
@@ -89,25 +97,25 @@ public class ActorNode implements ActorSource, ActorContext {
 			return system.getActor(uri);
 		} else if (uri.startsWith("../")) {
 			if(parent != null) {
-				return parent.getActor(uri.substring(3));
+				return parent.unwrap().getActor(uri.substring(3));
 			} else {
 				throw new RuntimeException("Actor not found.");
 			}
 		} else {
 			int del = uri.indexOf('/');
 			if(del == -1) {
-				ActorNode n = children.get(uri);
+				ActorRef n = children.get(uri);
 				if(n != null) {
-					return n.getRef();
+					return n;
 				} else {
 					throw new RuntimeException("Actor not found.");
 				}
 			} else {
 				String child = uri.substring(0, del);
 				String remain = uri.substring(del+1);
-				ActorNode n = children.get(child);
+				InternalRef n = children.get(child);
 				if(n != null) {
-					return n.getActor(remain);
+					return n.unwrap().getActor(remain);
 				} else {
 					throw new RuntimeException("Actor not found.");
 				}
@@ -141,12 +149,13 @@ public class ActorNode implements ActorSource, ActorContext {
 		return mailbox;
 	}
 	
-	public ActorNode getChildByName(String name) {
+	public InternalRef getChildByName(String name) {
 		return children.get(name);
 	}
 	
-	private void start() {
+	public void start() {
 		createActor();
+        mailbox.setSuspended(false);
 	}
 	
 	public void stop() {
@@ -175,12 +184,13 @@ public class ActorNode implements ActorSource, ActorContext {
 		nodeRef.remove();
 	}
 	
-	private ActorNode createChild(String name, ActorFactory factory) {
+	private InternalRef createChild(String name, ActorFactory factory) {
 	    if(running) {
-    		ActorNode node = new ActorNode(name, Objects.requireNonNull(factory), this, system, dispatcher);
+    		InternalRef node = new InternalRefImpl(name, Objects.requireNonNull(factory), self, system, dispatcher);
     		if(children.putIfAbsent(name, node) != null) {
     			throw new RuntimeException("Actor name '" + name + "' already in use");
     		}
+            node.start();
     		return node;
 	    } else {
 	        throw new IllegalStateException("Actor not running");
@@ -188,7 +198,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	private void stopChildren() {
-	    for(ActorNode n : children.values()) {
+	    for(InternalRef n : children.values()) {
 	        n.stop();
 	    }
 	}

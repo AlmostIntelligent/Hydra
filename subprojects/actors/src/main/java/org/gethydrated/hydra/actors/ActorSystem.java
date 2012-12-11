@@ -4,8 +4,7 @@ import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.event.EventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
-import org.gethydrated.hydra.actors.internal.RootGuardian;
-import org.gethydrated.hydra.actors.internal.StandardActorFactory;
+import org.gethydrated.hydra.actors.internal.*;
 import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.node.ActorNode;
@@ -32,12 +31,14 @@ public final class ActorSystem implements ActorSource {
     /**
      * Root guardian.
      */
-    private final ActorNode rootGuardian;
+    private final InternalRef rootGuardian;
 
     /**
      * Application guardian.
      */
-    private final ActorNode appGuardian;
+    private final InternalRef appGuardian;
+
+    private final InternalRef sysGuardian;
 
     /**
      * Lock object for threads awaiting system termination.
@@ -52,8 +53,11 @@ public final class ActorSystem implements ActorSource {
     private ActorSystem() {
         logger.info("Creating actor system.");
         awaitLock = new Object();
-        rootGuardian = new ActorNode("", new StandardActorFactory(RootGuardian.class), null, this, defaultDispatcher);
-        appGuardian = rootGuardian.getChildByName("app");
+        rootGuardian = new RootGuardian(this);
+        sysGuardian = new InternalRefImpl("sys", new StandardActorFactory(SysGuardian.class), rootGuardian, this, defaultDispatcher);
+        sysGuardian.start();
+        appGuardian = new InternalRefImpl("app", new StandardActorFactory(AppGuardian.class), rootGuardian, this, defaultDispatcher);
+        appGuardian.start();
         eventStream.startEventHandling(1);
     }
 
@@ -104,22 +108,22 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef spawnActor(final Class<? extends Actor> actorClass, final String name) {
-        return appGuardian.spawnActor(actorClass, name);
+        return appGuardian.unwrap().spawnActor(actorClass, name);
     }
 
     @Override
     public ActorRef spawnActor(final ActorFactory actorFactory, final String name) {
-        return appGuardian.spawnActor(actorFactory, name);
+        return appGuardian.unwrap().spawnActor(actorFactory, name);
     }
 
     @Override
     public ActorRef getActor(final String uri) {
-        if (uri.startsWith("/")) {
-            return rootGuardian.getActor(uri.substring(1));
-        } else if (uri.startsWith("..")) {
-            throw new RuntimeException("Actor not found.");
+        if (uri.startsWith("/system/")) {
+            return sysGuardian.unwrap().getActor(uri.substring(8));
+        } else if (uri.startsWith("/app/")) {
+            return appGuardian.unwrap().getActor(uri.substring(5));
         } else {
-            return rootGuardian.getActor(uri);
+            throw new RuntimeException("Actor not found.");
         }
     }
 

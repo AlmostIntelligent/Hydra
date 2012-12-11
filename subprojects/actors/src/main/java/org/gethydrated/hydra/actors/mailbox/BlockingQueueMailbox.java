@@ -26,6 +26,8 @@ public class BlockingQueueMailbox implements Mailbox {
 
     private volatile boolean scheduled = false;
 
+    private volatile boolean suspended = true;
+
     public BlockingQueueMailbox(final Dispatcher dispatcher) {
         this.dispatcher = dispatcher;
     }
@@ -57,7 +59,7 @@ public class BlockingQueueMailbox implements Mailbox {
     }
 
     public final boolean hasMessages() {
-        return !messages.isEmpty();
+        return !messages.isEmpty() && !suspended;
     }
 
     @Override
@@ -73,6 +75,16 @@ public class BlockingQueueMailbox implements Mailbox {
     @Override
     public void setScheduled(boolean state) {
         scheduled = state;
+    }
+
+    @Override
+    public void setSuspended(boolean state) {
+        suspended = state;
+    }
+
+    @Override
+    public boolean isSuspended() {
+        return suspended;
     }
 
     @Override

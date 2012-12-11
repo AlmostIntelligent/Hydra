@@ -19,6 +19,10 @@ public interface Mailbox {
 
     void setScheduled(boolean state);
 
+    void setSuspended(boolean state);
+
+    boolean isSuspended();
+
     void close();
 
     boolean isClosed();

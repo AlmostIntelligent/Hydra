@@ -34,7 +34,9 @@ public class StdInActor extends Actor {
                         if(line == null) {
                             running = false;
                         } else {
-                            getSelf().tell(line, null);
+                            if(!line.isEmpty()) {
+                                getSelf().tell(line, null);
+                            }
                         }
                     } catch (IOException e) {
                         logger.warn("Error reading system.in.", e);

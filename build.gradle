@@ -1,25 +1,24 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
 apply from: "gradle/dist.gradle"
 apply from: "gradle/coverage.gradle"
 apply from: "gradle/codequality.gradle"
 apply from: "gradle/idea.gradle"
+
+project.sourceCompatibility = 1.7
+project.targetCompatibility = 1.7
 
 defaultTasks 'tasks'
 
 ext {
     jvm = org.gradle.internal.jvm.Jvm.current()
     javaVersion = JavaVersion.current()
-
     javaProjects = subprojects.findAll { !(it.name in ["doc"])}
 }
 
 configure(allprojects) {
-	apply plugin: 'java'
-	apply plugin: 'eclipse'
 
 	group = 'org.gethydrated'
-
-	sourceCompatibility=1.7
-	targetCompatibility=1.7
 
 	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
