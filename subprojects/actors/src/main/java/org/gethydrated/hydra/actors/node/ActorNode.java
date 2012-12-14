@@ -27,8 +27,6 @@ import org.slf4j.Logger;
 public class ActorNode implements ActorSource, ActorContext {
     
 	private final ActorSystem system;
-	
-	private final InternalRef parent;
 
     private final InternalRef self;
 	
@@ -54,10 +52,9 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private boolean running = true;
 	
-	public ActorNode(String name, ActorFactory factory, InternalRef parent, InternalRef self, ActorSystem system, Dispatcher dispatcher) {
+	public ActorNode(String name, ActorFactory factory, InternalRef self, ActorSystem system, Dispatcher dispatcher) {
 		this.name = Objects.requireNonNull(name);
 		this.factory = factory;
-		this.parent = parent;
         this.self = self;
 		this.system = system;
         this.dispatcher = dispatcher;
@@ -107,8 +104,8 @@ public class ActorNode implements ActorSource, ActorContext {
 		if(uri.startsWith("/")) {
 			return system.getActor(uri);
 		} else if (uri.startsWith("../")) {
-			if(parent != null) {
-				return parent.unwrap().getActor(uri.substring(3));
+			if(self.parent() != null) {
+				return self.parent().unwrap().getActor(uri.substring(3));
 			} else {
 				throw new RuntimeException("Actor not found.");
 			}
@@ -150,7 +147,7 @@ public class ActorNode implements ActorSource, ActorContext {
             synchronized (watched) {
                 if(!watched.contains(target)) {
                     watched.add(target);
-                    ((InternalRef)target).tellSystem(new Watch(self));
+                    ((InternalRef)target).tellSystem(new Watch(self), self);
                 }
             }
         }
@@ -162,7 +159,7 @@ public class ActorNode implements ActorSource, ActorContext {
             synchronized (watched) {
                 if(watched.contains(target)) {
                     watched.remove(target);
-                    ((InternalRef)target).tellSystem(new UnWatch(self));
+                    ((InternalRef)target).tellSystem(new UnWatch(self), self);
                 }
             }
         }
@@ -170,7 +167,7 @@ public class ActorNode implements ActorSource, ActorContext {
 
     @Override
     public void stop(ActorRef target) {
-        ((InternalRef)target).tellSystem(new Stop());
+        ((InternalRef)target).tellSystem(new Stop(), self);
     }
 
     public ActorRef getRef() {
@@ -208,6 +205,7 @@ public class ActorNode implements ActorSource, ActorContext {
             logger.error("Error shutting down actor ", e);
         }
 		informWatchers();
+        self.parent().tellSystem(new Stopped(), self);
 	}
 
     private void pause() {
@@ -257,7 +255,7 @@ public class ActorNode implements ActorSource, ActorContext {
             watchers.add(target);
         }
         if(!running) {
-            target.tell(new Stopped(self), self);
+            target.tell(new WatcheeStopped(self), self);
         }
     }
 
@@ -270,7 +268,7 @@ public class ActorNode implements ActorSource, ActorContext {
     private void informWatchers() {
         synchronized (watchers) {
             for(ActorRef r : watchers) {
-                r.tell(new Stopped(self), self);
+                r.tell(new WatcheeStopped(self), self);
             }
         }
     }

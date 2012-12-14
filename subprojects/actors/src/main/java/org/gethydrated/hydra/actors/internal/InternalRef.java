@@ -11,8 +11,9 @@ public interface InternalRef extends ActorRef {
     void restart();
     void pause();
     void resume();
-    void tellSystem(Object o);
+    void tellSystem(Object o, ActorRef sender);
 
+    InternalRef parent();
     ActorNode unwrap();
 
     boolean isTerminated();

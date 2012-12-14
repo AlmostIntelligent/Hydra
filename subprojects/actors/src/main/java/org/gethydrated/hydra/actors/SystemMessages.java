@@ -14,6 +14,10 @@ public class SystemMessages {
 
     }
 
+    public static class Stopped {
+
+    }
+
     public static class Restart {
 
     }
@@ -51,10 +55,10 @@ public class SystemMessages {
         }
     }
 
-    public static class Stopped {
+    public static class WatcheeStopped {
         private final ActorRef target;
 
-        public Stopped(ActorRef target) {
+        public WatcheeStopped(ActorRef target) {
             this.target = target;
         }
 

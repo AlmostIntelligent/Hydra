@@ -13,10 +13,13 @@ import java.util.concurrent.Future;
 
 public class InternalRefImpl implements InternalRef {
 
-    private ActorNode actorNode;
+    private final ActorNode actorNode;
+
+    private final InternalRef parent;
 
     public InternalRefImpl(String name, ActorFactory actorFactory, InternalRef parent, ActorSystem actorSystem, Dispatcher dispatcher) {
-        this.actorNode = new ActorNode(name, actorFactory, parent, this, actorSystem, dispatcher  );
+        this.parent = parent;
+        this.actorNode = new ActorNode(name, actorFactory, this, actorSystem, dispatcher  );
     }
 
     @Override
@@ -26,7 +29,7 @@ public class InternalRefImpl implements InternalRef {
 
     @Override
     public void stop() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        tellSystem(new Stop(), null);
     }
 
     @Override
@@ -45,8 +48,13 @@ public class InternalRefImpl implements InternalRef {
     }
 
     @Override
-    public void tellSystem(Object o) {
-        actorNode.getMailbox().offerSystem(new Message(o, null));
+    public void tellSystem(Object o, ActorRef ref) {
+        actorNode.getMailbox().offerSystem(new Message(o, ref));
+    }
+
+    @Override
+    public InternalRef parent() {
+        return parent;
     }
 
     @Override
@@ -61,7 +69,7 @@ public class InternalRefImpl implements InternalRef {
 
     @Override
     public String getName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return actorNode.getName();
     }
 
     @Override

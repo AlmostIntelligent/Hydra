@@ -16,13 +16,14 @@ public class WatchTest {
         System.out.println("Waiting 1000 Milliseconds before stopping watchee.");
         Thread.sleep(1000);
         watchee.tell("StopYourself", null);
+        as.await();
     }
 
     public static class Watcher extends Actor {
 
         @Override
         public void onReceive(Object message) throws Exception {
-            if(message instanceof Stopped) {
+            if(message instanceof WatcheeStopped) {
                 System.out.println("Watchee stopped. Shutting down!");
                 getSystem().shutdown();
             }
