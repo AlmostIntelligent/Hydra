@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
 /**
  * 
@@ -11,7 +13,7 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
  * @since 0.1.0
  * 
  */
-public class ConfigList extends ConfigurationItem {
+public class ConfigList extends ConfigItemBase {
 
     /**
      * 
@@ -20,20 +22,20 @@ public class ConfigList extends ConfigurationItem {
      */
     public ConfigList(final String itemName) {
         super(itemName);
-        childs = new LinkedList<ConfigurationItem>();
+        children = new LinkedList<ConfigurationItem>();
     }
 
     /**
      * @var List of child item.
      */
-    private List<ConfigurationItem> childs;
+    private List<ConfigurationItem> children;
 
     /**
      * 
      * @return Child items.
      */
-    public final List<ConfigurationItem> getChilds() {
-        return childs;
+    public final List<ConfigurationItem> getChildren() {
+        return children;
     }
 
     /**
@@ -46,7 +48,7 @@ public class ConfigList extends ConfigurationItem {
     public final ConfigurationItem getChild(final String name)
             throws ConfigItemNotFoundException {
 
-        for (ConfigurationItem c : childs) {
+        for (ConfigurationItem c : children) {
             if (c.getName().equals(name)) {
                 return c;
             }
@@ -60,15 +62,20 @@ public class ConfigList extends ConfigurationItem {
     }
 
     @Override
+    public final Object getValue() throws ConfigItemTypeException {
+        throw new ConfigItemTypeException();
+    }
+
+    @Override
     public final Boolean hasChildren() {
-        return childs.size() != 0;
+        return children.size() != 0;
     }
 
     @Override
     public final ConfigurationItem copy() {
         ConfigList l = new ConfigList(getName());
-        for (ConfigurationItem i : childs) {
-            l.getChilds().add(i.copy());
+        for (ConfigurationItem i : children) {
+            l.getChildren().add(i.copy());
         }
         return l;
     }
@@ -77,10 +84,10 @@ public class ConfigList extends ConfigurationItem {
     public final int hashCode() {
         final int prime = 31;
         int result = 1;
-        if (childs == null) {
+        if (children == null) {
             result = prime * result;
         } else {
-            result = prime * result + childs.hashCode();
+            result = prime * result + children.hashCode();
         }
         return result;
     }
@@ -94,11 +101,7 @@ public class ConfigList extends ConfigurationItem {
             return false;
         }
         ConfigList other = (ConfigList) obj;
-        if (childs == null) {
-            if (other.childs != null) {
-                return false;
-            }
-        } else if (!childs.equals(other.childs)) {
+        if (!children.equals(other.getChildren())) {
             return false;
         }
         if (getName() == null) {

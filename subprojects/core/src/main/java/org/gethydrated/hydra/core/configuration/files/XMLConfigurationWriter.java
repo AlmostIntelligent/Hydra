@@ -2,10 +2,11 @@ package org.gethydrated.hydra.core.configuration.files;
 
 import java.io.PrintStream;
 
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.configuration.tree.ConfigList;
 import org.gethydrated.hydra.core.configuration.tree.ConfigValue;
-import org.gethydrated.hydra.core.configuration.tree.ConfigurationItem;
+
 
 /**
  * 
@@ -76,7 +77,7 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
             stream.print("<");
             stream.print(list.getName());
             stream.println(">");
-            for (ConfigurationItem i : list.getChilds()) {
+            for (ConfigurationItem i : list.getChildren()) {
                 if (i.hasValue()) {
                     writeValue(stream, (ConfigValue<?>) i, indent + 1);
                 } else if (i.hasChildren()) {
@@ -96,7 +97,7 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
      */
     public final void saveToStream(final PrintStream stream) {
         stream.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        writeList(stream, getCfg().getRoot(), 0);
+        writeList(stream, (ConfigList)getCfg().getRoot(), 0);
 
     }
 

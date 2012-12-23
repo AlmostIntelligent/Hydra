@@ -1,5 +1,11 @@
 package org.gethydrated.hydra.core.configuration.tree;
 
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
+import org.gethydrated.hydra.api.configuration.ConfigTypeMismatchException;
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
+
+import java.util.List;
+
 /**
  * 
  * @author Hanno Sternberg
@@ -8,7 +14,7 @@ package org.gethydrated.hydra.core.configuration.tree;
  * @param <T>
  *            .
  */
-public class ConfigValue<T> extends ConfigurationItem {
+public class ConfigValue<T> extends ConfigItemBase {
 
     /**
      * 
@@ -42,8 +48,18 @@ public class ConfigValue<T> extends ConfigurationItem {
     }
 
     @Override
+    public final Object getValue() {
+        return value;
+    }
+
+    @Override
     public final Boolean hasChildren() {
         return false;
+    }
+
+    @Override
+    public final List<ConfigurationItem> getChildren() throws ConfigItemTypeException {
+        throw new ConfigItemTypeException();
     }
 
     /**
@@ -98,11 +114,7 @@ public class ConfigValue<T> extends ConfigurationItem {
         }
         @SuppressWarnings("unchecked")
         ConfigValue<T> other = (ConfigValue<T>) obj;
-        if (value == null) {
-            if (other.value != null) {
-                return false;
-            }
-        } else if (!value.equals(other.value)) {
+        if (!value.equals(other.value())) {
             return false;
         }
         return true;

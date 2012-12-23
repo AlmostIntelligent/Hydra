@@ -10,10 +10,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.configuration.tree.ConfigList;
 import org.gethydrated.hydra.core.configuration.tree.ConfigValue;
-import org.gethydrated.hydra.core.configuration.tree.ConfigurationItem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,10 +56,11 @@ public class ConfigurationTest {
     public final void testSetValue() {
         try {
             cfg.set("Name", "test");
+            assertEquals(cfg.getRoot().getChildren().size(), 1);
         } catch (Exception e) {
             fail("Got Exception");
         }
-        assertEquals(cfg.getRoot().getChilds().size(), 1);
+
     }
 
     /**
@@ -71,15 +73,17 @@ public class ConfigurationTest {
         ConfigurationItem child = null;
         cfg.set("Network.Port", 1337);
         cfg.set("Network.Host", "local");
-        assertEquals(cfg.getRoot().getChilds().size(), 1);
         try {
-            child = cfg.getRoot().getChild("Network");
+            assertEquals(cfg.getRoot().getChildren().size(), 1);
+            child = ((ConfigList)cfg.getRoot()).getChild("Network");
         } catch (ConfigItemNotFoundException e) {
             fail("SubList not created!");
+        } catch (ConfigItemTypeException e) {
+            fail("Got type exception");
         }
         assertNotNull(child);
         assertTrue(child.hasChildren());
-        assertEquals(((ConfigList) child).getChilds().size(), 2);
+        assertEquals(((ConfigList) child).getChildren().size(), 2);
         try {
             assertEquals(
                     ((ConfigValue<?>) ((ConfigList) child).getChild("Port"))
@@ -140,7 +144,7 @@ public class ConfigurationTest {
     public final void testSetBoolean() {
         cfg.setBoolean("Active", true);
         try {
-            assertTrue(((ConfigValue<Boolean>) cfg.getRoot().getChild("Active"))
+            assertTrue(((ConfigValue<Boolean>) ((ConfigList)cfg.getRoot()).getChild("Active"))
                     .value());
         } catch (ConfigItemNotFoundException e) {
             fail("Value not set");
@@ -173,7 +177,7 @@ public class ConfigurationTest {
         cfg.setInteger("A_Number", 1337);
         try {
             assertEquals(
-                    ((ConfigValue<Integer>) cfg.getRoot().getChild("A_Number"))
+                    ((ConfigValue<Integer>) ((ConfigList)cfg.getRoot()).getChild("A_Number"))
                             .value(),
                     (Integer) 1337);
         } catch (ConfigItemNotFoundException e) {
@@ -207,7 +211,7 @@ public class ConfigurationTest {
         cfg.setFloat("A_Double", (Double) 13.37);
         try {
             assertEquals(
-                    ((ConfigValue<Double>) cfg.getRoot().getChild("A_Double"))
+                    ((ConfigValue<Double>) ((ConfigList)cfg.getRoot()).getChild("A_Double"))
                             .value(),
                     (Double) 13.37);
         } catch (ConfigItemNotFoundException e) {
@@ -226,7 +230,7 @@ public class ConfigurationTest {
         cfg.setFloat("A_Double", (Double) 13.37);
         try {
             assertEquals(
-                    ((ConfigValue<Double>) cfg.getRoot().getChild("A_Double"))
+                    ((ConfigValue<Double>) ((ConfigList)cfg.getRoot()).getChild("A_Double"))
                             .value(),
                     (Double) 13.37);
         } catch (ConfigItemNotFoundException e) {
@@ -245,7 +249,7 @@ public class ConfigurationTest {
         cfg.setString("A_String", "foobar");
         try {
             assertEquals(
-                    ((ConfigValue<String>) cfg.getRoot().getChild("A_String"))
+                    ((ConfigValue<String>) ((ConfigList)cfg.getRoot()).getChild("A_String"))
                             .value(),
                     "foobar");
         } catch (ConfigItemNotFoundException e) {

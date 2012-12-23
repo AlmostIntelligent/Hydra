@@ -8,10 +8,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+
 
 /**
  * 
@@ -88,7 +91,7 @@ public class XMLConfigurationReader {
     /**
      * @var The configuration.
      */
-    private ConfigurationImpl cfg;
+    private Configuration cfg;
 
     /**
      * 
@@ -99,7 +102,7 @@ public class XMLConfigurationReader {
      * @throws IOException .
      * @throws ParserConfigurationException .
      */
-    public final ConfigurationImpl load(final String filename) throws SAXException,
+    public final Configuration load(final String filename) throws SAXException,
             IOException, ParserConfigurationException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
@@ -112,13 +115,13 @@ public class XMLConfigurationReader {
             /**
              * @param uri
              *            .
-             * @param localname
+             * @param localName
              *            .
              * @param qName
              *            .
              * @param attributes
              *            .
-             * @throws SAXExcpetion .
+             * @throws SAXException .
              */
             public void startElement(final String uri, final String localName,
                     final String qName, final Attributes attributes)
@@ -131,7 +134,7 @@ public class XMLConfigurationReader {
             /**
              * @param uri
              *            .
-             * @param localname
+             * @param localName
              *            .
              * @param qName
              *            .

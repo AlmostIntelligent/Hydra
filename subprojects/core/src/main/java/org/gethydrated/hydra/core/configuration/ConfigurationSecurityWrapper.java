@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
 /**
  * 
@@ -103,9 +104,29 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
+    public Configuration getSubItems(String base) throws ConfigItemNotFoundException {
+        return getCoreConfiguration().getSubItems(base);
+    }
+
+    @Override
     public final Object get(final String name)
             throws ConfigItemNotFoundException {
         return getCoreConfiguration().get(name);
+    }
+
+    @Override
+    public Boolean has(String name) {
+        return getCoreConfiguration().has(name);
+    }
+
+    @Override
+    public ConfigurationItem getRoot() {
+        return getCoreConfiguration().getRoot();
+    }
+
+    @Override
+    public void setRoot(ConfigurationItem root) {
+        getCoreConfiguration().setRoot(root);
     }
 
     @Override

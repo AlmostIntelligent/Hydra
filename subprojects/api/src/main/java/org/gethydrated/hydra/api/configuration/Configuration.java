@@ -28,6 +28,12 @@ public interface Configuration {
      */
     Object get(final String name) throws ConfigItemNotFoundException;
 
+    Boolean has(final String name);
+
+    ConfigurationItem getRoot();
+    void setRoot(ConfigurationItem root);
+
+
     /**
      * 
      * @param name
@@ -109,6 +115,8 @@ public interface Configuration {
      * @throws ConfigItemNotFoundException .
      */
     List<String> list(final String name) throws ConfigItemNotFoundException;
+
+    Configuration getSubItems(final String base) throws ConfigItemNotFoundException;
 
 }
 

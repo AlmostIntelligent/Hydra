@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.configuration.files.XMLConfigurationReader;
 import org.junit.After;
@@ -50,7 +51,7 @@ public class ConfigurationReaderTest {
         XMLConfigurationReader ld = new XMLConfigurationReader();
 
         try {
-            ConfigurationImpl cfg = ld.load("test/testConfig.xml");
+            Configuration cfg = ld.load("test/testConfig.xml");
             assertEquals("Test-configuration", cfg.getString("name"));
             assertEquals((Integer) 1337, cfg.getInteger("network.port"));
             assertEquals("local", cfg.getString("network.host"));

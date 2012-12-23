@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 import org.gethydrated.hydra.core.configuration.tree.ConfigList;
 import org.gethydrated.hydra.core.configuration.tree.ConfigValue;
-import org.gethydrated.hydra.core.configuration.tree.ConfigurationItem;
 
 /**
  * 
@@ -58,11 +58,7 @@ public class ConfigurationImpl implements Configuration {
             return false;
         }
         ConfigurationImpl other = (ConfigurationImpl) obj;
-        if (root == null) {
-            if (other.root != null) {
-                return false;
-            }
-        } else if (!root.equals(other.root)) {
+        if (!root.equals(other.getRoot())) {
             return false;
         }
         return true;
@@ -72,8 +68,14 @@ public class ConfigurationImpl implements Configuration {
      * 
      * @return root item.
      */
-    public final ConfigList getRoot() {
+
+    public final ConfigurationItem getRoot() {
         return root;
+    }
+
+    @Override
+    public void setRoot(ConfigurationItem root) {
+        this.root = (ConfigList) root;
     }
 
     /**
@@ -84,20 +86,21 @@ public class ConfigurationImpl implements Configuration {
         return configSeparator;
     }
 
+
     /**
      * 
      * @return copy of this configuration.
      */
     public final ConfigurationImpl copy() {
         ConfigurationImpl cp = new ConfigurationImpl();
-        for (ConfigurationItem itm : getRoot().getChilds()) {
-            cp.getRoot().getChilds().add(itm.copy());
+        for (ConfigurationItem itm : root.getChildren()) {
+            ((ConfigList)cp.getRoot()).getChildren().add(itm.copy());
         }
         return cp;
     }
 
     /**
-     * 
+     *
      * @param base
      *            Configuration base item.
      * @param l
@@ -109,11 +112,11 @@ public class ConfigurationImpl implements Configuration {
     private List<String> listFromItem(final ConfigurationItem base,
             final List<String> l, final String name) {
         if (name.isEmpty() && base.hasChildren()) {
-            for (ConfigurationItem itm : ((ConfigList) base).getChilds()) {
+            for (ConfigurationItem itm : ((ConfigList) base).getChildren()) {
                 l.add(itm.getName());
             }
         } else if (!name.isEmpty()) {
-            for (ConfigurationItem itm : ((ConfigList) base).getChilds()) {
+            for (ConfigurationItem itm : ((ConfigList) base).getChildren()) {
                 if (name.equalsIgnoreCase(itm.getName())) {
                     return listFromItem(itm, l, "");
                 } else if (name.startsWith(itm.getName() + configSeparator)) {
@@ -153,7 +156,7 @@ public class ConfigurationImpl implements Configuration {
                 child.set(value);
             } catch (ConfigItemNotFoundException e) {
                 /* Value doesn't exists, add new element */
-                base.getChilds().add(new ConfigValue<Object>(name, value));
+                base.getChildren().add(new ConfigValue<Object>(name, value));
             }
         } else if (namesplit.length > 1) {
             /* Merge namesplit to tail */
@@ -168,7 +171,7 @@ public class ConfigurationImpl implements Configuration {
             } catch (ConfigItemNotFoundException e) {
                 /* List doesn't exists: create */
                 l = new ConfigList(namesplit[0]);
-                base.getChilds().add(l);
+                base.getChildren().add(l);
             }
             setItem(l, nametail, value, type);
         }
@@ -204,7 +207,7 @@ public class ConfigurationImpl implements Configuration {
      */
     private Object getFromItem(final ConfigList base, final String name)
             throws ConfigItemNotFoundException {
-        for (ConfigurationItem i : base.getChilds()) {
+        for (ConfigurationItem i : base.getChildren()) {
             if (i.hasValue() && i.getName().equals(name)) {
                 return ((ConfigValue<?>) i).value();
             } else if (i.hasChildren()
@@ -220,6 +223,21 @@ public class ConfigurationImpl implements Configuration {
     public final Object get(final String name)
             throws ConfigItemNotFoundException {
         return getFromItem(root, name);
+    }
+
+    @Override
+    public final Boolean has(final String name) {
+        try {
+            Object o = get(name);
+            return true;
+        } catch(ConfigItemNotFoundException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public final Configuration getSubItems(final String name) {
+        return null;
     }
 
     @Override
