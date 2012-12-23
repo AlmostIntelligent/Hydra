@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 import org.gethydrated.hydra.core.configuration.tree.ConfigList;
@@ -134,6 +135,11 @@ public class ConfigurationImpl implements Configuration {
         return listFromItem(getRoot(), l, name);
     }
 
+    @Override
+    public final List<String> list() {
+        return list("");
+    }
+
     /**
      * 
      * @param base
@@ -236,8 +242,11 @@ public class ConfigurationImpl implements Configuration {
     }
 
     @Override
-    public final Configuration getSubItems(final String name) {
-        return null;
+    public final Configuration getSubItems(final String name)
+            throws ConfigItemNotFoundException, ConfigItemTypeException{
+        Configuration subCfg = new ConfigurationImpl();
+        subCfg.setRoot(((ConfigList) getRoot()).getSubItem(name, configSeparator));
+        return subCfg;
     }
 
     @Override

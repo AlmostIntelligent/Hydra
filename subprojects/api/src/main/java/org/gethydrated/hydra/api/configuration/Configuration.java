@@ -115,8 +115,10 @@ public interface Configuration {
      * @throws ConfigItemNotFoundException .
      */
     List<String> list(final String name) throws ConfigItemNotFoundException;
+    List<String> list() throws ConfigItemNotFoundException;
 
-    Configuration getSubItems(final String base) throws ConfigItemNotFoundException;
+    Configuration getSubItems(final String base)
+            throws ConfigItemNotFoundException, ConfigItemTypeException;
 
 }
 

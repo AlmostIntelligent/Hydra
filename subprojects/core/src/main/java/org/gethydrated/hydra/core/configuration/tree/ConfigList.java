@@ -80,6 +80,36 @@ public class ConfigList extends ConfigItemBase {
         return l;
     }
 
+    public final ConfigList getSubItem(final String prefix, final String separator)
+            throws ConfigItemNotFoundException, ConfigItemTypeException {
+        return getSubItem(prefix.split("\\" + separator));
+    }
+
+    public final ConfigList getSubItem(final String[] prefix)
+            throws ConfigItemNotFoundException, ConfigItemTypeException {
+        if (prefix.length == 0) {
+            throw new ConfigItemNotFoundException("");
+        } else if (prefix[0].equalsIgnoreCase(getName())) {
+            if (prefix.length == 1) {
+                return this;
+            } else {
+                for (ConfigurationItem i : getChildren()) {
+                    if (prefix[1].equalsIgnoreCase(i.getName())) {
+                        if (i.hasChildren()) {
+                            String[] newPrefix = new String[prefix.length-1];
+                            System.arraycopy(prefix, 1, newPrefix, 0, prefix.length-1);
+                            return getSubItem(newPrefix);
+                        } else {
+                            throw new ConfigItemTypeException();
+                        }
+                    }
+                }
+                throw new ConfigItemNotFoundException("");
+            }
+        }
+        throw new ConfigItemNotFoundException("");
+    }
+
     @Override
     public final int hashCode() {
         final int prime = 31;
