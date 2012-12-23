@@ -114,10 +114,7 @@ public class ConfigValue<T> extends ConfigItemBase {
         }
         @SuppressWarnings("unchecked")
         ConfigValue<T> other = (ConfigValue<T>) obj;
-        if (!value.equals(other.value())) {
-            return false;
-        }
-        return true;
+        return (value.equals(other.value()));
     }
 
 }

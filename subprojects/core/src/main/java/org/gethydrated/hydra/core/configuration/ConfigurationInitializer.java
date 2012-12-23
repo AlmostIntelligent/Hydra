@@ -1,6 +1,9 @@
 package org.gethydrated.hydra.core.configuration;
 
 import java.io.IOException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -16,6 +19,8 @@ import org.gethydrated.hydra.core.configuration.files.XMLConfigurationReader;
  * 
  */
 public class ConfigurationInitializer {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
     /**
      * @var configuration.
@@ -43,12 +48,16 @@ public class ConfigurationInitializer {
             final XMLConfigurationReader rdr = new XMLConfigurationReader();
             final Configuration usrCfg = rdr.load(configurationFile);
             BasicConfigurator.configure(cfg);
+            cfg = (ConfigurationImpl) ConfigMerger.merge(cfg, usrCfg);
         } catch (SAXException e) {
-
+            LOG.error("Error while parsing the configuration file.");
+            // Todo: Add fallback config generation
         } catch (IOException e) {
-
+            LOG.error("Invalid configuration file.");
+            // Todo: Add fallback config generation
         } catch (ParserConfigurationException e) {
-
+            LOG.error("Invalid parser configuration.");
+            // Todo: Add fallback config generation
         }
     }
 }

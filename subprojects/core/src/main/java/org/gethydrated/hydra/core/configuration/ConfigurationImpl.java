@@ -59,10 +59,7 @@ public class ConfigurationImpl implements Configuration {
             return false;
         }
         ConfigurationImpl other = (ConfigurationImpl) obj;
-        if (!root.equals(other.getRoot())) {
-            return false;
-        }
-        return true;
+        return root.equals(other.getRoot());
     }
 
     /**

@@ -3,6 +3,7 @@ package org.gethydrated.hydra.core.configuration;
 import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
@@ -97,6 +98,12 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
+    public final List<String> list()
+            throws ConfigItemNotFoundException {
+        return getCoreConfiguration().list();
+    }
+
+    @Override
     public final List<String> list(final String name)
             throws ConfigItemNotFoundException {
         // TODO Auto-generated method stub
@@ -104,7 +111,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
-    public Configuration getSubItems(String base) throws ConfigItemNotFoundException {
+    public Configuration getSubItems(String base) throws ConfigItemNotFoundException, ConfigItemTypeException {
         return getCoreConfiguration().getSubItems(base);
     }
 
