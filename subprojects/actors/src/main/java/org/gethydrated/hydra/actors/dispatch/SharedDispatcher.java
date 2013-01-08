@@ -14,7 +14,7 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class SharedDispatcher implements Dispatcher {
 
-    ExecutorService executor = new ForkJoinPool();
+    final ExecutorService executor = new ForkJoinPool();
 
     final BiMap<ActorNode, Mailbox> mailboxes = HashBiMap.create();
 

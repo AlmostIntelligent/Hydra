@@ -19,7 +19,7 @@ public class EventStreamTest {
 		
 		eventStream.startEventHandling(10);
 		eventStream.publish(new Object());
-		eventStream.publish(new String());
+		eventStream.publish("");
 		eventStream.publish(new Integer(1));
 		eventStream.publish(new Object());
 		Thread.sleep(1000);

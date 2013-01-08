@@ -89,7 +89,7 @@ public class ConfigValue<T> extends ConfigItemBase {
 
     @Override
     public final ConfigurationItem copy() {
-        return new ConfigValue<T>(getName(), value);
+        return new ConfigValue<>(getName(), value);
     }
 
     @Override

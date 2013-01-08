@@ -22,12 +22,12 @@ public class ShutdownHook implements Runnable {
     /**
      * Thread reference.
      */
-    private Thread hook = new Thread(this);
+    private final Thread hook = new Thread(this);
 
     /**
      * Hydra instance.
      */
-    private Hydra hydra;
+    private final Hydra hydra;
 
     /**
      * Constructor.

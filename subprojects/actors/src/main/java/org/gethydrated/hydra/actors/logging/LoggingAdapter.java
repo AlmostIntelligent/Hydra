@@ -130,7 +130,7 @@ public class LoggingAdapter implements Logger {
 
 	@Override
 	public boolean isDebugEnabled(Marker marker) {
-		return isDebugEnabled(marker);
+		return logger.isDebugEnabled(marker);
 	}
 
 	@Override

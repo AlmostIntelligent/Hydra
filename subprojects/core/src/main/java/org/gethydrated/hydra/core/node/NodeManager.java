@@ -12,7 +12,7 @@ import org.gethydrated.hydra.api.node.Node;
  */
 public class NodeManager {
 
-	private Connector connector;
+	private final Connector connector;
 	
 	private List<Node> nodes = new LinkedList<>();
 	

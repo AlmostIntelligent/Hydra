@@ -26,7 +26,7 @@ public class ConfigurationImpl implements Configuration {
     /**
      * 
      */
-    private static String configSeparator = ".";
+    private static final String configSeparator = ".";
 
     /**
      * 
@@ -128,7 +128,7 @@ public class ConfigurationImpl implements Configuration {
 
     @Override
     public final List<String> list(final String name) {
-        List<String> l = new LinkedList<String>();
+        List<String> l = new LinkedList<>();
         return listFromItem(getRoot(), l, name);
     }
 
@@ -159,7 +159,7 @@ public class ConfigurationImpl implements Configuration {
                 child.set(value);
             } catch (ConfigItemNotFoundException e) {
                 /* Value doesn't exists, add new element */
-                base.getChildren().add(new ConfigValue<Object>(name, value));
+                base.getChildren().add(new ConfigValue<>(name, value));
             }
         } else if (namesplit.length > 1) {
             /* Merge namesplit to tail */

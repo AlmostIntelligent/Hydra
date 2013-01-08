@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 
 public class SysGuardian extends Actor {
 
-	Logger logger = getLogger(SysGuardian.class);
+	final Logger logger = getLogger(SysGuardian.class);
 	
 	@Override
 	public void onReceive(Object message) throws Exception {

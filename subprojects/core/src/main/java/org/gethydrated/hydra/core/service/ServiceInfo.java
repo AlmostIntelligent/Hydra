@@ -79,10 +79,8 @@ public class ServiceInfo {
     public final URL[] getServiceJars() {
         int i = 0;
         final URL[] urls = new URL[serviceJars.size()];
-        Iterator<URL> it = serviceJars.iterator();
-        while (it.hasNext()) {
+        for (URL serviceJar : serviceJars) {
             urls[i] = serviceJars.get(i++);
-            it.next();
         }
         return urls;
     }

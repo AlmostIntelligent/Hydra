@@ -17,7 +17,7 @@ public class PingPongTest {
 	
 	public static class PingPong extends Actor {
 
-		private Logger log = getLogger(PingPong.class);
+		private final Logger log = getLogger(PingPong.class);
 		
 		ActorRef ping;
 		ActorRef pong;
@@ -43,7 +43,7 @@ public class PingPongTest {
 	
 	public static class Ping extends Actor {
 
-		private Logger log = getLogger(Ping.class);
+		private final Logger log = getLogger(Ping.class);
 		
 		@Override
 		public void onReceive(Object message) throws Exception {
@@ -69,7 +69,7 @@ public class PingPongTest {
 	
 	public static class Pong extends Actor {
 
-		private Logger log = getLogger(Pong.class);
+		private final Logger log = getLogger(Pong.class);
 		
 		@Override
 		public void onReceive(Object message) throws Exception {

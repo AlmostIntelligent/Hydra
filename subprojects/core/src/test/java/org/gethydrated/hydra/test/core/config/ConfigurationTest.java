@@ -208,7 +208,7 @@ public class ConfigurationTest {
     @SuppressWarnings("unchecked")
     @Test
     public final void testSetFloat() {
-        cfg.setFloat("A_Double", (Double) 13.37);
+        cfg.setFloat("A_Double", 13.37);
         try {
             assertEquals(
                     ((ConfigValue<Double>) ((ConfigList)cfg.getRoot()).getChild("A_Double"))
@@ -227,7 +227,7 @@ public class ConfigurationTest {
     @SuppressWarnings("unchecked")
     @Test
     public final void testGetFloat() {
-        cfg.setFloat("A_Double", (Double) 13.37);
+        cfg.setFloat("A_Double", 13.37);
         try {
             assertEquals(
                     ((ConfigValue<Double>) ((ConfigList)cfg.getRoot()).getChild("A_Double"))

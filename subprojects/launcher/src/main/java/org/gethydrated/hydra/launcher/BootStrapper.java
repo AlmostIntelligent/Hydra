@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public final class BootStrapper {
      */
     public static void bootstrap(final String[] args, final File hydraHome)
             throws Exception {
-        List<File> systemJars = new ArrayList<File>();
+        List<File> systemJars = new ArrayList<>();
 
         addFileSet(systemJars, new File(hydraHome, "lib"), ".jar");
 
@@ -87,9 +88,7 @@ public final class BootStrapper {
             }
         });
 
-        for (File f : files) {
-            fileSet.add(f);
-        }
+        Collections.addAll(fileSet, files);
     }
     
     /**

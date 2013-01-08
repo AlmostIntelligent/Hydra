@@ -38,7 +38,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
 
     @Override
     public boolean isDone() {
-        synchronized (done) {
+        synchronized (lock) {
             return done;
         }
     }
@@ -89,6 +89,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
                 if(o instanceof Throwable) {
                     error = (Throwable)o;
                 } else {
+                    //noinspection unchecked
                     value = (V)o;
                 }
             } catch (ClassCastException e) {

@@ -48,10 +48,7 @@ public class SystemServiceLocator implements ServiceLocator {
         LOG.debug("Trying to locate service - name: {} version: {}", name, version);
         File[] dir = new File(systemServiceDir).listFiles(new FileFilter() {
             public boolean accept(final File file) {
-                if (file.getAbsolutePath().endsWith(".jar")) {
-                    return true;
-                }
-                return false;
+                return file.getAbsolutePath().endsWith(".jar");
             }
         });
         for (File f : dir) {

@@ -17,7 +17,7 @@ public class StandardActorFactory implements ActorFactory {
     /**
      * class.
      */
-    Class<? extends Actor> actorClass;
+    final Class<? extends Actor> actorClass;
     
     /**
      * Constructor.

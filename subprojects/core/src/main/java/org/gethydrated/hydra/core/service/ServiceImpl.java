@@ -33,7 +33,7 @@ public class ServiceImpl extends Actor implements Service {
      */
     private final ClassLoader cl;
 
-    private ConcurrentMap<Class<?>, MessageHandler> handlers = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class<?>, MessageHandler> handlers = new ConcurrentHashMap<>();
 
     /**
      * Constructor.
@@ -70,6 +70,7 @@ public class ServiceImpl extends Actor implements Service {
     public void onReceive(Object message) throws Exception {
         for (Class<?> c : handlers.keySet()) {
             if(c.isInstance(message)) {
+                //noinspection unchecked
                 handlers.get(c).handle(c.cast(message));
             }
         }

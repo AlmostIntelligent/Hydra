@@ -19,9 +19,9 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     /**
      * Configuration.
      */
-    private Configuration cfg;
+    private final Configuration cfg;
 
-    private ServiceImpl service;
+    private final ServiceImpl service;
 
     /**
      * Constructor.

@@ -22,13 +22,13 @@ public class ConfigList extends ConfigItemBase {
      */
     public ConfigList(final String itemName) {
         super(itemName);
-        children = new LinkedList<ConfigurationItem>();
+        children = new LinkedList<>();
     }
 
     /**
      * @var List of child item.
      */
-    private List<ConfigurationItem> children;
+    private final List<ConfigurationItem> children;
 
     /**
      * 

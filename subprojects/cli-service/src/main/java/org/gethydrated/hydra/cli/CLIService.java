@@ -26,12 +26,12 @@ public class CLIService {
     /**
      * 
      */
-    private Logger log = LoggerFactory.getLogger(CLIService.class);
+    private final Logger log = LoggerFactory.getLogger(CLIService.class);
 
     /**
      * 
      */
-    private CLICommand commands;
+    private final CLICommand commands;
 
     /**
      * 

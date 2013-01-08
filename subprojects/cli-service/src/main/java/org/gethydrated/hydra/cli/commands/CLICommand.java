@@ -2,6 +2,7 @@ package org.gethydrated.hydra.cli.commands;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public abstract class CLICommand {
     /**
          * 
          */
-    private List<CLICommand> subCommands;
+    private final List<CLICommand> subCommands;
 
     /**
          * 
@@ -28,12 +29,12 @@ public abstract class CLICommand {
     /**
      * Full text for command help.
      */
-    private String helpText;
+    private final String helpText;
 
     /**
      * Short description of the command.
      */
-    private String shortDescr;
+    private final String shortDescr;
 
     /**
      * 
@@ -42,7 +43,7 @@ public abstract class CLICommand {
      */
     public CLICommand(final ServiceContext ctx) {
         setContext(ctx);
-        subCommands = new LinkedList<CLICommand>();
+        subCommands = new LinkedList<>();
         helpText = generateHelpText();
         shortDescr = generateShortDescr();
     }
@@ -227,12 +228,10 @@ public abstract class CLICommand {
         if (cmd.contains("\"")) {
             String[] parts = cmd.split("\"");
             int i = 0;
-            ArrayList<String> result = new ArrayList<String>();
+            ArrayList<String> result = new ArrayList<>();
             for (i = 0; i < parts.length; i++) {
                 if (i == 0) {
-                    for (String c : parts[0].split(" ")) {
-                        result.add(c);
-                    }
+                    Collections.addAll(result, parts[0].split(" "));
                 } else {
                     if (parts[i].trim() != "") {
                         result.add(parts[i]);

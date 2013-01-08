@@ -50,7 +50,7 @@ public class ActorNode implements ActorSource, ActorContext {
 
     private ActorRef sender = null;
 	
-	private static ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
+	private static final ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
 	
 	private boolean running = true;
 	

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class FallbackLogger {
 
-	private static Logger logger = LoggerFactory.getLogger(FallbackLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(FallbackLogger.class);
 	
 	public static void log(List<Object> remainingEvents) {
 		for(Object o : remainingEvents) {

@@ -14,7 +14,7 @@ public abstract class ConfigItemBase implements ConfigurationItem {
     /**
      * 
      */
-    private String name;
+    private final String name;
 
     /**
      * 

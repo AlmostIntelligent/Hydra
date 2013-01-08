@@ -13,7 +13,7 @@ public class CLICommandHelp extends CLICommand {
     /**
      * Root command.
      */
-    private CLICommand cmdRoot;
+    private final CLICommand cmdRoot;
 
     /**
      * 
@@ -70,9 +70,7 @@ public class CLICommandHelp extends CLICommand {
                 sub = root.isSubCommand(args[0]);
                 if (sub.hasSubCommand(args[0])) {
                     String[] arg = new String[args.length - 1];
-                    for (int i = 1; i < args.length; i++) {
-                        arg[i - 1] = args[i];
-                    }
+                    System.arraycopy(args, 1, arg, 0, args.length - 1);
                     findHelp(arg, sub);
                 } else {
                     sub.displayHelp();

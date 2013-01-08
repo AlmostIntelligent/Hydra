@@ -26,7 +26,7 @@ public class FutureTest {
 	
 	public static class FutureActor extends Actor {
 
-		private Logger log = getLogger(FutureActor.class);
+		private final Logger log = getLogger(FutureActor.class);
 		
 		@Override
 		public void onReceive(Object message) throws Exception {

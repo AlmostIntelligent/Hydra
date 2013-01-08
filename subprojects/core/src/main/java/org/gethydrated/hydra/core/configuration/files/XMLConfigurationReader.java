@@ -35,7 +35,7 @@ public class XMLConfigurationReader {
         /**
          * @var List structure for the stack.
          */
-        private List<String> strs = new LinkedList<String>();
+        private final List<String> strs = new LinkedList<>();
 
         /**
          * 

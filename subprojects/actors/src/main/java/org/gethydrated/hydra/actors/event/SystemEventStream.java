@@ -22,7 +22,7 @@ public class SystemEventStream implements ActorEventStream {
     /**
      * Event object queue.
      */
-    private BlockingQueue<Object> events = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Object> events = new LinkedBlockingQueue<>();
 
     /**
      * Event stream executor.
@@ -32,12 +32,12 @@ public class SystemEventStream implements ActorEventStream {
     /**
      * Event dispatchers.
      */
-    private List<EventDispatcher> dispatchers = new LinkedList<>();
+    private final List<EventDispatcher> dispatchers = new LinkedList<>();
 
     /**
      * Event listeners multi bag.
      */
-    private Map<Class<?>, List<EventListener>> listeners = new ConcurrentHashMap<>();
+    private final Map<Class<?>, List<EventListener>> listeners = new ConcurrentHashMap<>();
 
     @Override
     public final boolean subscribe(final ActorRef subscriber, final Class<?> classifier) {
@@ -168,7 +168,7 @@ public class SystemEventStream implements ActorEventStream {
         /**
          * Dispatcher status.
          */
-        private AtomicBoolean running = new AtomicBoolean(true);
+        private final AtomicBoolean running = new AtomicBoolean(true);
 
         @Override
         public void run() {

@@ -15,7 +15,7 @@ import ch.qos.logback.classic.Level;
 public class LoggingAdapterLevelTest {
     
     private ActorSystem testSystem;
-    private ch.qos.logback.classic.Logger baseLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("test");
+    private final ch.qos.logback.classic.Logger baseLogger = (ch.qos.logback.classic.Logger)LoggerFactory.getLogger("test");
     
     @Before
     public void setup() {
