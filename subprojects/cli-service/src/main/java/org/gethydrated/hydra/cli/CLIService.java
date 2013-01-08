@@ -53,7 +53,8 @@ public class CLIService {
         ctx.registerMessageHandler(InputEvent.class, new MessageHandler<InputEvent>() {
             @Override
             public void handle(InputEvent message) {
-                handleInputString(message.toString());
+                String str = handleInputString(message.toString());
+                System.out.println(str);
             }
         });
         log.info("CLI Service initialised.");
@@ -64,8 +65,8 @@ public class CLIService {
      * @param str
      *            command String
      */
-    public final void handleInputString(final String str) {
-        commands.parse(str);
+    public final String handleInputString(final String str) {
+        return commands.parse(str);
     }
 
     /**

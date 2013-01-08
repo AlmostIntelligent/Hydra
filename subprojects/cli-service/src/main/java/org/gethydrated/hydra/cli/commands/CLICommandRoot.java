@@ -30,8 +30,8 @@ public class CLICommandRoot extends CLICommand {
     }
 
     @Override
-    public final void execute(final String[] args) {
-        getOutput().println("");
+    public final String execute(final String[] args) {
+        return "";
 
     }
 

@@ -50,14 +50,6 @@ public abstract class CLICommand {
 
     /**
      * 
-     * @return OutputStream.
-     */
-    public final PrintStream getOutput() {
-        return System.out; //TODO: send messages to actor
-    }
-
-    /**
-     * 
      * @return The command word.
      */
     public abstract String getCommandWord();
@@ -134,45 +126,46 @@ public abstract class CLICommand {
      * @param args
      *            Array with arguments.
      */
-    public abstract void execute(final String[] args);
+    public abstract String execute(final String[] args);
 
     /**
      * 
      * @param args
      *            Array with arguments.
      */
-    private void executeSecure(final String[] args) {
+    private String executeSecure(final String[] args) {
         try {
-            execute(args);
+            return execute(args);
         } catch (Exception e) {
-            getOutput().println("Caught exception in command execution!");
-            e.printStackTrace(getOutput());
+            return "Caught exception in command execution!";
         }
     }
 
     /**
      * Displays the help text.
      */
-    public final void displayHelp() {
-        getOutput().printf("Help for command %s - ", getCommandWord());
-        getOutput().println(getShortDescription());
-        getOutput().println();
+    public final String displayHelp() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Help for command %s - ", getCommandWord()));
+        sb.append(System.getProperty("line.separator"));
+        sb.append(getShortDescription());
         if (getHelpText() != "") {
-            getOutput().println("Long Description: ");
-            getOutput().println(getHelpText());
-            getOutput().println();
+            sb.append("Long Description:");
+            sb.append(System.getProperty("line.separator"));
+            sb.append(getHelpText());
         }
         if (hasSubCommands()) {
-            getOutput().println("List of sub commands");
+            sb.append("List of sub commands");
+            sb.append(System.getProperty("line.separator"));
             for (CLICommand cmd : subCommands) {
-                getOutput().printf("\t%s: %s", cmd.getCommandWord(),
-                        cmd.getShortDescription());
-                getOutput().println();
+                sb.append(String.format("\t%s: %s", cmd.getCommandWord(),
+                        cmd.getShortDescription()));
+                sb.append(System.getProperty("line.separator"));
             }
-            getOutput().println();
         }
-        getOutput().println("Type '<command> -help' for further information");
-        getOutput().println();
+        sb.append("Type '<command> -help' for further information");
+        sb.append(System.getProperty("line.separator"));
+        return sb.toString();
     }
 
     /**
@@ -224,7 +217,7 @@ public abstract class CLICommand {
      * @param cmd
      *            The command string.
      */
-    public final void parse(final String cmd) {
+    public final String parse(final String cmd) {
         if (cmd.contains("\"")) {
             String[] parts = cmd.split("\"");
             int i = 0;
@@ -238,38 +231,37 @@ public abstract class CLICommand {
                     }
                 }
             }
+            return "";
         } else {
-            parse(cmd.split(" "));
+            return parse(cmd.split(" "));
         }
     }
 
     /**
-     * 
+     *
      * @param cmds
      *            .
      */
-    public final void parse(final String[] cmds) {
+    public final String parse(final String[] cmds) {
         if (cmds.length > 0
                 && (cmds[0].equalsIgnoreCase("-help")
                         || cmds[0].equalsIgnoreCase("--h") || cmds[0]
                             .equalsIgnoreCase("-?"))) {
-            displayHelp();
+            return displayHelp();
         } else if (cmds.length > 0 && hasSubCommands()) {
-            CLICommand subCmd;
             try {
-                subCmd = isSubCommand(cmds[0]);
+                CLICommand subCmd = isSubCommand(cmds[0]);
                 String[] rest = new String[cmds.length - 1];
                 int i;
                 for (i = 1; i < cmds.length; i++) {
                     rest[i - 1] = cmds[i];
                 }
-                subCmd.parse(rest);
+                return subCmd.parse(rest);
             } catch (CLISubCommandDoesNotExistsException e) {
-                getOutput().printf("No sub command %s", cmds[0]);
-                getOutput().println();
+                return String.format("No sub command: %s \n", cmds[0]);
             }
         } else {
-            executeSecure(cmds);
+            return executeSecure(cmds);
         }
 
     }

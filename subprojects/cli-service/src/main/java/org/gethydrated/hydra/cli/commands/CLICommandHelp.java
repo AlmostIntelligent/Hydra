@@ -48,11 +48,11 @@ public class CLICommandHelp extends CLICommand {
     }
 
     @Override
-    public final void execute(final String[] args) {
+    public final String execute(final String[] args) {
         if (args.length == 0) {
-            displayHelp();
+            return displayHelp();
         } else {
-            findHelp(args, cmdRoot);
+            return findHelp(args, cmdRoot);
         }
     }
 
@@ -63,7 +63,7 @@ public class CLICommandHelp extends CLICommand {
      * @param root
      *            Command root.
      */
-    private void findHelp(final String[] args, final CLICommand root) {
+    private String findHelp(final String[] args, final CLICommand root) {
         if (args.length > 0) {
             CLICommand sub;
             try {
@@ -71,16 +71,15 @@ public class CLICommandHelp extends CLICommand {
                 if (sub.hasSubCommand(args[0])) {
                     String[] arg = new String[args.length - 1];
                     System.arraycopy(args, 1, arg, 0, args.length - 1);
-                    findHelp(arg, sub);
+                    return findHelp(arg, sub);
                 } else {
-                    sub.displayHelp();
+                    return sub.displayHelp();
                 }
             } catch (CLISubCommandDoesNotExistsException e) {
-                getOutput().printf("command %s does not exist.", args[0]);
-                getOutput().println();
+                return String.format("command %s does not exist.", args[0]);
             }
         } else {
-            root.displayHelp();
+            return root.displayHelp();
         }
     }
 

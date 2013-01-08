@@ -32,24 +32,29 @@ public class CLICommandConfigSet extends CLICommand {
     }
 
     @Override
-    public final void execute(final String[] args) {
+    public final String execute(final String[] args) {
+           StringBuilder sb = new StringBuilder();
         if (args.length >= 2) {
             getContext().getConfiguration().set(args[0], args[1]);
             try {
-                getOutput().printf("%s = %s", args[0],
-                        getContext().getConfiguration().get(args[0]));
-                getOutput().println();
+                sb.append(args[0]);
+                sb.append(" = ");
+                sb.append(getContext().getConfiguration().get(args[0]));
+                sb.append(System.getProperty("line.separator"));
             } catch (ConfigItemNotFoundException e) {
-                getOutput().printf(
+                sb.append(String.format(
                         "Encountered an exception, while setting %s to %s",
-                        args[0], args[1]);
-                getOutput().println();
+                        args[0], args[1]));
+                sb.append(System.getProperty("line.separator"));
             } catch (NullPointerException e) {
-                getOutput().println("Caught Nullpointer exception. No Context defined?");
+                sb.append("Caught Nullpointer exception. No Context defined?");
+                sb.append(System.getProperty("line.separator"));
             }
         } else {
-            getOutput().println("Not enough parameters.");
+            sb.append("Not enough parameters.");
+            sb.append(System.getProperty("line.separator"));
         }
+        return sb.toString();
     }
 
     @Override

@@ -109,9 +109,13 @@ public class ConfigurationImpl implements Configuration {
      */
     private List<String> listFromItem(final ConfigurationItem base,
             final List<String> l, final String name) {
-        if (name.isEmpty() && base.hasChildren()) {
-            for (ConfigurationItem itm : ((ConfigList) base).getChildren()) {
-                l.add(itm.getName());
+        if (name.trim().isEmpty()) {
+            if (base.hasChildren()) {
+                for (ConfigurationItem itm : ((ConfigList) base).getChildren()) {
+                    l.add(itm.getName());
+                }
+            } else {
+                /* raise exception ?*/
             }
         } else if (!name.isEmpty()) {
             for (ConfigurationItem itm : ((ConfigList) base).getChildren()) {

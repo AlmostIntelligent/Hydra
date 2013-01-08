@@ -37,8 +37,8 @@ public class CLICommandConfig extends CLICommand {
     }
 
     @Override
-    public void execute(final String[] args) {
-
+    public String execute(final String[] args) {
+        return "";
     }
 
     @Override
