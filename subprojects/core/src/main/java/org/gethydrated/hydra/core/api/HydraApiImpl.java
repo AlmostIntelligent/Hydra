@@ -2,7 +2,7 @@ package org.gethydrated.hydra.core.api;
 
 import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
-import org.gethydrated.hydra.core.service.ServiceManager;
+import org.gethydrated.hydra.core.service.Services;
 
 /**
  * General Hydra api implementation.
@@ -12,36 +12,20 @@ import org.gethydrated.hydra.core.service.ServiceManager;
  *
  */
 public class HydraApiImpl implements HydraApi {
-
-    /**
-     * ServiceManager instance.
-     */
-    private final ServiceManager sm;
     
     /**
      * Constructor.
-     * @param sm ServiceManager.
      */
-    public HydraApiImpl(final ServiceManager sm) {
-        this.sm = sm;
+    public HydraApiImpl() {
     }
     
     @Override
     public final Long startService(final String name) throws HydraException {
-        return sm.startService(name);
+        return 0L;
     }
 
     @Override
     public final void stopService(final Long id) throws HydraException {
-        sm.stopService(id);
-    }
-    
-    /**
-     * Getter for ServiceManager.
-     * @return ServiceManager instance.
-     */
-    protected final ServiceManager getServiceManager() {
-        return sm;
     }
 
 }

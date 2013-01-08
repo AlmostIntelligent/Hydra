@@ -105,7 +105,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
     }
 
     @Override
-    public java.util.concurrent.Future<?> ask(Object o, ActorRef ref) {
+    public java.util.concurrent.Future<?> ask(Object o) {
         throw new RuntimeException("Cannot create future on future reference. Deadlock possible."); //TODO: actorexception
     }
 }

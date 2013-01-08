@@ -71,7 +71,7 @@ public class ActorNode implements ActorSource, ActorContext {
 			actor.onReceive(message.getMessage());
             sender = null;
 		} catch (Exception e) {
-			logger.error("Error processing message: ", e);
+			logger.error("Error processing messages: ", e);
 		}
 	}
 

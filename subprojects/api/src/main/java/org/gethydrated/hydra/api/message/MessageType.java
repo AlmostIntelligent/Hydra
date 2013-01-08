@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.api.message;
 
 /**
- * Type of the message.
+ * Type of the messages.
  * @author Christian Kulpa
  *
  */
@@ -11,15 +11,15 @@ public enum MessageType {
      */
     ALL,
     /**
-     * System message.
+     * System messages.
      */
     SYSTEM,
     /**
-     * Service message.
+     * Service messages.
      */
     SERVICE,
     /**
-     * Communication message.
+     * Communication messages.
      */
     MESSAGE
 }

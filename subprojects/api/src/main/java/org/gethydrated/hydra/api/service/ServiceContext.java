@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.event.EventListener;
+import org.gethydrated.hydra.api.event.InputEvent;
 
 /**
  * Service context.
@@ -15,17 +16,13 @@ import org.gethydrated.hydra.api.event.EventListener;
 public interface ServiceContext extends ServiceApi {
 
     /**
-     * Returns the corresponding service instance.
-     * 
-     * @return service instance
-     */
-    Service getService();
-
-    /**
      * 
      * @return Configurations
      */
     Configuration getConfiguration();
 
+    <T> void registerMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler);
+
+    void subscribeEvent(Class<?> classifier);
 }
 

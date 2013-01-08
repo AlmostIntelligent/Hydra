@@ -12,19 +12,19 @@ public interface Message {
     
     /**
      * 
-     * @return Type of the message.
+     * @return Type of the messages.
      */
     MessageType getType();
     
     /**
      * 
-     * @return Destination of the message.
+     * @return Destination of the messages.
      */
     USID getDestination();
     
     /**
      * 
-     * @return Source of the message.
+     * @return Source of the messages.
      */
     USID getSource();
 }

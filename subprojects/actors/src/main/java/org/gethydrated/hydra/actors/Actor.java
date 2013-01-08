@@ -3,6 +3,7 @@ package org.gethydrated.hydra.actors;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.node.ActorContext;
 import org.gethydrated.hydra.actors.node.ActorNode;
+import org.gethydrated.hydra.api.service.MessageHandler;
 import org.slf4j.Logger;
 
 /**
@@ -29,7 +30,7 @@ public abstract class Actor {
     }
 
     /**
-     * Message callback. Invoked on message received.
+     * Message callback. Invoked on messages received.
      *
      * @param message Message object.#
      * @throws Exception on failure.
@@ -37,7 +38,7 @@ public abstract class Actor {
     public abstract void onReceive(Object message) throws Exception;
 
     /**
-     * Startup callback. Gets called before message processing starts.
+     * Startup callback. Gets called before messages processing starts.
      *
      * @throws Exception on failure.
      */
@@ -45,7 +46,7 @@ public abstract class Actor {
     }
 
     /**
-     * Shutdown callback. Gets called after message processing stops.
+     * Shutdown callback. Gets called after messages processing stops.
      *
      * @throws Exception on failure.
      */
@@ -95,4 +96,5 @@ public abstract class Actor {
     public final Logger getLogger(final String name) {
         return new LoggingAdapter(name, getSystem());
     }
+
 }

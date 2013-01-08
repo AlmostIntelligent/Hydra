@@ -14,7 +14,7 @@ public class FutureTest {
         ActorSystem as = ActorSystem.create();
         ActorRef r = as.spawnActor(FutureActor.class, "futureprocessor");
         //Thread.sleep(1000);
-        Future<?> f = r.ask("start", r);
+        Future<?> f = r.ask("start");
         try {
             Object o = f.get();
             System.out.println(o.toString());

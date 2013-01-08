@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.api.message;
 
 /**
- * Defines a (message) object as sendable over the network.
+ * Defines a (messages) object as sendable over the network.
  * 
  * @author Hanno Sternberg
  *

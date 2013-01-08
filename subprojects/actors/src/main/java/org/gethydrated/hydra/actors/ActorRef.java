@@ -30,16 +30,15 @@ public interface ActorRef {
 
     /**
      *
-     * @param m Actual message.
+     * @param m Actual messages.
      */
     void forward(Message m);
 
     /**
      *
      * @param o Message object.
-     * @param ref Target actor reference.
      * @return FutureImpl object.
      */
-    Future<?> ask(Object o, ActorRef ref);
+    Future<?> ask(Object o);
 
 }

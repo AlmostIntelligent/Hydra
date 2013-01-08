@@ -85,9 +85,9 @@ public class InternalRefImpl implements InternalRef {
     }
 
     @Override
-    public Future<?> ask(Object o, ActorRef ref) {
+    public Future<?> ask(Object o) {
         FutureImpl<Object> future = new FutureImpl<>();
-        ref.tell(o, future);
+        tell(o, future);
         return future;
     }
 }

@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.core.api;
 
 import org.gethydrated.hydra.api.service.ServiceApi;
-import org.gethydrated.hydra.core.service.ServiceManager;
+import org.gethydrated.hydra.core.service.Services;
 
 /**
  * Service api implementation.
@@ -14,12 +14,8 @@ public class ServiceApiImpl extends HydraApiImpl implements ServiceApi {
 
     /**
      * Constructor.
-     * 
-     * @param sm
-     *            ServiceManager.
      */
-    public ServiceApiImpl(final ServiceManager sm) {
-        super(sm);
+    public ServiceApiImpl() {
     }
 
     @Override

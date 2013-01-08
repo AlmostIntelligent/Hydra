@@ -2,6 +2,8 @@ package org.gethydrated.hydra.cli;
 
 import java.io.IOException;
 
+import org.gethydrated.hydra.api.event.InputEvent;
+import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;
@@ -47,6 +49,13 @@ public class CLIService {
         commands.addSubCommand(new CLICommandConfig(ctx));
         commands.addSubCommand(new CLICommandShutdown(ctx));
         commands.addSubCommand(new CLICommandHelp(ctx, commands));
+        ctx.subscribeEvent(InputEvent.class);
+        ctx.registerMessageHandler(InputEvent.class, new MessageHandler<InputEvent>() {
+            @Override
+            public void handle(InputEvent message) {
+                handleInputString(message.toString());
+            }
+        });
         log.info("CLI Service initialised.");
     }
 

@@ -19,7 +19,6 @@ public class CLIServiceActivator implements ServiceActivator {
     @Override
     public final void start(final ServiceContext context) throws Exception {
         cli = new CLIService(context);
-        cli.handleInput();
     }
 
     @Override

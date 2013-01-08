@@ -5,6 +5,7 @@ import java.io.PrintStream;
 
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
@@ -84,14 +85,19 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public final Service getService() {
-        return null;
-    }
-
-    @Override
     public final Configuration getConfiguration() {
         
         return testConfig;
+    }
+
+    @Override
+    public <T> void registerMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler) {
+
+    }
+
+    @Override
+    public void subscribeEvent(Class<?> classifier) {
+
     }
 
 }

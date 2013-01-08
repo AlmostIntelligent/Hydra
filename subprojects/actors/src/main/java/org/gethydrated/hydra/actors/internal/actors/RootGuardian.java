@@ -100,8 +100,8 @@ public class RootGuardian implements InternalRef {
     }
 
     @Override
-    public Future<?> ask(Object o, ActorRef ref) {
-        return null;
+    public Future<?> ask(Object o) {
+        return null; //TODO:
     }
 
     public void setSystemGuardian(InternalRef ref) {

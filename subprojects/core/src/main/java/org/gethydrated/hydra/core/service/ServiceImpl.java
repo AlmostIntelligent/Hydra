@@ -1,14 +1,11 @@
 package org.gethydrated.hydra.core.service;
 
 import java.net.URLClassLoader;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-import org.gethydrated.hydra.api.service.Service;
-import org.gethydrated.hydra.api.service.ServiceActivator;
-import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.api.service.ServiceException;
+import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
 import org.gethydrated.hydra.api.configuration.Configuration;
 
@@ -19,7 +16,7 @@ import org.gethydrated.hydra.api.configuration.Configuration;
  * @since 0.1.0
  * 
  */
-public class ServiceImpl implements Service {
+public class ServiceImpl extends Actor implements Service {
 
     /**
      * Service activator.
@@ -36,75 +33,50 @@ public class ServiceImpl implements Service {
      */
     private final ClassLoader cl;
 
-    /**
-     * Service threadpool.
-     */
-    private final ExecutorService threadpool = Executors.newCachedThreadPool();
-    
-    /**
-     * Threadpool timeout.
-     */
-    private static final int TIMEOUT = 5;
+    private ConcurrentMap<Class<?>, MessageHandler> handlers = new ConcurrentHashMap<>();
 
     /**
      * Constructor.
      * @param si Service informations.
      * @param cfg Configuration.
-     * @param sm Service manager.
      * @throws ServiceException on failure.
      */
-    public ServiceImpl(final ServiceInfo si, final ServiceManager sm, final Configuration cfg) throws ServiceException {
+    public ServiceImpl(final ServiceInfo si, final Configuration cfg) throws ServiceException {
         cl = new URLClassLoader(si.getServiceJars(),
                 ServiceImpl.class.getClassLoader().getParent());
-        ctx = new ServiceContextImpl(sm, this, cfg);
+        ctx = new ServiceContextImpl(this, cfg);
         try {
-            Class<?> clzz = cl.loadClass(si.getActivator());
-            if (clzz == null) {
+            Class<?> clazz = cl.loadClass(si.getActivator());
+            if (clazz == null) {
                 throw new ServiceException("Service activator not found:"
                         + si.getActivator());
             }
-            activator = (ServiceActivator) clzz.newInstance();
+            activator = (ServiceActivator) clazz.newInstance();
         } catch (Exception e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public final void start() throws ServiceException {
-        try {
-            threadpool.execute(new Runnable() {
+    public void onStart() throws Exception {
+        activator.start(ctx);
+    }
 
-                @Override
-                public void run() {
-                    try {
-                        activator.start(ctx);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+    public void onStop() throws Exception {
+        activator.stop(ctx);
+    }
 
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    @Override
+    public void onReceive(Object message) throws Exception {
+        for (Class<?> c : handlers.keySet()) {
+            if(c.isInstance(message)) {
+                handlers.get(c).handle(c.cast(message));
+            }
         }
     }
 
     @Override
-    public final void stop() throws ServiceException {
-        try {
-            activator.stop(ctx);
-            threadpool.shutdownNow();
-            while(!threadpool.awaitTermination(TIMEOUT, TimeUnit.SECONDS));
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
+    public <T> void  addMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler) {
+        handlers.put(classifier, messageHandler);
     }
-
-    @Override
-    public final Long getId() {
-        // TODO Auto-generated method stub
-        return (long) 0;
-    }
-
 }

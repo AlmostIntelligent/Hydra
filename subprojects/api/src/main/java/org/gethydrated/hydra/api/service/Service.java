@@ -9,26 +9,5 @@ package org.gethydrated.hydra.api.service;
  */
 public interface Service {
 
-    /**
-     * Attempts to start the service.
-     * 
-     * @throws ServiceException
-     *             on errors while starting the service.
-     */
-    void start() throws ServiceException;
-
-    /**
-     * Attempts to stop the service.
-     * 
-     * @throws ServiceException
-     *             on errors while stopping the service.
-     */
-    void stop() throws ServiceException;
-
-    /**
-     * Return unique service id.
-     * 
-     * @return service id.
-     */
-    Long getId();
+    <T> void addMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler);
 }

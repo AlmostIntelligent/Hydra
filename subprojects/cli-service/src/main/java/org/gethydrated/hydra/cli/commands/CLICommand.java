@@ -52,7 +52,7 @@ public abstract class CLICommand {
      * @return OutputStream.
      */
     public final PrintStream getOutput() {
-        return System.out; //TODO: send message to actor
+        return System.out; //TODO: send messages to actor
     }
 
     /**

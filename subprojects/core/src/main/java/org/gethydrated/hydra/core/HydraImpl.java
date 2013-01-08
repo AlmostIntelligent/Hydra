@@ -1,16 +1,19 @@
 package org.gethydrated.hydra.core;
 
+import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.actors.ActorFactory;
+import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
-import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
-import org.gethydrated.hydra.core.api.HydraApiImpl;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
-import org.gethydrated.hydra.core.message.MessageDispatcher;
-import org.gethydrated.hydra.core.message.MessageQueue;
-import org.gethydrated.hydra.core.service.ServiceManager;
+import org.gethydrated.hydra.core.messages.StartService;
+import org.gethydrated.hydra.core.service.Services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Hydra implementation.
@@ -36,7 +39,9 @@ public final class HydraImpl implements Hydra {
      */
     private final ConfigurationImpl cfg;
     
-    private final ActorSystem actorSystem;
+    private ActorSystem actorSystem;
+
+    private ActorRef services;
 
     /**
      * Constructor.
@@ -46,30 +51,52 @@ public final class HydraImpl implements Hydra {
      */
     public HydraImpl(final ConfigurationImpl cfg) {
         this.cfg = cfg;
-        actorSystem = ActorSystem.create();
+
     }
 
     @Override
-    public void start() {
-        LOG.info("Starting Hydra.");
-        shutdownhook.register();
+    public synchronized void start() {
+        if(actorSystem==null) {
+            LOG.info("Starting Hydra.");
+            actorSystem = ActorSystem.create();
+            services = actorSystem.spawnActor(new ActorFactory() {
+                @Override
+                public Actor create() throws Exception {
+                    return new Services(cfg);
+                }
+            }, "services");
+            shutdownhook.register();
+        }
     }
 
     @Override
-    public void stop() {
-        LOG.info("Stopping Hydra.");
-        shutdownhook.unregister();
-        actorSystem.shutdown();
+    public synchronized void stop() {
+        if(actorSystem!=null) {
+            LOG.info("Stopping Hydra.");
+            shutdownhook.unregister();
+            actorSystem.shutdown();
+            actorSystem = null;
+        }
     }
 
     @Override
-    public Long startService(final String name) throws HydraException {
-        return null;
+    public synchronized Long startService(final String name) throws HydraException {
+        if(actorSystem==null) {
+            throw new IllegalStateException("Hydra not running.");
+        }
+        Future f = services.ask(new StartService(name));
+        try {
+            return (Long)f.get();
+        } catch (InterruptedException|ExecutionException e) {
+            throw new HydraException(e);
+        }
     }
 
     @Override
-    public void stopService(final Long id) throws HydraException {
-        
+    public synchronized void stopService(final Long id) throws HydraException {
+        if(actorSystem==null) {
+            throw new IllegalStateException("Hydra not running.");
+        }
     }
 
 }

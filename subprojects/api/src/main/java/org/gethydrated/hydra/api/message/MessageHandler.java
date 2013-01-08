@@ -8,7 +8,7 @@ package org.gethydrated.hydra.api.message;
 public interface MessageHandler {
     
     /**
-     * Processes a message.
+     * Processes a messages.
      * @param m Message.
      */
     void processMessage(Message m);

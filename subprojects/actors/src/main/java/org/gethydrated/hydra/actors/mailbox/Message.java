@@ -8,7 +8,7 @@ import java.util.Objects;
 import org.gethydrated.hydra.actors.ActorRef;
 
 /**
- * Hydra actor message encapsulation.
+ * Hydra actor messages encapsulation.
  * 
  * @author Christian Kulpa
  * 
@@ -42,7 +42,7 @@ public final class Message {
     }
 
     /**
-     * Creates a new Message with a message id for response mapping. The id must
+     * Creates a new Message with a messages id for response mapping. The id must
      * not be 0.
      * 
      * @param message
@@ -68,7 +68,7 @@ public final class Message {
 
     /**
      * 
-     * @return message object.
+     * @return messages object.
      */
     public Object getMessage() {
         return message;
@@ -76,7 +76,7 @@ public final class Message {
 
     /**
      * 
-     * @return message id.
+     * @return messages id.
      */
     public Integer getId() {
         return id;
