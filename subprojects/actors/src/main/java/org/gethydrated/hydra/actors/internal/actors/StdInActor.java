@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.slf4j.Logger;
 
@@ -12,11 +13,11 @@ public class StdInActor extends Actor {
 	private volatile boolean running = true;
 	
 	private final Logger logger = getLogger(StdInActor.class);
-	
+
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if(message instanceof String) {
-			getSystem().getEventStream().publish(new InputEvent((String) message));
+			getSystem().getEventStream().publish(new InputEvent((String) message, getSelf().getName()));
 		}
 	}
 

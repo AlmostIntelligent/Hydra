@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.service;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
+import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.locator.ServiceLocator;
@@ -59,16 +60,16 @@ public class Services extends Actor {
             Long id = idGen.getId();
             final ServiceInfo si = sl.locate(serviceName);
             if(si != null) {
-                getContext().spawnActor(new ActorFactory() {
+                ActorRef service = getContext().spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
                         return new ServiceImpl(si, cfg);
                     }
                 }, id.toString());
+                getSender().tell(new USIDImpl(service), getSelf());
             }
-            getContext().getSender().tell(id, getSelf());
         } catch (IOException e) {
-            getContext().getSender().tell(e, getSelf());
+            getSender().tell(e, getSelf());
         }
     }
 

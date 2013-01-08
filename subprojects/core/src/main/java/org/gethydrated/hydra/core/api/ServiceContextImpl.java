@@ -4,8 +4,10 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.core.configuration.ConfigurationSecurityWrapper;
 import org.gethydrated.hydra.core.service.ServiceImpl;
+import org.gethydrated.hydra.core.service.USIDImpl;
 
 /**
  * Service context api implementation.
@@ -30,6 +32,11 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     public ServiceContextImpl(final ServiceImpl service, final Configuration cfg) {
         this.cfg = new ConfigurationSecurityWrapper(cfg);
         this.service = service;
+    }
+
+    @Override
+    public USID getSelf() {
+        return new USIDImpl(service.getSelf());
     }
 
     @Override

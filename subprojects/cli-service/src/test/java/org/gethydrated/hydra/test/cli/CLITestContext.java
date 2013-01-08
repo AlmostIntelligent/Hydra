@@ -8,6 +8,7 @@ import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 
 /**
@@ -75,13 +76,18 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public final Long startService(final String name) throws HydraException {
+    public final USID startService(final String name) throws HydraException {
         return null;
     }
 
     @Override
-    public final void stopService(final Long id) throws HydraException {
+    public final void stopService(final USID id) throws HydraException {
 
+    }
+
+    @Override
+    public USID getSelf() {
+        return null;
     }
 
     @Override

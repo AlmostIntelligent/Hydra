@@ -68,10 +68,14 @@ public class ServiceImpl extends Actor implements Service {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        USID sender = null;
+        if(getSender() != null) {
+            sender = new USIDImpl(getSender());
+        }
         for (Class<?> c : handlers.keySet()) {
             if(c.isInstance(message)) {
                 //noinspection unchecked
-                handlers.get(c).handle(c.cast(message));
+                handlers.get(c).handle(c.cast(message), sender);
             }
         }
     }
