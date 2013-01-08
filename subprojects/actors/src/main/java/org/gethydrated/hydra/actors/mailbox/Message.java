@@ -62,7 +62,7 @@ public final class Message {
      * 
      * @return source actor.
      */
-    public Object getSender() {
+    public ActorRef getSender() {
         return sender;
     }
 

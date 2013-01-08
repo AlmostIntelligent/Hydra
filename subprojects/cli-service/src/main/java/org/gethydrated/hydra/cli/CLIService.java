@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.cli;
 
 import java.io.IOException;
+
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.cli.commands.CLICommand;
 import org.gethydrated.hydra.cli.commands.CLICommandConfig;

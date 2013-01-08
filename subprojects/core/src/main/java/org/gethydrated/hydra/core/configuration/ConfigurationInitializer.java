@@ -45,9 +45,9 @@ public class ConfigurationInitializer {
      */
     public final void configure(String configurationFile) throws ConfigItemNotFoundException {
         try {
+            BasicConfigurator.configure(cfg);
             final XMLConfigurationReader rdr = new XMLConfigurationReader();
             final Configuration usrCfg = rdr.load(configurationFile);
-            BasicConfigurator.configure(cfg);
             cfg = (ConfigurationImpl) ConfigMerger.merge(cfg, usrCfg);
         } catch (SAXException e) {
             LOG.error("Error while parsing the configuration file.");

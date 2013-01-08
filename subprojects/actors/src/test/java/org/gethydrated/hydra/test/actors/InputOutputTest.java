@@ -3,7 +3,7 @@ package org.gethydrated.hydra.test.actors;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.api.events.InputEvent;
+import org.gethydrated.hydra.api.event.InputEvent;
 
 public class InputOutputTest {
 

@@ -9,6 +9,8 @@ public interface ActorContext extends ActorSource {
 
 	String getName();
 
+    ActorRef getSender();
+
     void stop(ActorRef target);
 
     void watch(ActorRef target);

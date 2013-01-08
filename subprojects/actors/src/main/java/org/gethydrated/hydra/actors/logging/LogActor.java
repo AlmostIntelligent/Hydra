@@ -1,11 +1,10 @@
 package org.gethydrated.hydra.actors.logging;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.actors.node.ActorNode;
-import org.gethydrated.hydra.api.events.LogEvent;
+import org.gethydrated.hydra.api.event.LogEvent;
 import org.slf4j.LoggerFactory;
 
 public class LogActor extends Actor {

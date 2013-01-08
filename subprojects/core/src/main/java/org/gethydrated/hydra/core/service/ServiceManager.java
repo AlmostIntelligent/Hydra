@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.Service;
 import org.gethydrated.hydra.api.service.ServiceException;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
@@ -20,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @since 0.1.0
  * 
  */
-public class ServiceManager {
+public class ServiceManager extends Actor {
     /**
      * Logger.
      */
@@ -40,7 +42,7 @@ public class ServiceManager {
     /**
      * Configuration.
      */
-    private final ConfigurationImpl cfg;
+    private final Configuration cfg;
     
     /**
      * Constructor.
@@ -48,7 +50,7 @@ public class ServiceManager {
      * @param cfg
      *            Configuration.
      */
-    public ServiceManager(final ConfigurationImpl cfg) {
+    public ServiceManager(final Configuration cfg) {
         sl = new SystemServiceLocator(cfg);
         this.cfg = cfg;
     }
@@ -108,4 +110,8 @@ public class ServiceManager {
         }
     }
 
+    @Override
+    public void onReceive(Object message) throws Exception {
+
+    }
 }

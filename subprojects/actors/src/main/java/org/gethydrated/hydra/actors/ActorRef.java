@@ -38,7 +38,7 @@ public interface ActorRef {
      *
      * @param o Message object.
      * @param ref Target actor reference.
-     * @return Future object.
+     * @return FutureImpl object.
      */
     Future<?> ask(Object o, ActorRef ref);
 

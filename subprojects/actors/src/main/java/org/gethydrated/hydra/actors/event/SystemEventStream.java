@@ -11,11 +11,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.EventListener;
+import org.gethydrated.hydra.api.event.EventStream;
 
 /**
  * Event stream implementation.
  */
-public class SystemEventStream implements EventStream {
+public class SystemEventStream implements ActorEventStream {
 
     /**
      * Event object queue.
@@ -124,9 +126,9 @@ public class SystemEventStream implements EventStream {
     }
 
     /**
-     * Returns if the event stream has published events in the queue.
+     * Returns if the event stream has published event in the queue.
      *
-     * @return true, if there are unhandled events.
+     * @return true, if there are unhandled event.
      */
     public boolean hasRemainingEvents() {
         return !events.isEmpty();
@@ -135,7 +137,7 @@ public class SystemEventStream implements EventStream {
     /**
      * Drains the event queue into a list.
      *
-     * @return remaining events.
+     * @return remaining event.
      */
     public List<Object> getRemainingEvents() {
         List<Object> l = new LinkedList<>();

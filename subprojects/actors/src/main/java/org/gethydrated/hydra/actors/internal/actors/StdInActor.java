@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.api.events.InputEvent;
+import org.gethydrated.hydra.api.event.InputEvent;
 import org.slf4j.Logger;
 
 public class StdInActor extends Actor {

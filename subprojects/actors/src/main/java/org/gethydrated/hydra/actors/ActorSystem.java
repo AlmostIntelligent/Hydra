@@ -2,7 +2,7 @@ package org.gethydrated.hydra.actors;
 
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
-import org.gethydrated.hydra.actors.event.EventStream;
+import org.gethydrated.hydra.actors.event.ActorEventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
 import org.gethydrated.hydra.actors.internal.actors.AppGuardian;
 import org.gethydrated.hydra.actors.internal.InternalRef;
@@ -111,7 +111,7 @@ public final class ActorSystem implements ActorSource {
      * Returns the systems event stream.
      * @return System event stream.
      */
-    public EventStream getEventStream() {
+    public ActorEventStream getEventStream() {
         return eventStream;
     }
 

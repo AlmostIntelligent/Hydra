@@ -2,7 +2,7 @@ package org.gethydrated.hydra.actors.logging;
 
 import java.util.List;
 
-import org.gethydrated.hydra.api.events.LogEvent;
+import org.gethydrated.hydra.api.event.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

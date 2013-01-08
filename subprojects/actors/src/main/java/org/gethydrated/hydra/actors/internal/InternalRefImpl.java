@@ -1,9 +1,6 @@
 package org.gethydrated.hydra.actors.internal;
 
-import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.actors.ActorURI;
+import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.mailbox.Message;
@@ -89,6 +86,8 @@ public class InternalRefImpl implements InternalRef {
 
     @Override
     public Future<?> ask(Object o, ActorRef ref) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        FutureImpl<Object> future = new FutureImpl<>();
+        ref.tell(o, future);
+        return future;
     }
 }

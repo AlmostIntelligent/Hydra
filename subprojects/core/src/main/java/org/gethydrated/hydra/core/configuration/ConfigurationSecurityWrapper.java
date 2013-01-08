@@ -17,13 +17,13 @@ public class ConfigurationSecurityWrapper implements Configuration {
     /**
      * @var Reference to the core configuration.
      */
-    private ConfigurationImpl coreConfiguration;
+    private Configuration coreConfiguration;
 
     /**
      * 
      * @return core Configuration
      */
-    private ConfigurationImpl getCoreConfiguration() {
+    private Configuration getCoreConfiguration() {
         return coreConfiguration;
     }
 
@@ -32,7 +32,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
      * @param coreConfig
      *            Core Configuration.
      */
-    private void setCoreConfiguration(final ConfigurationImpl coreConfig) {
+    private void setCoreConfiguration(final Configuration coreConfig) {
         this.coreConfiguration = coreConfig;
     }
 
@@ -41,7 +41,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
      * @param coreConfig
      *            core Configuration
      */
-    public ConfigurationSecurityWrapper(final ConfigurationImpl coreConfig) {
+    public ConfigurationSecurityWrapper(final Configuration coreConfig) {
         setCoreConfiguration(coreConfig);
     }
 

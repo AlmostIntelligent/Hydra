@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Encapsulates parsed service informations.
+ * Encapsulates parsed service information.
  * 
  * @author Christian Kulpa
  * @since 0.1.0

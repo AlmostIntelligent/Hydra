@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.test.cli;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.PrintStream;
 
 import org.gethydrated.hydra.api.HydraException;
@@ -87,16 +86,6 @@ public class CLITestContext implements ServiceContext {
     @Override
     public final Service getService() {
         return null;
-    }
-
-    @Override
-    public final PrintStream getOutputStream() {
-        return ps;
-    }
-
-    @Override
-    public final InputStream getInputStream() {
-        return System.in;
     }
 
     @Override

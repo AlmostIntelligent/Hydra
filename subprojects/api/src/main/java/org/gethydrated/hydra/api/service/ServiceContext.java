@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.event.EventListener;
 
 /**
  * Service context.
@@ -21,21 +22,10 @@ public interface ServiceContext extends ServiceApi {
     Service getService();
 
     /**
-     * Returns system output stream.
-     * @return PrintStream.
-     */
-    PrintStream getOutputStream();
-
-    /**
-     * Returns system input stream.
-     * @return InputStream.
-     */
-    InputStream getInputStream();
-
-    /**
      * 
      * @return Configurations
      */
     Configuration getConfiguration();
+
 }
 

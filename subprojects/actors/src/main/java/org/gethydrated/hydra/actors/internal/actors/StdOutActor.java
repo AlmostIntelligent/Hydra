@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.actors.internal.actors;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.api.events.OutputEvent;
+import org.gethydrated.hydra.api.event.OutputEvent;
 
 public class StdOutActor extends Actor {
 

@@ -2,7 +2,7 @@ package org.gethydrated.hydra.test.actors.event;
 
 import static org.junit.Assert.assertTrue;
 
-import org.gethydrated.hydra.actors.event.EventListener;
+import org.gethydrated.hydra.api.event.EventListener;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
 import org.junit.Test;
 

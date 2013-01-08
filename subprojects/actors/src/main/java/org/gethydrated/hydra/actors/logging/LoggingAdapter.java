@@ -1,9 +1,9 @@
 package org.gethydrated.hydra.actors.logging;
 
 import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.actors.event.EventStream;
-import org.gethydrated.hydra.api.events.LogEvent;
-import org.gethydrated.hydra.api.events.LogEvent.*;
+import org.gethydrated.hydra.api.event.EventStream;
+import org.gethydrated.hydra.api.event.LogEvent;
+import org.gethydrated.hydra.api.event.LogEvent.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;

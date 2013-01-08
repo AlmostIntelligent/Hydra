@@ -47,6 +47,8 @@ public class ActorNode implements ActorSource, ActorContext {
 	private final Mailbox mailbox;
 	
 	private Actor actor;
+
+    private ActorRef sender = null;
 	
 	private static ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
 	
@@ -65,7 +67,9 @@ public class ActorNode implements ActorSource, ActorContext {
 	public void process(Message message) {
 		try {
             handleInternal(message.getMessage());
+            sender = message.getSender();
 			actor.onReceive(message.getMessage());
+            sender = null;
 		} catch (Exception e) {
 			logger.error("Error processing message: ", e);
 		}
@@ -87,6 +91,11 @@ public class ActorNode implements ActorSource, ActorContext {
     }
 
     private void handleInternal(Object o) {
+    }
+
+    @Override
+    public ActorRef getSender() {
+        return sender;
     }
 
 	@Override
