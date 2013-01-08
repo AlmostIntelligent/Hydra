@@ -30,4 +30,5 @@ public interface ActorEventStream extends EventStream {
      * @return true, if the subscriber was registered to a topic.
      */
     boolean unsubscribe(ActorRef subscriber);
+
 }

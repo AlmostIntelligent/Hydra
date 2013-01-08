@@ -15,6 +15,8 @@ import org.gethydrated.hydra.api.event.InputEvent;
  */
 public interface ServiceContext extends ServiceApi {
 
+    USID getSelf();
+
     /**
      * 
      * @return Configurations

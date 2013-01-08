@@ -6,6 +6,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.Services;
@@ -80,20 +81,20 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
-    public synchronized Long startService(final String name) throws HydraException {
+    public synchronized USID startService(final String name) throws HydraException {
         if(actorSystem==null) {
             throw new IllegalStateException("Hydra not running.");
         }
         Future f = services.ask(new StartService(name));
         try {
-            return (Long)f.get();
+            return (USID)f.get();
         } catch (InterruptedException|ExecutionException e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public synchronized void stopService(final Long id) throws HydraException {
+    public synchronized void stopService(final USID id) throws HydraException {
         if(actorSystem==null) {
             throw new IllegalStateException("Hydra not running.");
         }

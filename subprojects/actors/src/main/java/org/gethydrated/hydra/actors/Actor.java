@@ -77,6 +77,10 @@ public abstract class Actor {
         return node.getRef();
     }
 
+    public final ActorRef getSender() {
+        return node.getSender();
+    }
+
     /**
      * Creates an logger that will push its log messages
      * through the actor system.
