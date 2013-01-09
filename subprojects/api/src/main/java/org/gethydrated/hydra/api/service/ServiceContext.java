@@ -12,6 +12,8 @@ public interface ServiceContext extends ServiceApi {
 
     SID getSelf();
 
+    SID getOutput();
+
     /**
      * 
      * @return Configurations

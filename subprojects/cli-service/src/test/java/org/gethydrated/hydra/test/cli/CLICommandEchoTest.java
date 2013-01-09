@@ -52,7 +52,7 @@ public class CLICommandEchoTest {
         String[] s = new String[1];
         s[0] = "Test Execute Echo";
         dut.execute(s);
-        assertEquals(s[0], ctx.getOutput().trim());
+        assertEquals(s[0], ctx.getResult().trim());
     }
 
     /**
@@ -62,7 +62,7 @@ public class CLICommandEchoTest {
     public final void testParseCommandString() {
         String s = "Test Parse Echo";
         dut.parse(s);
-        assertEquals(s, ctx.getOutput().trim());
+        assertEquals(s, ctx.getResult().trim());
     }
     
     /**
@@ -72,7 +72,7 @@ public class CLICommandEchoTest {
     public final void testParseEmptyString() {
         String s = "";
         dut.parse(s);
-        assertEquals(s, ctx.getOutput().trim());
+        assertEquals(s, ctx.getResult().trim());
     }
     
     /**
@@ -83,7 +83,7 @@ public class CLICommandEchoTest {
         String[] s = new String[1];
         s[0] = "";
         dut.execute(s);
-        assertEquals("", ctx.getOutput().trim());
+        assertEquals("", ctx.getResult().trim());
     }
     
     /**
@@ -93,7 +93,7 @@ public class CLICommandEchoTest {
     public final void testParseBlankString() {
         String s = " ";
         dut.parse(s);
-        assertEquals("", ctx.getOutput().trim());
+        assertEquals("", ctx.getResult().trim());
     }
     
     /**
@@ -104,6 +104,6 @@ public class CLICommandEchoTest {
         String[] s = new String[1];
         s[0] = " ";
         dut.execute(s);
-        assertEquals("", ctx.getOutput().trim());
+        assertEquals("", ctx.getResult().trim());
     }
 }

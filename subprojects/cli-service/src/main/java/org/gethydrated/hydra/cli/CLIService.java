@@ -32,16 +32,10 @@ public class CLIService {
     private final CLICommand commands;
 
     /**
-     * 
-     */
-    private volatile boolean running;
-
-    /**
      * @param ctx
      *            Context.
      */
     public CLIService(final ServiceContext ctx) {
-        running = true;
         commands = new CLICommandRoot(ctx);
         commands.addSubCommand(new CLICommandEcho(ctx));
         commands.addSubCommand(new CLICommandConfig(ctx));
@@ -52,8 +46,13 @@ public class CLIService {
         ctx.registerMessageHandler(InputEvent.class, new MessageHandler<InputEvent>() {
             @Override
             public void handle(InputEvent message, SID sender) {
+                String out =handleInputString(message.toString());
+                ctx.getOutput().tell(
+                        "local: " + out,
+                        ctx.getSelf()
+                );
                 sender.tell(
-                        handleInputString(message.toString()),
+                        "remote: " + out,
                         ctx.getSelf()
                 );
             }
@@ -71,42 +70,10 @@ public class CLIService {
     }
 
     /**
-         * 
-         */
-    public final void handleInput() {
-        StringBuilder str = new StringBuilder();
-        while (running) {
-
-            try {
-                char c;
-                int i;
-                if ((i = System.in.read()) == -1) {
-                    running = false;
-                } else {
-                    c = (char) i;
-                    switch (c) {
-                    case '\r':
-                        break;
-                    case '\n':
-                        handleInputString(str.toString());
-                        str.setLength(0);
-                        break;
-                    default:
-                        str.append(c);
-                    }
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /**
      * Stops the service.
      */
     public final void stop() {
-        running = false;
+
     }
 
 }
