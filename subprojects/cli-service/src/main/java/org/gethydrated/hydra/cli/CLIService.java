@@ -5,13 +5,7 @@ import java.io.IOException;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.api.service.USID;
-import org.gethydrated.hydra.cli.commands.CLICommand;
-import org.gethydrated.hydra.cli.commands.CLICommandConfig;
-import org.gethydrated.hydra.cli.commands.CLICommandEcho;
-import org.gethydrated.hydra.cli.commands.CLICommandHelp;
-import org.gethydrated.hydra.cli.commands.CLICommandRoot;
-import org.gethydrated.hydra.cli.commands.CLICommandShutdown;
+import org.gethydrated.hydra.cli.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,14 +42,15 @@ public class CLIService {
         commands = new CLICommandRoot(ctx);
         commands.addSubCommand(new CLICommandEcho(ctx));
         commands.addSubCommand(new CLICommandConfig(ctx));
+        commands.addSubCommand(new CLICommandService(ctx));
         commands.addSubCommand(new CLICommandShutdown(ctx));
         commands.addSubCommand(new CLICommandHelp(ctx, commands));
         ctx.subscribeEvent(InputEvent.class);
         ctx.registerMessageHandler(InputEvent.class, new MessageHandler<InputEvent>() {
             @Override
-            public void handle(InputEvent message, USID sender) {
+            public void handle(InputEvent message) {
                 String str = handleInputString(message.toString());
-                System.out.print(str); //TODO: reply to source from inputevent.
+                System.out.println(str);
             }
         });
         log.info("CLI Service initialised.");
