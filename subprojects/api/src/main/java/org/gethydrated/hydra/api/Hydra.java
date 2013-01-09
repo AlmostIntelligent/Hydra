@@ -10,7 +10,7 @@ public interface Hydra extends HydraApi {
     /**
      * Starts the Hydra.
      */
-    void start();
+    void start() throws HydraException;
 
     /**
      * Stops the Hydra.

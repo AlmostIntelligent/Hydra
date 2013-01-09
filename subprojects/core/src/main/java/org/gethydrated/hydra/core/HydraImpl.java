@@ -6,6 +6,8 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.messages.StartService;
@@ -28,7 +30,7 @@ public final class HydraImpl implements Hydra {
     /**
      * Logger.
      */
-    private static final Logger LOG = LoggerFactory.getLogger(Hydra.class);
+    private final Logger logger = LoggerFactory.getLogger(Hydra.class);
 
     /**
      * Shutdown hook.
@@ -56,24 +58,30 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
-    public synchronized void start() {
+    public synchronized void start() throws HydraException {
         if(actorSystem==null) {
-            LOG.info("Starting Hydra.");
-            actorSystem = ActorSystem.create();
-            services = actorSystem.spawnActor(new ActorFactory() {
-                @Override
-                public Actor create() throws Exception {
-                    return new Services(cfg);
-                }
-            }, "services");
-            shutdownhook.register();
+            logger.info("Starting Hydra.");
+            try {
+                System.out.println(cfg.list());
+                actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
+                services = actorSystem.spawnActor(new ActorFactory() {
+                    @Override
+                    public Actor create() throws Exception {
+                        return new Services(cfg);
+                    }
+                }, "services");
+                shutdownhook.register();
+            } catch (ConfigItemNotFoundException|ConfigItemTypeException  e) {
+                logger.error("Invalid configuration.", e);
+                throw new HydraException(e);
+            }
         }
     }
 
     @Override
     public synchronized void stop() {
         if(actorSystem!=null) {
-            LOG.info("Stopping Hydra.");
+            logger.info("Stopping Hydra.");
             shutdownhook.unregister();
             actorSystem.shutdown();
             actorSystem = null;
@@ -87,9 +95,7 @@ public final class HydraImpl implements Hydra {
         }
         Future f = services.ask(new StartService(name));
         try {
-            System.out.println("meh");
             SID i =  (SID)f.get();
-            System.out.println("muh");
             return i;
         } catch (InterruptedException|ExecutionException e) {
             throw new HydraException(e);

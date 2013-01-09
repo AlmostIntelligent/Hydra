@@ -83,6 +83,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void tell(Object o, ActorRef sender) {
         synchronized (lock) {
             try {

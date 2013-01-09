@@ -35,6 +35,8 @@ public final class ActorSystem implements ActorSource {
      */
     private final Logger logger = new LoggingAdapter(ActorSystem.class, this);
 
+    private final Configuration config;
+
     /**
      * Root guardian.
      */
@@ -71,9 +73,11 @@ public final class ActorSystem implements ActorSource {
 
     /**
      * Private constructor.
+     * @param cfg
      */
-    private ActorSystem() {
+    private ActorSystem(Configuration cfg) {
         logger.info("Creating actor system.");
+        config = cfg;
         awaitLock = new Object();
         rootGuardian = new RootGuardian(this);
         sysGuardian = new InternalRefImpl("sys", new StandardActorFactory(SysGuardian.class), rootGuardian, this, defaultDispatcher);
@@ -172,6 +176,10 @@ public final class ActorSystem implements ActorSource {
      */
     public static ActorSystem create() {
         Configuration cfg = new ConfigurationImpl();
-        return new ActorSystem();
+        return new ActorSystem(cfg);
+    }
+
+    public static ActorSystem create(Configuration cfg) {
+        return new ActorSystem(cfg);
     }
 }

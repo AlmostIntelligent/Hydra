@@ -22,6 +22,10 @@ configure(allprojects) {
 
 	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+    [compileJava, compileTestJava]*.options*.compilerArgs = [
+        "-Xlint:unchecked"
+    ]
+
 	repositories { mavenCentral() }
 
 	dependencies {

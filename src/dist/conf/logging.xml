@@ -31,9 +31,17 @@
     	</encoder>
 	</appender>
 
-	<root level="trace">
-		<appender-ref ref="FILE" />
+    <logger name="org.gethydrated" level="TRACE">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <logger name="org.eclipse.jetty" level="WARN">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </logger>
+
+	<root level="WARN">
 		<appender-ref ref="ERRORS" />
-		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

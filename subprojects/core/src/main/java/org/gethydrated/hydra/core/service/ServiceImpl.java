@@ -67,6 +67,7 @@ public class ServiceImpl extends Actor implements Service {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onReceive(Object message) throws Exception {
         SID sender = null;
         if(getSender() != null) {

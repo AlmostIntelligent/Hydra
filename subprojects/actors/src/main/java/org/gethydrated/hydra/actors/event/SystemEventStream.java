@@ -3,16 +3,18 @@ package org.gethydrated.hydra.actors.event;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.EventListener;
-import org.gethydrated.hydra.api.event.EventStream;
+
 
 /**
  * Event stream implementation.
@@ -35,60 +37,52 @@ public class SystemEventStream implements ActorEventStream {
     private final List<EventDispatcher> dispatchers = new LinkedList<>();
 
     /**
-     * Event listeners multi bag.
+     * Event listeners multi map.
      */
-    private final Map<Class<?>, List<EventListener>> listeners = new ConcurrentHashMap<>();
+    private final Multimap<Class<?>, EventListener> listeners = HashMultimap.create();
 
     @Override
     public final boolean subscribe(final ActorRef subscriber, final Class<?> classifier) {
-        return subscribe(new EventListener() {
-            @Override
-            public void handle(Object event) {
-                subscriber.tell(event, null);
-            }
-        }, classifier);
+        return subscribe(new ActorRefListener(subscriber), classifier);
     }
 
     @Override
     public final boolean subscribe(final EventListener subscriber, final Class<?> classifier) {
-        List<EventListener> l = listeners.get(classifier);
-        if (l == null) {
-            List<EventListener> li = new LinkedList<>();
-            li.add(subscriber);
-            listeners.put(classifier, li);
-            return true;
-        } else {
-            if (l.contains(subscriber)) {
-                return false;
-            } else {
-                l.add(subscriber);
-                return true;
-            }
+        synchronized (listeners) {
+            return listeners.put(classifier, subscriber);
         }
     }
 
     @Override
     public final boolean unsubscribe(final ActorRef subscriber, final Class<?> classifier) {
-        //TODO:
-        return false;
+        return unsubscribe(new ActorRefListener(subscriber), classifier);
     }
 
     @Override
     public final boolean unsubscribe(final EventListener subscriber, final Class<?> classifier) {
-        //TODO:
-        return false;
+        synchronized (listeners) {
+            return listeners.remove(classifier,subscriber);
+        }
     }
 
     @Override
     public final boolean unsubscribe(final ActorRef subscriber) {
-        //TODO:
-        return false;
+        return unsubscribe(new ActorRefListener(subscriber));
     }
 
     @Override
     public final boolean unsubscribe(final EventListener subscriber) {
-        //TODO:
-        return false;
+        synchronized (listeners) {
+            if(!listeners.containsValue(subscriber)) {
+                return false;
+            }
+            for(Map.Entry e: listeners.entries()) {
+                if(e.getValue().equals(subscriber)) {
+                    listeners.remove(e.getKey(), e.getValue());
+                }
+            }
+        }
+        return true;
     }
 
     @Override
@@ -151,10 +145,16 @@ public class SystemEventStream implements ActorEventStream {
      * @param event actual event.
      */
     private void dispatch(final Object event) {
-        for (Class<?> c : listeners.keySet()) {
+        Set<Class<?>> keyset;
+        synchronized (listeners) {
+            keyset = listeners.keySet();
+        }
+        for (Class<?> c : keyset) {
             if (c.isInstance(event)) {
-                for (EventListener l : listeners.get(c)) {
-                    l.handle(event);
+                synchronized (listeners) {
+                    for (EventListener l : listeners.get(c)) {
+                        l.handle(event);
+                    }
                 }
             }
         }
@@ -188,5 +188,38 @@ public class SystemEventStream implements ActorEventStream {
         public void stop() {
             running.set(false);
         }
+    }
+
+    private class ActorRefListener implements EventListener {
+
+        ActorRef ref;
+
+        ActorRefListener(ActorRef ref) {
+            this.ref = ref;
+        }
+
+        @Override
+        public void handle(Object event) {
+            ref.tell(event, null);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            ActorRefListener that = (ActorRefListener) o;
+
+            if (!ref.equals(that.ref)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            return ref.hashCode();
+        }
+
+
     }
 }
