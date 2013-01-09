@@ -6,6 +6,7 @@ import java.io.PrintStream;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
+import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
@@ -72,6 +73,11 @@ public class CLITestContext implements ServiceContext {
     public final Long getGlobalService(final String name) {
         return null;
 
+    }
+
+    @Override
+    public SIDFactory getSIDFactory() {
+        return null;
     }
 
     @Override
