@@ -51,7 +51,7 @@ public class CLIService {
             @Override
             public void handle(InputEvent message, SID sender) {
                 String str = handleInputString(message.toString());
-                System.out.println(str);
+                ctx.getOutput().tell(str, ctx.getSelf());
             }
         });
         log.info("CLI Service initialised.");

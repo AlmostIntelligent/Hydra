@@ -2,6 +2,7 @@ package org.gethydrated.hydra.test.cli;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.Future;
 
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.Configuration;
@@ -37,7 +38,22 @@ public class CLITestContext implements ServiceContext {
      * 
      * @return OutputStream.
      */
-    public final String getOutput() {
+    public final SID getOutput() {
+        return new SID() {
+
+            @Override
+            public void tell(Object message, SID sender) {
+                ps.print(message.toString());
+            }
+
+            @Override
+            public Future<?> ask(Object message) {
+                return null;
+            }
+        };
+    }
+
+    public String getResult() {
         return output.toString();
     }
 

@@ -39,6 +39,11 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     }
 
     @Override
+    public SID getOutput() {
+        return new SIDImpl(service.getContext().getActor("/system/out"));
+    }
+
+    @Override
     public final Configuration getConfiguration() {
         return cfg;
     }
