@@ -14,7 +14,14 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class SharedDispatcher implements Dispatcher {
 
-    final ExecutorService executor = new ForkJoinPool();
+    final ExecutorService executor = new ForkJoinPool(10, ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+            new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+    , false);
 
     final BiMap<ActorNode, Mailbox> mailboxes = HashBiMap.create();
 
@@ -51,7 +58,7 @@ public class SharedDispatcher implements Dispatcher {
             synchronized (mailboxes) {
                 an = mailboxes.inverse().get(mb);
             }
-            executor.submit(new MessageRunner(this, mb, an));
+            executor.execute(new MessageRunner(this, mb, an));
         }
     }
 

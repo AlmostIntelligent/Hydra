@@ -1,0 +1,7 @@
+<service>
+	<name>JETTY</name>
+	<version>0.0.0</version>
+	<activators>
+		<activator>org.gethydrated.hydra.http.JettyActivator</activator>
+	</activators>
+</service>

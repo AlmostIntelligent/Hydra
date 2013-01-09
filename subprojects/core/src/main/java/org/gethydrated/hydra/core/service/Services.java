@@ -69,6 +69,7 @@ public class Services extends Actor {
                 getSender().tell(new USIDImpl(service), getSelf());
             }
         } catch (IOException e) {
+            e.printStackTrace();
             getSender().tell(e, getSelf());
         }
     }

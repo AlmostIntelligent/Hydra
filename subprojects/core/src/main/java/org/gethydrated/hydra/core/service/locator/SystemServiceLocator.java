@@ -52,8 +52,10 @@ public class SystemServiceLocator implements ServiceLocator {
             }
         });
         for (File f : dir) {
+            System.out.println(f.getName());
             ServiceInfo si = checkJarInfo(f, name, version);
             if (si != null) {
+                System.out.println("found: " + f.getName());
                 return si;
             }
         }

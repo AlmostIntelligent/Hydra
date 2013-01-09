@@ -33,6 +33,7 @@ public final class HydraStarter {
         Hydra hydra = HydraFactory.getHydra();
         hydra.start();
         hydra.startService("CLI");
+        hydra.startService("JETTY");
     }
 
     /**

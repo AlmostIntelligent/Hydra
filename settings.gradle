@@ -5,6 +5,7 @@ include 'actors'
 include 'core'
 include 'launcher'
 include 'cli-service'
+include 'jetty-service'
 
 rootProject.name = 'hydra'
 rootProject.children.each { project ->

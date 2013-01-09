@@ -52,7 +52,7 @@ public class ServiceImpl extends Actor implements Service {
                         + si.getActivator());
             }
             activator = (ServiceActivator) clazz.newInstance();
-        } catch (Exception e) {
+        } catch (Exception | NoClassDefFoundError e) {
             throw new ServiceException(e);
         }
     }
