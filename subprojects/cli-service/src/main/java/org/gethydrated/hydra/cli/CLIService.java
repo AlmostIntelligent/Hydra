@@ -3,6 +3,8 @@ package org.gethydrated.hydra.cli;
 import java.io.IOException;
 
 import org.gethydrated.hydra.api.event.InputEvent;
+import org.gethydrated.hydra.api.message.Message;
+import org.gethydrated.hydra.api.message.MessageType;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.SID;
@@ -50,8 +52,10 @@ public class CLIService {
         ctx.registerMessageHandler(InputEvent.class, new MessageHandler<InputEvent>() {
             @Override
             public void handle(InputEvent message, SID sender) {
-                String str = handleInputString(message.toString());
-                System.out.println(str);
+                sender.tell(
+                        handleInputString(message.toString()),
+                        ctx.getSelf()
+                );
             }
         });
         log.info("CLI Service initialised.");
