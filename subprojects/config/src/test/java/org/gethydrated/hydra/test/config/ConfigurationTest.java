@@ -11,6 +11,7 @@ import static org.junit.Assert.fail;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.config.tree.ConfigList;
@@ -280,6 +281,22 @@ public class ConfigurationTest {
         ConfigurationImpl cp = cfg.copy();
         assertFalse(cp == cfg);
         assertEquals(cfg, cp);
+    }
+
+    @Test
+    public final void testGetSubItem() {
+        cfg.set("Name", "test");
+        cfg.set("Network.Port", 1337);
+        cfg.set("Network.Host", "local");
+        try {
+            Configuration sub = cfg.getSubItems("Network");
+            assertEquals("[Port, Host]", sub.list("").toString());
+        } catch (ConfigItemTypeException e) {
+            fail("Type error");
+        } catch (ConfigItemNotFoundException e) {
+            fail("Item not found");
+        }
+
     }
 
 }

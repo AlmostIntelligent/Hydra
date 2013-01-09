@@ -82,7 +82,11 @@ public class ConfigList extends ConfigItemBase {
 
     public final ConfigList getSubItem(final String prefix, final String separator)
             throws ConfigItemNotFoundException, ConfigItemTypeException {
-        return getSubItem(prefix.split("\\" + separator));
+        String pre = prefix;
+        if (!pre.startsWith(getName())) {
+            pre = getName() + separator + pre;
+        }
+        return getSubItem(pre.split("\\" + separator));
     }
 
     public final ConfigList getSubItem(final String[] prefix)
@@ -98,7 +102,7 @@ public class ConfigList extends ConfigItemBase {
                         if (i.hasChildren()) {
                             String[] newPrefix = new String[prefix.length-1];
                             System.arraycopy(prefix, 1, newPrefix, 0, prefix.length-1);
-                            return getSubItem(newPrefix);
+                            return ((ConfigList)i).getSubItem(newPrefix);
                         } else {
                             throw new ConfigItemTypeException();
                         }
