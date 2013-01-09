@@ -205,6 +205,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	private void stop() {
+        System.out.println("Stopping actor " + name);
 		running = false;
         mailbox.setSuspended(true);
 		stopChildren();
@@ -240,14 +241,21 @@ public class ActorNode implements ActorSource, ActorContext {
 		nodeRef.remove();
 	}
 	
-	private InternalRef createChild(String name, ActorFactory factory) {
+	private synchronized InternalRef createChild(String name, ActorFactory factory) {
 	    if(running) {
-    		InternalRef node = new InternalRefImpl(name, Objects.requireNonNull(factory), self, system, dispatcher);
-    		if(children.putIfAbsent(name, node) != null) {
-    			throw new RuntimeException("Actor name '" + name + "' already in use");
-    		}
-            node.start();
-    		return node;
+            if(!children.containsKey(name)) {
+                InternalRef node = new InternalRefImpl(name, Objects.requireNonNull(factory), self, system, dispatcher);
+                try {
+                    node.start();
+                    children.put(name, node);
+                } catch (Exception e) {
+                    logger.error("Could not start actor '{}'", name, e);
+                    throw e;
+                }
+                return node;
+            } else {
+                throw new RuntimeException("Actor name '" + name + "' already in use");
+            }
 	    } else {
 	        throw new IllegalStateException("Actor not running");
 	    }
@@ -255,6 +263,7 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private void stopChildren() {
 	    for(InternalRef n : children.values()) {
+            System.out.println("sending stop to child "+n.getName());
             n.stop();
 	    }
 	}
