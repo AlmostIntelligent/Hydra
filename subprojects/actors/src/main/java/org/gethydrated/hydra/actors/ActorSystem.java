@@ -13,7 +13,11 @@ import org.gethydrated.hydra.actors.internal.actors.SysGuardian;
 import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.SystemMessages.*;
+import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.util.Util;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 
 /**
@@ -52,6 +56,18 @@ public final class ActorSystem implements ActorSource {
     private final Object awaitLock;
 
     private final Dispatcher defaultDispatcher = Dispatchers.newSharedDispatcher();
+
+    private final UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler() {
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            if(Util.isNonFatal(e)) {
+                logger.error("Unhandled exception from thread '{}'", t.getName(), e);
+            } else {
+                logger.error("Unhandled fatal error from thread '{}'. Shutting down ActorSystem.", t.getName(), e);
+            }
+        }
+    };
 
     /**
      * Private constructor.
@@ -155,6 +171,7 @@ public final class ActorSystem implements ActorSource {
      * @return new actor system.
      */
     public static ActorSystem create() {
+        Configuration cfg = new ConfigurationImpl();
         return new ActorSystem();
     }
 }

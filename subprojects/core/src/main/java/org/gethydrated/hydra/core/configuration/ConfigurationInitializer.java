@@ -2,9 +2,8 @@ package org.gethydrated.hydra.core.configuration;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
-import org.gethydrated.hydra.api.configuration.ConfigurationItem;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -12,7 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
-import org.gethydrated.hydra.core.configuration.files.XMLConfigurationReader;
+import org.gethydrated.hydra.config.files.XMLConfigurationReader;
 
 
 /**

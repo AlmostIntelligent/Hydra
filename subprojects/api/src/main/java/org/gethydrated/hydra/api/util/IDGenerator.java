@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.util;
+package org.gethydrated.hydra.api.util;
 
 public class IDGenerator {
 

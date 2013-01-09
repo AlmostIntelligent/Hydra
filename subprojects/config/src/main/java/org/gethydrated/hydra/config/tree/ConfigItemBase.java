@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.configuration.tree;
+package org.gethydrated.hydra.config.tree;
 
 
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;

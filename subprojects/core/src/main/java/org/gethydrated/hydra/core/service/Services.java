@@ -7,10 +7,8 @@ import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.locator.ServiceLocator;
 import org.gethydrated.hydra.core.service.locator.SystemServiceLocator;
-import org.gethydrated.hydra.core.util.IDGenerator;
+import org.gethydrated.hydra.api.util.IDGenerator;
 import org.slf4j.Logger;
-
-import java.io.IOException;
 
 /**
  * Manages running services.

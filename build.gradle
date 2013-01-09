@@ -71,6 +71,7 @@ project("actors") {
 	
 	dependencies {
 		compile project(':api')
+        compile project(':config')
         compile "com.google.guava:guava:13.0.1"
 	}
 }
@@ -81,10 +82,17 @@ project("core") {
 	dependencies { 
 		compile project(':api') 
 		compile project(':actors')
-        compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"
-
+        compile project(':config')
+        compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"   //Workaround for jetty dependency copying.
 	}
+}
 
+project("config") {
+    description = 'Hydra configurations'
+
+    dependencies {
+        compile project(':api')
+    }
 }
 
 project("cli-service") {

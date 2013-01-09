@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.configuration;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 
 /**
  * Configures basic settings.
@@ -26,6 +27,7 @@ public final class BasicConfigurator {
     public static void configure(final ConfigurationImpl cfg)
             throws ConfigItemNotFoundException {
         // TO-DO: initialize standard config values
-        cfg.setString("test", "test");
+        cfg.setString("actors.test", "test");
+        cfg.setBoolean("hydra.test", Boolean.TRUE);
     }
 }

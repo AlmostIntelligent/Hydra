@@ -7,7 +7,7 @@ import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.Services;
 import org.slf4j.Logger;

@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.configuration;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 
 /**
  *

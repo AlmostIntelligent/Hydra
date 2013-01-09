@@ -9,7 +9,7 @@ import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 
 /**
  * 
