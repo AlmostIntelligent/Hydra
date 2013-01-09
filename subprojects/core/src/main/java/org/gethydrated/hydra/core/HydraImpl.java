@@ -87,7 +87,10 @@ public final class HydraImpl implements Hydra {
         }
         Future f = services.ask(new StartService(name));
         try {
-            return (SID)f.get();
+            System.out.println("meh");
+            SID i =  (SID)f.get();
+            System.out.println("muh");
+            return i;
         } catch (InterruptedException|ExecutionException e) {
             throw new HydraException(e);
         }

@@ -69,8 +69,7 @@ public class Services extends Actor {
                 }, id.toString());
                 getSender().tell(new SIDImpl(service), getSelf());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
             getSender().tell(e, getSelf());
         }
     }
