@@ -1,13 +1,12 @@
 package org.gethydrated.hydra.core.api;
 
-import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.configuration.ConfigurationSecurityWrapper;
+import org.gethydrated.hydra.core.service.SIDImpl;
 import org.gethydrated.hydra.core.service.ServiceImpl;
-import org.gethydrated.hydra.core.service.USIDImpl;
 
 /**
  * Service context api implementation.
@@ -35,8 +34,8 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     }
 
     @Override
-    public USID getSelf() {
-        return new USIDImpl(service.getSelf());
+    public SID getSelf() {
+        return new SIDImpl(service.getSelf());
     }
 
     @Override

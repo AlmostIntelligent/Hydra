@@ -1,8 +1,5 @@
 package org.gethydrated.hydra.api.service;
 
-import org.gethydrated.hydra.api.node.Node;
-
-import java.util.Objects;
 import java.util.concurrent.Future;
 
 /**
@@ -10,9 +7,9 @@ import java.util.concurrent.Future;
  * @author Christian Kulpa
  * @since 0.2.0
  */
-public interface USID {
+public interface SID {
 
-    void tell(Object message, USID sender);
+    void tell(Object message, SID sender);
 
     Future<?> ask(Object message);
 

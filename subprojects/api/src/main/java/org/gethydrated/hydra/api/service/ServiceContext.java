@@ -1,11 +1,6 @@
 package org.gethydrated.hydra.api.service;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.api.configuration.Configuration;
-import org.gethydrated.hydra.api.event.EventListener;
-import org.gethydrated.hydra.api.event.InputEvent;
 
 /**
  * Service context.
@@ -15,7 +10,7 @@ import org.gethydrated.hydra.api.event.InputEvent;
  */
 public interface ServiceContext extends ServiceApi {
 
-    USID getSelf();
+    SID getSelf();
 
     /**
      * 

@@ -2,8 +2,7 @@ package org.gethydrated.hydra.core.api;
 
 import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
-import org.gethydrated.hydra.api.service.USID;
-import org.gethydrated.hydra.core.service.Services;
+import org.gethydrated.hydra.api.service.SID;
 
 /**
  * General Hydra api implementation.
@@ -21,12 +20,12 @@ public class HydraApiImpl implements HydraApi {
     }
     
     @Override
-    public final USID startService(final String name) throws HydraException {
+    public final SID startService(final String name) throws HydraException {
         return null;
     }
 
     @Override
-    public final void stopService(final USID id) throws HydraException {
+    public final void stopService(final SID id) throws HydraException {
     }
 
 }

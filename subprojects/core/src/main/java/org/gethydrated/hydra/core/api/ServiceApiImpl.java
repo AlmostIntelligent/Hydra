@@ -1,5 +1,6 @@
 package org.gethydrated.hydra.core.api;
 
+import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.ServiceApi;
 import org.gethydrated.hydra.core.service.Services;
 
@@ -42,6 +43,11 @@ public class ServiceApiImpl extends HydraApiImpl implements ServiceApi {
         return null;
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public SIDFactory getSIDFactory() {
+        return null;
     }
 
 }

@@ -1,6 +1,6 @@
 package org.gethydrated.hydra.api.message;
 
-import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.SID;
 
 /**
  * Message Interface.
@@ -20,11 +20,11 @@ public interface Message {
      * 
      * @return Destination of the messages.
      */
-    USID getDestination();
+    SID getDestination();
     
     /**
      * 
      * @return Source of the messages.
      */
-    USID getSource();
+    SID getSource();
 }

@@ -2,24 +2,24 @@ package org.gethydrated.hydra.core.service;
 
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.FutureImpl;
-import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.SID;
 
 import java.util.concurrent.Future;
 
-public class USIDImpl implements USID {
+public class SIDImpl implements SID {
 
     ActorRef ref;
 
-    public USIDImpl(ActorRef ref) {
+    public SIDImpl(ActorRef ref) {
         this.ref = ref;
     }
 
     @Override
-    public void tell(Object message, USID sender) {
+    public void tell(Object message, SID sender) {
         if(sender == null) {
             ref.tell(message, null);
         } else {
-            ref.tell(message, ((USIDImpl)sender).ref);
+            ref.tell(message, ((SIDImpl)sender).ref);
         }
     }
 

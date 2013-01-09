@@ -38,4 +38,6 @@ public interface ServiceApi extends HydraApi {
      * @return TODO
      */
     Long getGlobalService(String name);
+
+    SIDFactory getSIDFactory();
 }
