@@ -33,8 +33,8 @@ public interface ActorSource {
     /**
      * Retrieves an actor reference to the given actor path. Will throw an
      * ActorNotFoundException otherwise.
-     * @param uri Actor uri.
+     * @param path Actor path.
      * @return ActorRef pointing to the actor.
      */
-    ActorRef getActor(ActorURI uri);
+    ActorRef getActor(ActorPath path);
 }

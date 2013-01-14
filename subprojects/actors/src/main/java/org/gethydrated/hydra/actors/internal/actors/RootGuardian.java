@@ -1,8 +1,8 @@
 package org.gethydrated.hydra.actors.internal.actors;
 
+import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.actors.ActorURI;
 import org.gethydrated.hydra.actors.internal.InternalRef;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Message;
@@ -87,8 +87,8 @@ public class RootGuardian implements InternalRef {
     }
 
     @Override
-    public ActorURI getAddress() {
-        return null;
+    public ActorPath getPath() {
+        return new ActorPath();
     }
 
     @Override
