@@ -70,7 +70,7 @@ public class InternalRefImpl implements InternalRef {
     }
 
     @Override
-    public ActorURI getAddress() {
+    public ActorPath getPath() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

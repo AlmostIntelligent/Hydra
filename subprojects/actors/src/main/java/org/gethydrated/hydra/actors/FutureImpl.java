@@ -78,7 +78,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
     }
 
     @Override
-    public ActorURI getAddress() {
+    public ActorPath getPath() {
         return null;  //TODO;
     }
 

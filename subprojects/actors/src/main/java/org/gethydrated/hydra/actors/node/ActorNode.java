@@ -4,12 +4,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.actors.ActorSource;
-import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.actors.ActorURI;
+import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.internal.InternalRef;
@@ -141,8 +136,8 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 
 	@Override
-	public ActorRef getActor(ActorURI uri) {
-		return getActor(uri.toString());
+	public ActorRef getActor(ActorPath path) {
+		return getActor(path.toString());
 	}
 	
 	@Override

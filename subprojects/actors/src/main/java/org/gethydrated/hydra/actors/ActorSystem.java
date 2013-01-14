@@ -157,8 +157,8 @@ public final class ActorSystem implements ActorSource {
     }
 
     @Override
-    public ActorRef getActor(final ActorURI uri) {
-        return getActor(uri.toString());
+    public ActorRef getActor(final ActorPath path) {
+        return getActor(path.toString());
     }
 
     private void initRootGuardians() {
