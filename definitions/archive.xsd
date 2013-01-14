@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Hydra Service Archive
+	XML Schema Defintion
+	
+	Version 1.0
+-->
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+	
+	<!--
+		Include service schema
+	-->
+	<xs:include schemaLocation="service.xsd" />
+
+	<!--
+		Main Entity
+	-->
+	<xs:element name="archive">
+		<xs:complexType>
+			<xs:sequence>
+				<!-- Required: archive name -->
+				<xs:element name="name" type="Name" maxOccurs="1" />
+				<!-- Required: Version of the archive -->
+				<xs:element name="version" type="Version" maxOccurs="1" />
+				<!-- Required: A list of services -->
+				<xs:element name="services" maxOccurs="1">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="service" minOccurs="0" maxOccurs="unbounded">
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<!-- Optional: Configration Tree -->
+				<xs:element ref="configuration" minOccurs="0" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>
+

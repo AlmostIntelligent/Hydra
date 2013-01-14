@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration name="configuration"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="configuration.xsd">
+	<configuration name="subitemlist">
+		<configuration name="subitem1" value="Some value" />
+		<configuration name="subitem2" value="Some more value" />
+		<configuration name="subitem3" value="1.0" />
+	</configuration>
+	<configuration name="item" value="Foobar" />
+</configuration>
