@@ -231,7 +231,7 @@ public abstract class CLICommand {
                     }
                 }
             }
-            return "";
+            return parse(result.toArray(new String[result.size()]));
         } else {
             return parse(cmd.split(" "));
         }
