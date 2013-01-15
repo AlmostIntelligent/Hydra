@@ -18,6 +18,16 @@ public class SystemMessages {
 
     public static class Stopped {
 
+        private ActorPath path;
+
+        public Stopped(ActorPath path) {
+            this.path = path;
+        }
+
+        public ActorPath getPath() {
+            return path;
+        }
+
     }
 
     public static class Restart {

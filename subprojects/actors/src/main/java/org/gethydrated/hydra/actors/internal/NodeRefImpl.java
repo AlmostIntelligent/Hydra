@@ -15,8 +15,8 @@ public class NodeRefImpl extends InternalRefImpl implements NodeRef {
     private final ActorNode actorNode;
 
     public NodeRefImpl(ActorPath path, ActorFactory actorFactory, InternalRef parent, ActorSystem actorSystem, Dispatchers dispatchers) {
-        super(path);
-        actorNode = new ActorNode(path, actorFactory, this, actorSystem, dispatchers);
+        super(path, dispatchers);
+        actorNode = new ActorNode(this, parent, actorFactory, actorSystem, dispatchers);
     }
 
     @Override

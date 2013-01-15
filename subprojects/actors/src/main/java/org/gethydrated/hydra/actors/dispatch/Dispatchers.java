@@ -33,6 +33,9 @@ public class Dispatchers implements MailboxLookup{
 
     @Override
     public Mailbox lookupMailbox(ActorPath path) {
+        if(path.isRoot()) {
+            throw new IllegalArgumentException("Cannot resolve Mailbox for root.");
+        }
         for(Dispatcher d : dispatchers.values()) {
             Mailbox m = d.lookupMailbox(path);
             if(m != null) {

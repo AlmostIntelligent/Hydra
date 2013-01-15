@@ -1,6 +1,6 @@
 package org.gethydrated.hydra.actors.node;
 
-import org.gethydrated.hydra.actors.SystemMessages.WatcheeStopped;
+import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.internal.InternalRef;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.api.event.EventStream;
@@ -18,7 +18,7 @@ public class Watchers {
 
     private final InternalRef self;
 
-    private volatile boolean isClosed = false;
+    private volatile boolean closed = false;
 
     private Set<InternalRef> watched = new HashSet<>();
     private Set<InternalRef> watchers = new HashSet<>();
@@ -30,26 +30,46 @@ public class Watchers {
 
     public synchronized void addWatcher(InternalRef watcher) {
         logger.debug("Actor '{}' is now watched by '{}'", self, watcher);
+        if(!closed) {
+            if(!watchers.contains(watcher)) {
+                watchers.add(watcher);
+            }
+        } else {
+            watcher.tellSystem(new WatcheeStopped(self), self);
+        }
     }
 
     public synchronized void removeWatcher(InternalRef watcher) {
-        logger.debug("Actor '{}' is no longer watched by '{}'", self, watcher);
+        if(watchers.contains(watcher)) {
+            logger.debug("Actor '{}' is no longer watched by '{}'", self, watcher);
+            watchers.remove(watcher);
+        }
     }
 
     public synchronized void addWatched(InternalRef target) {
-        logger.debug("Actor '{)' is now watching '{}'", self, target);
+        if(!target.equals(self)) {
+            logger.debug("Actor '{)' is now watching '{}'", self, target);
+            if(!watched.contains(target)) {
+                target.tellSystem(new Watch(self), self);
+                watched.add(target);
+            }
+        }
     }
 
     public synchronized void removeWatched(InternalRef target) {
-        logger.debug("Actor '{}' is no longer watching by '{}'", self, target);
+        if(watched.contains(target)) {
+            logger.debug("Actor '{}' is no longer watching by '{}'", self, target);
+            target.tellSystem(new UnWatch(self), self);
+            watched.remove(target);
+        }
     }
 
     public boolean isClosed() {
-        return isClosed;
+        return closed;
     }
 
     public synchronized void close() {
-        isClosed = true;
+        closed = true;
         informWatchers();
     }
 

@@ -1,9 +1,6 @@
 package org.gethydrated.hydra.actors.node;
 
-import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.ActorPath;
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.actors.ActorSystem;
+import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.internal.InternalRef;
 import org.gethydrated.hydra.actors.internal.LazyActorRef;
@@ -42,8 +39,22 @@ public class Children {
         }
         ActorPath childPath = self.getPath().createChild(name);
         NodeRef child = new NodeRefImpl(childPath, actorFactory, self, actorSystem, dispatchers);
-        child.start();
         children.put(name, child);
+        child.start();
         return new LazyActorRef(childPath, dispatchers);
+    }
+
+    public synchronized boolean removeChild(ActorPath path) {
+        return children.remove(path.getName()) != null;
+    }
+
+    public synchronized void stopChildren() {
+        for (InternalRef ir : children.values()) {
+            ir.tellSystem(new SystemMessages.Stop(), self);
+        }
+    }
+
+    public synchronized boolean isEmpty() {
+        return children.isEmpty();
     }
 }

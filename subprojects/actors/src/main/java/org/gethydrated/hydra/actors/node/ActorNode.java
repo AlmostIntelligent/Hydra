@@ -4,6 +4,7 @@ import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.internal.InternalRef;
+import org.gethydrated.hydra.actors.internal.InternalRefImpl;
 import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
@@ -22,10 +23,10 @@ public class ActorNode implements ActorSource, ActorContext {
 	private final ActorSystem system;
 
     private final InternalRef self;
+
+    private final InternalRef parent;
 	
 	private final ActorFactory factory;
-	
-	private final ActorPath path;
 	
 	private final Logger logger;
 	
@@ -37,48 +38,25 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private final Mailbox mailbox;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-
-        if (o instanceof ActorPath) {
-            System.out.println(path + " - " + o.toString());
-        }
-
-        if (getClass() != o.getClass()) return false;
-
-        ActorNode actorNode = (ActorNode) o;
-
-        if (!path.equals(actorNode.path)) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return path.hashCode();
-    }
-
     private Actor actor;
 
     private ActorRef sender = null;
 	
 	private static final ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
 	
-	private boolean running = true;
+	private ActorLifecyle status = ActorLifecyle.CREATED;
 	
-	public ActorNode(ActorPath path, ActorFactory factory, InternalRef self, ActorSystem system, Dispatchers dispatchers) {
+	public ActorNode(InternalRef self, InternalRef parent, ActorFactory factory, ActorSystem system, Dispatchers dispatchers) {
         logger = new LoggingAdapter(ActorNode.class, system);
-        this.path = Objects.requireNonNull(path);
 		this.factory = factory;
         this.self = self;
+        this.parent = parent;
 		this.system = system;
         this.dispatchers = dispatchers;
         this.watchers = new Watchers(self, system.getEventStream());
         this.children = new Children(self, system, dispatchers);
         this.mailbox = dispatchers.lookupDispatcher("").createMailbox(this); //TODO: get dispatchername from config
-		logger.debug("ActorNode for actor: '" +path+ "' created");
+		logger.debug("ActorNode for actor: '" + self + "' created");
 	}
 	
 	public void process(Message message) {
@@ -108,10 +86,15 @@ public class ActorNode implements ActorSource, ActorContext {
                 pause();
             } else if (o instanceof Resume) {
                 resume();
+            } else if (o instanceof Stopped) {
+                childStopped(((Stopped)o).getPath());
             } else if(o instanceof Watch) {
                 watchers.addWatcher(((Watch) o).getTarget());
             } else if (o instanceof UnWatch) {
                 watchers.removeWatcher(((UnWatch) o).getTarget());
+            } else if (o instanceof WatcheeStopped) {
+                watchers.removeWatcher(((WatcheeStopped) o).getTarget());
+                stop();
             }
         } catch (Exception e) {
             handleError(e);
@@ -185,11 +168,11 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	@Override
 	public String getName() {
-		return path.getName();
+		return self.getName();
 	}
 
     public ActorPath getPath() {
-        return path;
+        return self.getPath();
     }
 
     @Override
@@ -243,33 +226,56 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	public void start() {
+        status = ActorLifecyle.STARTING;
 		createActor();
         mailbox.setSuspended(false);
+        status = ActorLifecyle.RUNNING;
 	}
 	
 	private void stop() {
-        System.out.println("Stopping actor " + path);
-		running = false;
+        logger.info("Stopping actor '{}'",self);
+        status = ActorLifecyle.STOPPING;
         mailbox.setSuspended(true);
-		stopChildren();
+		children.stopChildren();
 		try {
 		    actor.onStop();
         } catch (Exception e) {
             logger.error("Error shutting down actor ", e);
         }
-        //self.parent().tellSystem(new Stopped(), self);
+
+        if(children.isEmpty()) {
+            terminate();
+        }
 	}
 
     private void pause() {
+        status = ActorLifecyle.SUSPENDED;
         mailbox.setSuspended(true);
     }
 
     private void resume() {
+        status = ActorLifecyle.RUNNING;
         mailbox.setSuspended(false);
     }
 
+    private void childStopped(ActorPath path) {
+        children.removeChild(path);
+        if(status == ActorLifecyle.RESTARTING || status == ActorLifecyle.STOPPING) {
+            if(children.isEmpty()) {
+                terminate();
+            }
+        }
+    }
+
+    private void terminate() {
+        watchers.close();
+        parent.tellSystem(new Stopped(self.getPath()), self);
+        status = ActorLifecyle.STOPPED;
+        logger.debug("Actor '{}' stopped.", self);
+    }
+
 	public boolean isTerminated() {
-		return !running;
+		return status == ActorLifecyle.STOPPED;
 	}
 	
 	private void createActor() {
@@ -282,35 +288,29 @@ public class ActorNode implements ActorSource, ActorContext {
 		}
 		nodeRef.remove();
 	}
-	
-	private synchronized InternalRef createChild(String name, ActorFactory factory) {
-	    /*if(running) {
-            if(!children.containsKey(name)) {
-                InternalRef node = new InternalRefImpl(path.createChild(name), Objects.requireNonNull(factory), self, system, dispatcher);
-                try {
-                    node.start();
-                    children.put(name, node);
-                } catch (Exception e) {
-                    logger.error("Could not start actor '{}'", name, e);
-                    throw e;
-                }
-                return node;
-            } else {
-                throw new RuntimeException("Actor name '" + name + "' already in use");
-            }
-	    } else {
-	        throw new IllegalStateException("Actor not running");
-	    }*/ return null;
-	}
-	
-	private void stopChildren() {/*
-        System.out.println(children.size());
-        for(InternalRef n: children.values()) {
-            System.out.println("Sending stop to actor: '" + n + "'");
-            n.stop();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        if (o instanceof ActorPath) {
+            System.out.println(self.getPath() + " - " + o.toString());
         }
-        System.out.println("done");*/
-	}
+
+        if (getClass() != o.getClass()) return false;
+
+        ActorNode actorNode = (ActorNode) o;
+
+        if (!getPath().equals(actorNode.getPath())) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return self.getPath().hashCode();
+    }
 
 	public static ActorNode getLocalActorNode() {
 		return nodeRef.get();

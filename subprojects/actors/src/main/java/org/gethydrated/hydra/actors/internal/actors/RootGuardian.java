@@ -77,11 +77,9 @@ public class RootGuardian implements NodeRef {
     public synchronized void tellSystem(Object o, ActorRef sender) {
         if(o instanceof Stopped) {
             if(sysGuardian.equals(sender)) {
-                System.out.println("yes");
                 running = false;
                 runTerminationHooks();
             }
-            System.out.println("no");
         }
     }
 

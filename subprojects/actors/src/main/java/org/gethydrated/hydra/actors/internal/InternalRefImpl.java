@@ -4,13 +4,17 @@ import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.SystemMessages.Start;
 import org.gethydrated.hydra.actors.SystemMessages.Stop;
+import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 
 public class InternalRefImpl extends AbstractActorRef implements InternalRef {
 
-    public InternalRefImpl(ActorPath path) {
+    private Mailbox mb;
+
+    public InternalRefImpl(ActorPath path, Dispatchers dispatchers) {
         super(path);
+        mb = dispatchers.lookupMailbox(path);
     }
 
     @Override
@@ -55,6 +59,6 @@ public class InternalRefImpl extends AbstractActorRef implements InternalRef {
 
     @Override
     protected Mailbox getMailbox() {
-        return null; //TODO:
+        return mb;
     }
 }

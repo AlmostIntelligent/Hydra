@@ -51,11 +51,6 @@ public class SharedDispatcher implements Dispatcher {
     }
 
     public Mailbox lookupMailbox(ActorPath path) {
-        System.out.println(mailboxes.containsKey(path));
-        for(ActorNode n : mailboxes.keySet()) {
-            System.out.println(n.getName() + ": " + n.hashCode() + "-" + path.hashCode() + " -> " + path.equals(n));
-        }
-        System.out.println(mailboxes.get(path));
         return mailboxes.get(path);
     }
 
