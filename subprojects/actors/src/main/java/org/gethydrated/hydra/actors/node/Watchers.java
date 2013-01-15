@@ -28,20 +28,20 @@ public class Watchers {
         this.logger = new LoggingAdapter(Watchers.class, eventStream);
     }
 
-    public synchronized void addWatcher(InternalRef target) {
-
+    public synchronized void addWatcher(InternalRef watcher) {
+        logger.debug("Actor '{}' is now watched by '{}'", self, watcher);
     }
 
-    public void removeWatcher(InternalRef target) {
-
+    public synchronized void removeWatcher(InternalRef watcher) {
+        logger.debug("Actor '{}' is no longer watched by '{}'", self, watcher);
     }
 
-    public void addWatched(InternalRef target) {
-
+    public synchronized void addWatched(InternalRef target) {
+        logger.debug("Actor '{)' is now watching '{}'", self, target);
     }
 
-    public void removeWatched(InternalRef target) {
-
+    public synchronized void removeWatched(InternalRef target) {
+        logger.debug("Actor '{}' is no longer watching by '{}'", self, target);
     }
 
     public boolean isClosed() {

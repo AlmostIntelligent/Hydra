@@ -5,7 +5,8 @@ import com.google.common.collect.Multimap;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.EventListener;
 
-import java.util.Map;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 
 /**
@@ -52,10 +53,12 @@ public class SystemEventStream implements ActorEventStream {
         synchronized (listeners) {
             if(!listeners.containsValue(subscriber)) {
                 return false;
+
             }
-            for(Map.Entry e: listeners.entries()) {
-                if(e.getValue().equals(subscriber)) {
-                    listeners.remove(e.getKey(), e.getValue());
+            Iterator<Entry<Class<?>, EventListener>> i = listeners.entries().iterator();
+            while(i.hasNext()) {
+                if(i.next().getValue().equals(subscriber)) {
+                    i.remove();
                 }
             }
         }
