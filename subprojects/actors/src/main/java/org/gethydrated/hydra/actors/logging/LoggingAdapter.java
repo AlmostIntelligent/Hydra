@@ -17,14 +17,22 @@ public class LoggingAdapter implements Logger {
 	private final Logger logger;
 
 	public LoggingAdapter(Class<?> clazz, ActorSystem system) {
-		this(clazz.getName(), system);
+		this(clazz.getName(), system.getEventStream());
 	}
 
 	public LoggingAdapter(String name, ActorSystem system) {
-		this.name = name;
-		logger = LoggerFactory.getLogger(name);
-		eventStream = system.getEventStream();
+		this(name, system.getEventStream());
 	}
+
+    public LoggingAdapter(Class<?> clazz, EventStream eventStream) {
+        this(clazz.getName(), eventStream);
+    }
+
+    public LoggingAdapter(String name, EventStream eventStream) {
+        this.name = name;
+        logger = LoggerFactory.getLogger(name);
+        this.eventStream = eventStream;
+    }
 
 	@Override
 	public String getName() {

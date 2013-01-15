@@ -1,9 +1,6 @@
 package org.gethydrated.hydra.actors.logging;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.actors.mailbox.Mailbox;
-import org.gethydrated.hydra.actors.mailbox.Message;
-import org.gethydrated.hydra.actors.node.ActorNode;
 import org.gethydrated.hydra.api.event.LogEvent;
 import org.slf4j.LoggerFactory;
 
@@ -20,17 +17,12 @@ public class LogActor extends Actor {
 	public void onStart() {
 		getLogger(LogActor.class).info("Log actor startet.");
 		getSystem().getEventStream().subscribe(getSelf(), LogEvent.class);
+        getSystem().getEventStream().unsubscribe(new FallbackLogger());
 	}
 	
 	public void onStop() throws Exception {
-	    //Hack until async shutdown
-	    Mailbox m = ((ActorNode)getContext()).getMailbox();
-	    while(m.hasMessages()) {
-	        Message me = m.poll();
-	        if(me != null) {
-	            onReceive(me.getMessage());
-	        }
-	    }
+	    getSystem().getEventStream().subscribe(new FallbackLogger(), LogEvent.class);
+        getSystem().getEventStream().unsubscribe(getSelf());
 	}
 	
 }

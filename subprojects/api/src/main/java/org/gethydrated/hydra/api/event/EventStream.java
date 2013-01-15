@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.api.event;
 
-import org.gethydrated.hydra.api.event.EventListener;
-
 /**
  * Event steam.
  */
@@ -36,8 +34,8 @@ public interface EventStream {
 
     /**
      * Publish an object in the event stream.
+     *
      * @param event Event object.
-     * @return true if published successfully.
      */
-    boolean publish(Object event);
+    void publish(Object event);
 }

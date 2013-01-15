@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.actors;
 
 
+import org.gethydrated.hydra.actors.internal.InternalRef;
+
 public class SystemMessages {
 
     private SystemMessages() {
@@ -32,37 +34,37 @@ public class SystemMessages {
 
     public static class Watch {
 
-        private final ActorRef target;
+        private final InternalRef target;
 
-        public Watch(ActorRef target) {
+        public Watch(InternalRef target) {
             this.target = target;
         }
 
-        public ActorRef getTarget() {
+        public InternalRef getTarget() {
             return target;
         }
     }
 
     public static class UnWatch {
-        private final ActorRef target;
+        private final InternalRef target;
 
-        public UnWatch(ActorRef target) {
+        public UnWatch(InternalRef target) {
             this.target = target;
         }
 
-        public ActorRef getTarget() {
+        public InternalRef getTarget() {
             return target;
         }
     }
 
     public static class WatcheeStopped {
-        private final ActorRef target;
+        private final InternalRef target;
 
-        public WatcheeStopped(ActorRef target) {
+        public WatcheeStopped(InternalRef target) {
             this.target = target;
         }
 
-        public ActorRef getTarget() {
+        public InternalRef getTarget() {
             return target;
         }
     }
