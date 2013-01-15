@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="archive.xsd">
+
+    <name>CLI</name>
+    <version>0.2</version>
+
+    <services>
+        <service>
+            <name>CLI</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.cli.CLIServiceActivator</activator>
+        </service>
+    </services>
+
+</archive>

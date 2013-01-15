@@ -3,6 +3,7 @@ package org.gethydrated.hydra.core.service;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.FutureImpl;
 import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.USID;
 
 import java.util.concurrent.Future;
 
@@ -12,6 +13,11 @@ public class SIDImpl implements SID {
 
     public SIDImpl(ActorRef ref) {
         this.ref = ref;
+    }
+
+    @Override
+    public USID getUSID() {
+        return null;
     }
 
     @Override

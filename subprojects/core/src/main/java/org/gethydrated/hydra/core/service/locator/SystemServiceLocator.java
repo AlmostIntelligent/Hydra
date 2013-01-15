@@ -1,16 +1,16 @@
 package org.gethydrated.hydra.core.service.locator;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.jar.JarFile;
-
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.core.service.ServiceInfo;
 import org.gethydrated.hydra.core.service.ServiceInfoParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.jar.JarFile;
 
 /**
  * System service locator.
@@ -81,7 +81,7 @@ public class SystemServiceLocator implements ServiceLocator {
             final String version) {
         try (JarFile jf = new JarFile(f);
                 InputStream is = jf.getInputStream(jf
-                        .getEntry("HYDRA-INF/service.xml"))) {
+                        .getEntry("HYDRA-INF/archive.xml"))) {
             if (is != null) {
                 ServiceInfo si = ServiceInfoParser.parse(is, name, version);
                 if (si != null) {
