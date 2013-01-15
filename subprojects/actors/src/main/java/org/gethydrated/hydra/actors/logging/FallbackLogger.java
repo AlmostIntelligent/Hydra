@@ -1,20 +1,31 @@
 package org.gethydrated.hydra.actors.logging;
 
-import java.util.List;
-
+import org.gethydrated.hydra.api.event.EventListener;
 import org.gethydrated.hydra.api.event.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FallbackLogger {
+public class FallbackLogger implements EventListener {
 
 	private static final Logger logger = LoggerFactory.getLogger(FallbackLogger.class);
-	
-	public static void log(List<Object> remainingEvents) {
-		for(Object o : remainingEvents) {
-			if(o instanceof LogEvent) {
-				((LogEvent) o).logInto(logger);
-			}
-		}
-	}
+
+    @Override
+    public void handle(Object event) {
+        if(event instanceof LogEvent) {
+            ((LogEvent) event).logInto(logger);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o == null) {
+            return false;
+        }
+        return o instanceof FallbackLogger;
+    }
+
+    @Override
+    public int hashCode() {
+        return FallbackLogger.class.hashCode();
+    }
 }

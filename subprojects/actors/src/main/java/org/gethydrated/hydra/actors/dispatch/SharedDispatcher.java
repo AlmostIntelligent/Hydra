@@ -2,28 +2,28 @@ package org.gethydrated.hydra.actors.dispatch;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.node.ActorNode;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
  */
 public class SharedDispatcher implements Dispatcher {
 
-    final ExecutorService executor = new ForkJoinPool(10, ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-            new Thread.UncaughtExceptionHandler() {
-                @Override
-                public void uncaughtException(Thread t, Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-    , false);
+    final ExecutorService executor;
 
     final BiMap<ActorNode, Mailbox> mailboxes = HashBiMap.create();
+
+    public SharedDispatcher(Thread.UncaughtExceptionHandler handler) {
+        executor = new ForkJoinPool(10, ForkJoinPool.defaultForkJoinWorkerThreadFactory, handler, false);
+    }
 
     @Override
     public Mailbox createMailbox(ActorNode actorNode) {
@@ -51,6 +51,10 @@ public class SharedDispatcher implements Dispatcher {
         return false;
     }
 
+    public Mailbox lookupMailbox(ActorPath path) {
+        return mailboxes.get(path);
+    }
+
     @Override
     public void registerForExecution(Mailbox mb) {
         if(mb.hasMessages() || mb.hasSystemMessages()) {
@@ -65,5 +69,48 @@ public class SharedDispatcher implements Dispatcher {
     @Override
     public void shutdown() {
         executor.shutdown();
+    }
+
+    @Override
+    public ExecutorService getExecutor() {
+        return executor;  //TODO: Maybe wrap that into a delegate to shield the actual executor.
+    }
+
+    @Override
+    public void join() {
+        try {
+            while(!executor.awaitTermination(1, TimeUnit.SECONDS)) {}
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private final class MailboxTask extends ForkJoinTask<Object> {
+
+        private MessageRunner runner;
+
+        public MailboxTask(MessageRunner runner) {
+            this.runner = runner;
+        }
+
+        @Override
+        public Object getRawResult() {
+            return null;
+        }
+
+        @Override
+        protected void setRawResult(Object value) { }
+
+        @Override
+        protected boolean exec() {
+            try {
+                runner.run();
+                return true;
+            } catch (Throwable t) {
+                Thread th = Thread.currentThread();
+                th.getDefaultUncaughtExceptionHandler().uncaughtException(th, t);
+                throw t;
+            }
+        }
     }
 }

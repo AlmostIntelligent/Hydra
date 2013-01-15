@@ -16,4 +16,9 @@ public interface Hydra extends HydraApi {
      * Stops the Hydra.
      */
     void stop();
+
+    /**
+     * Awaits Hydra shutdown.
+     */
+    void await() throws InterruptedException;
 }

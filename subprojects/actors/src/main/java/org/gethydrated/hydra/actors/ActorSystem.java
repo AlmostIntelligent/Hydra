@@ -4,20 +4,19 @@ import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.event.ActorEventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
-import org.gethydrated.hydra.actors.internal.actors.AppGuardian;
-import org.gethydrated.hydra.actors.internal.InternalRef;
-import org.gethydrated.hydra.actors.internal.InternalRefImpl;
+import org.gethydrated.hydra.actors.internal.LazyActorRef;
+import org.gethydrated.hydra.actors.internal.NodeRef;
 import org.gethydrated.hydra.actors.internal.actors.RootGuardian;
-import org.gethydrated.hydra.actors.internal.StandardActorFactory;
-import org.gethydrated.hydra.actors.internal.actors.SysGuardian;
 import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
-import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.event.LogEvent;
 import org.gethydrated.hydra.api.util.Util;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
+
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.MalformedURLException;
 
 
 /**
@@ -45,65 +44,69 @@ public final class ActorSystem implements ActorSource {
     /**
      * Application guardian.
      */
-    private final InternalRef appGuardian;
+    private final NodeRef appGuardian;
 
     /**
      * System guardian.
      */
-    private final InternalRef sysGuardian;
+    private final NodeRef sysGuardian;
 
     /**
      * Lock object for threads awaiting system termination.
      */
-    private final Object awaitLock;
-
-    private final Dispatcher defaultDispatcher = Dispatchers.newSharedDispatcher();
+    private final Object awaitLock = new Object();
 
     private final UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler() {
 
         @Override
         public void uncaughtException(Thread t, Throwable e) {
+            e.printStackTrace(System.err);
             if(Util.isNonFatal(e)) {
                 logger.error("Unhandled exception from thread '{}'", t.getName(), e);
             } else {
                 logger.error("Unhandled fatal error from thread '{}'. Shutting down ActorSystem.", t.getName(), e);
             }
+
         }
     };
+
+    private final Dispatchers dispatchers;
+
+    private final Dispatcher defaultDispatcher;
+
+    private final FallbackLogger fallbackLogger= new FallbackLogger();
 
     /**
      * Private constructor.
      * @param cfg
      */
     private ActorSystem(Configuration cfg) {
+        eventStream.subscribe(fallbackLogger, LogEvent.class);
         logger.info("Creating actor system.");
         config = cfg;
-        awaitLock = new Object();
-        rootGuardian = new RootGuardian(this);
-        sysGuardian = new InternalRefImpl("sys", new StandardActorFactory(SysGuardian.class), rootGuardian, this, defaultDispatcher);
-        appGuardian = new InternalRefImpl("app", new StandardActorFactory(AppGuardian.class), rootGuardian, this, defaultDispatcher);
-        initRootGuardians();
+        dispatchers = new Dispatchers(config, exceptionHandler);
+        defaultDispatcher = dispatchers.lookupDispatcher("default-dispatcher");
+        rootGuardian = new RootGuardian(this, dispatchers);
+        sysGuardian = rootGuardian.getSystemGuardian();
+        appGuardian = rootGuardian.getAppGuardian();
         rootGuardian.addTerminationHook(new Runnable() {
             @Override
             public void run() {
-                eventStream.stopEventHandling();
-                if (eventStream.hasRemainingEvents()) {
-                    FallbackLogger.log(eventStream.getRemainingEvents());
-                }
-                synchronized (awaitLock) {
-                    awaitLock.notifyAll();
-                }
+            synchronized (awaitLock) {
+                logger.debug("shutdown");
+                awaitLock.notifyAll();
+            }
             }
         });
-        eventStream.startEventHandling(1);
     }
 
     /**
      * Shuts down the actor system.
      */
     public void shutdown() {
-        rootGuardian.stop();
         logger.info("Stopping actor system.");
+        appGuardian.stop();
+
     }
 
     /**
@@ -147,27 +150,17 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef getActor(final String uri) {
-        if (uri.startsWith("/system/")) {
-            return sysGuardian.unwrap().getActor(uri.substring(8));
-        } else if (uri.startsWith("/app/")) {
-            return appGuardian.unwrap().getActor(uri.substring(5));
-        } else {
-            throw new RuntimeException("Actor not found.");
+        try {
+            ActorPath ap = ActorPath.apply(new ActorPath(), uri);
+            return getActor(ap);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public ActorRef getActor(final ActorPath path) {
-        return getActor(path.toString());
-    }
-
-    private void initRootGuardians() {
-        rootGuardian.setSystemGuardian(sysGuardian);
-        rootGuardian.setAppGuardian(appGuardian);
-        sysGuardian.start();
-        appGuardian.start();
-        appGuardian.tellSystem(new Watch(sysGuardian), sysGuardian);
-        sysGuardian.tellSystem(new Watch(appGuardian), appGuardian);
+        return new LazyActorRef(path, dispatchers);
     }
 
     /**

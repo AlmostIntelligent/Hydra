@@ -89,6 +89,15 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
+    public void await() throws InterruptedException {
+        if(actorSystem!=null) {
+            logger.info("await");
+            actorSystem.await();
+        }
+    }
+
+
+    @Override
     public synchronized SID startService(final String name) throws HydraException {
         if(actorSystem==null) {
             throw new IllegalStateException("Hydra not running.");
