@@ -14,4 +14,6 @@ public interface Dispatcher extends MailboxFactory, MailboxLookup {
     void shutdown();
 
     ExecutorService getExecutor();
+
+    void join();
 }

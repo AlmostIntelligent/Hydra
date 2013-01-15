@@ -50,7 +50,7 @@ public class Children {
 
     public synchronized void stopChildren() {
         for (InternalRef ir : children.values()) {
-            ir.tellSystem(new SystemMessages.Stop(), self);
+            ir.stop();
         }
     }
 

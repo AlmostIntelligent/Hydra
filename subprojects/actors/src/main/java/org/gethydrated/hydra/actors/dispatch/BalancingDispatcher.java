@@ -36,6 +36,11 @@ public class BalancingDispatcher implements Dispatcher {
     }
 
     @Override
+    public void join() {
+
+    }
+
+    @Override
     public Mailbox lookupMailbox(ActorPath path) {
         return null;
     }

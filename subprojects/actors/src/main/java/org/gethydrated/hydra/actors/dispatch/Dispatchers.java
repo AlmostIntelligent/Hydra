@@ -44,4 +44,17 @@ public class Dispatchers implements MailboxLookup{
         }
         return null;
     }
+
+    public void join() {
+        for(Dispatcher d : dispatchers.values()) {
+            d.join();
+        }
+    }
+
+    public void shutdown() {
+        for(Dispatcher d : dispatchers.values()) {
+            d.shutdown();
+        }
+
+    }
 }

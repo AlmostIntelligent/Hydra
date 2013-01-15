@@ -5,7 +5,6 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.FutureImpl;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.concurrent.Future;
 
@@ -37,7 +36,7 @@ public abstract class AbstractActorRef implements ActorRef {
 
     @Override
     public void forward(Message m) {
-        throw new NotImplementedException(); //TODO:
+        throw new RuntimeException("Not implemented: forward"); //TODO:
     }
 
     @Override

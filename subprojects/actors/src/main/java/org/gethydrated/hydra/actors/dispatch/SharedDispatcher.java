@@ -10,6 +10,7 @@ import org.gethydrated.hydra.actors.node.ActorNode;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -73,6 +74,15 @@ public class SharedDispatcher implements Dispatcher {
     @Override
     public ExecutorService getExecutor() {
         return executor;  //TODO: Maybe wrap that into a delegate to shield the actual executor.
+    }
+
+    @Override
+    public void join() {
+        try {
+            while(!executor.awaitTermination(1, TimeUnit.SECONDS)) {}
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private final class MailboxTask extends ForkJoinTask<Object> {

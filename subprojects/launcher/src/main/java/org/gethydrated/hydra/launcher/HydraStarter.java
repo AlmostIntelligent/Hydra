@@ -1,11 +1,11 @@
 package org.gethydrated.hydra.launcher;
 
+import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.core.HydraFactory;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.gethydrated.hydra.api.Hydra;
-import org.gethydrated.hydra.core.HydraFactory;
 
 /**
  * Starts Hydra.
@@ -33,7 +33,8 @@ public final class HydraStarter {
         Hydra hydra = HydraFactory.getHydra();
         hydra.start();
         hydra.startService("CLI");
-        hydra.startService("JETTY");
+        //hydra.startService("JETTY");
+        hydra.await();
     }
 
     /**

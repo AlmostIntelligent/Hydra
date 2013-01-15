@@ -4,8 +4,6 @@ package org.gethydrated.hydra.test.actors;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.actors.SystemMessages.*;
-import org.junit.rules.TestWatcher;
 
 public class WatchTest {
 
@@ -23,15 +21,17 @@ public class WatchTest {
 
         @Override
         public void onReceive(Object message) throws Exception {
-            if(message instanceof WatcheeStopped) {
-                System.out.println("Watchee stopped. Shutting down!");
-                getSystem().shutdown();
-            }
         }
 
         @Override
         public void onStart() {
             getContext().watch(getSystem().getActor("/app/watchee"));
+        }
+
+        @Override
+        public void onStop() {
+            System.out.println("Watchee stopped. Shutting down!");
+            getSystem().shutdown();
         }
     }
 

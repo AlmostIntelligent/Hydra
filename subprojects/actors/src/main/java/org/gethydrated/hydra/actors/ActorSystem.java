@@ -4,6 +4,7 @@ import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.event.ActorEventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
+import org.gethydrated.hydra.actors.internal.LazyActorRef;
 import org.gethydrated.hydra.actors.internal.NodeRef;
 import org.gethydrated.hydra.actors.internal.actors.RootGuardian;
 import org.gethydrated.hydra.actors.logging.FallbackLogger;
@@ -15,6 +16,7 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
 
 import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.MalformedURLException;
 
 
 /**
@@ -90,9 +92,10 @@ public final class ActorSystem implements ActorSource {
         rootGuardian.addTerminationHook(new Runnable() {
             @Override
             public void run() {
-                synchronized (awaitLock) {
-                    awaitLock.notifyAll();
-                }
+            synchronized (awaitLock) {
+                logger.debug("shutdown");
+                awaitLock.notifyAll();
+            }
             }
         });
     }
@@ -101,8 +104,9 @@ public final class ActorSystem implements ActorSource {
      * Shuts down the actor system.
      */
     public void shutdown() {
-        rootGuardian.stop();
         logger.info("Stopping actor system.");
+        appGuardian.stop();
+
     }
 
     /**
@@ -146,18 +150,17 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef getActor(final String uri) {
-        if (uri.startsWith("/system/")) {
-            return sysGuardian.unwrap().getActor(uri.substring(8));
-        } else if (uri.startsWith("/app/")) {
-            return appGuardian.unwrap().getActor(uri.substring(5));
-        } else {
-            throw new RuntimeException("Actor not found.");
+        try {
+            ActorPath ap = ActorPath.apply(new ActorPath(), uri);
+            return getActor(ap);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public ActorRef getActor(final ActorPath path) {
-        return getActor(path.toString());
+        return new LazyActorRef(path, dispatchers);
     }
 
     /**

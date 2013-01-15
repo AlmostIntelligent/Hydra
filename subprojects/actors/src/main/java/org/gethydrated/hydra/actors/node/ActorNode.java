@@ -12,7 +12,7 @@ import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.api.util.Util;
 import org.slf4j.Logger;
 
-import java.util.Objects;
+import java.net.MalformedURLException;
 
 /**
  * @author Christian Kulpa
@@ -59,7 +59,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		logger.debug("ActorNode for actor: '" + self + "' created");
 	}
 	
-	public void process(Message message) {
+	public synchronized void process(Message message) {
 		try {
             if(!handleInternal(message.getMessage())) {
                 sender = message.getSender();
@@ -75,7 +75,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		}
 	}
 
-    public void processSystem(Message message) {
+    public synchronized void processSystem(Message message) {
         try {
             Object o = message.getMessage();
             if(o instanceof Start) {
@@ -131,39 +131,17 @@ public class ActorNode implements ActorSource, ActorContext {
 
 	@Override
 	public ActorRef getActor(String uri) {
-		/*if(uri.startsWith("/")) {
-			return system.getActor(uri);
-		} else if (uri.startsWith("../")) {
-			if(self.parent() != null) {
-				return self.parent().unwrap().getActor(uri.substring(3));
-			} else {
-				throw new RuntimeException("Actor not found.");
-			}
-		} else {
-			int del = uri.indexOf('/');
-			if(del == -1) {
-				ActorRef n = children.get(uri);
-				if(n != null) {
-					return n;
-				} else {
-					throw new RuntimeException("Actor not found.");
-				}
-			} else {
-				String child = uri.substring(0, del);
-				String remain = uri.substring(del+1);
-				InternalRef n = children.get(child);
-				if(n != null) {
-					return n.unwrap().getActor(remain);
-				} else {
-					throw new RuntimeException("Actor not found.");
-				}
-			}
-		}    */return null;
-	}
+        try {
+            ActorPath ap = ActorPath.apply(self.getPath(), uri);
+            return getActor(ap);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	@Override
 	public ActorRef getActor(ActorPath path) {
-		return getActor(path.toString());
+		return system.getActor(path);
 	}
 	
 	@Override
@@ -177,27 +155,12 @@ public class ActorNode implements ActorSource, ActorContext {
 
     @Override
     public void watch(ActorRef target) {
-        /*watchers.addWatched(target);
-        if(target != self) {
-            synchronized (watched) {
-                if(!watched.contains(target)) {
-                    watched.add(target);
-                    ((InternalRef)target).tellSystem(new Watch(self), self);
-                }
-            }
-        }       */
+        watchers.addWatched(new InternalRefImpl(target.getPath(), dispatchers));
     }
 
     @Override
     public void unwatch(ActorRef target) {
-        /*if(target != self) {
-            synchronized (watched) {
-                if(watched.contains(target)) {
-                    watched.remove(target);
-                    ((InternalRef)target).tellSystem(new UnWatch(self), self);
-                }
-            }
-        }       */
+        watchers.removeWatched(new InternalRefImpl(target.getPath(), dispatchers));
     }
 
     @Override
@@ -225,7 +188,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		return children.getChild(name);
 	}
 	
-	public void start() {
+	private void start() {
         status = ActorLifecyle.STARTING;
 		createActor();
         mailbox.setSuspended(false);
@@ -233,14 +196,14 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	private void stop() {
-        logger.info("Stopping actor '{}'",self);
+        logger.debug("Stopping actor '{}'", self);
         status = ActorLifecyle.STOPPING;
         mailbox.setSuspended(true);
 		children.stopChildren();
 		try {
 		    actor.onStop();
         } catch (Exception e) {
-            logger.error("Error shutting down actor ", e);
+            logger.error("Error shutting down actor '{}':", self, e);
         }
 
         if(children.isEmpty()) {
@@ -271,7 +234,7 @@ public class ActorNode implements ActorSource, ActorContext {
         watchers.close();
         parent.tellSystem(new Stopped(self.getPath()), self);
         status = ActorLifecyle.STOPPED;
-        logger.debug("Actor '{}' stopped.", self);
+        logger.info("Actor '{}' stopped.", self);
     }
 
 	public boolean isTerminated() {

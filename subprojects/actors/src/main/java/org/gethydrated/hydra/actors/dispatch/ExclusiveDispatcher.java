@@ -39,4 +39,9 @@ public class ExclusiveDispatcher implements Dispatcher {
     public ExecutorService getExecutor() {
         return null;
     }
+
+    @Override
+    public void join() {
+
+    }
 }
