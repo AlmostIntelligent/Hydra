@@ -9,10 +9,12 @@ public class PingPongTest {
 	
 	public static void main(String [] args) throws InterruptedException {
         ActorSystem as = ActorSystem.create();
+        Thread.sleep(1000);
         ActorRef r = as.spawnActor(PingPong.class, "pingpong");
-        //Thread.sleep(1000);
+        Thread.sleep(1000);
         r.tell("start", null);
         as.await();
+
     }
 	
 	public static class PingPong extends Actor {

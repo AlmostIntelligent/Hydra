@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.actors;
 
+import org.gethydrated.hydra.actors.node.ActorNode;
+
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Arrays;
@@ -49,6 +51,14 @@ public class ActorPath implements Serializable {
         return new ActorPath(newPathStack);
     }
 
+    /**
+     * Returns the target actors name.
+     * @return actor name.
+     */
+    public String getName() {
+        return pathStack[pathStack.length-1];
+    }
+
     private boolean validateName(String name) {
         return name.matches("[a-zA-Z0-9_-]");
     }
@@ -68,13 +78,18 @@ public class ActorPath implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null) return false;
+
+        if (o instanceof ActorNode) {
+            return this.equals(((ActorNode) o).getPath());
+        }
+
+        if (getClass() != o.getClass()) return false;
 
         ActorPath actorPath = (ActorPath) o;
 
-        if (!Arrays.equals(pathStack, actorPath.pathStack)) return false;
+        return java.util.Arrays.equals(pathStack, actorPath.pathStack);
 
-        return true;
     }
 
     @Override
