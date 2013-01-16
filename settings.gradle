@@ -6,6 +6,7 @@ include 'core'
 include 'config'
 include 'launcher'
 include 'cli-service'
+include 'kartograph-service'
 include 'jetty-service'
 
 rootProject.name = 'hydra'
