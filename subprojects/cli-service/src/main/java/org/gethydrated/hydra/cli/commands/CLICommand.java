@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.gethydrated.hydra.api.service.ServiceContext;
 
@@ -219,19 +221,11 @@ public abstract class CLICommand {
      */
     public final String parse(final String cmd) {
         if (cmd.contains("\"")) {
-            String[] parts = cmd.split("\"");
-            int i = 0;
-            ArrayList<String> result = new ArrayList<>();
-            for (i = 0; i < parts.length; i++) {
-                if (i == 0) {
-                    Collections.addAll(result, parts[0].split(" "));
-                } else {
-                    if (parts[i].trim() != "") {
-                        result.add(parts[i]);
-                    }
-                }
-            }
-            return "";
+            List<String> list = new ArrayList<String>();
+            Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(cmd);
+            while (m.find())
+                list.add(m.group(1).replace("\"", ""));
+            return parse(list.toArray(new String[list.size()]));
         } else {
             return parse(cmd.split(" "));
         }
