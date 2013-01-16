@@ -51,7 +51,7 @@ public class CLIServiceTest {
          */
     @Test
     public final void testEcho() {
-        assertEquals("Hallo", dut.handleInputString("echo Hallo"));
+        assertEquals("Hallo", dut.handleInputString("echo Hallo").trim());
     }
 
     /**
@@ -61,15 +61,11 @@ public class CLIServiceTest {
     public final void testEchoQuote() {
         String str = null;
         str = dut.handleInputString("echo \"Hallo Welt\"");
-        System.out.print(str);
-        //assertEquals("Hallo Welt", str);
-        str = dut.handleInputString("echo String, \"more String\" and even more \"String here with content\"");
-        System.out.print(str);
-        //assertEquals("Some String and even more Strings here with content", str);
-        str = dut.handleInputString("echo String, \"more String\" and even more \"String here with content\" all done");
-        System.out.print(str);
-        //assertEquals("Some String and even more Strings here with content all done", str);
-        assertTrue(true);
+        assertEquals("Hallo Welt", str.trim());
+        str = dut.handleInputString("echo Some String, \"more Strings\" and even more \"Strings here with content\"");
+        assertEquals("Some String, more Strings and even more Strings here with content", str.trim());
+        str = dut.handleInputString("echo Some String, \"more Strings\" and even more \"Strings here with content\" all done");
+        assertEquals("Some String, more Strings and even more Strings here with content all done", str.trim());
     }
     
     /**
@@ -77,7 +73,7 @@ public class CLIServiceTest {
      */
     @Test
     public final void testEchoEmpty() {
-        assertEquals("", dut.handleInputString("echo"));
+        assertEquals("", dut.handleInputString("echo").trim());
     }
     
     /**
@@ -85,7 +81,7 @@ public class CLIServiceTest {
      */
     @Test
     public final void testEchoBlank() {
-        assertEquals("", dut.handleInputString("echo "));
+        assertEquals("", dut.handleInputString("echo ").trim());
     }   
 
     /**
@@ -93,7 +89,7 @@ public class CLIServiceTest {
          */
     @Test
     public final void testConfigSet() {
-        assertEquals("Network.Host = localhost", dut.handleInputString("configuration set Network.Host localhost"));
+        assertEquals("Network.Host = localhost", dut.handleInputString("configuration set Network.Host localhost").trim());
         try {
             assertEquals("localhost",
                     ctx.getConfiguration().getString("Network.Host"));
@@ -107,7 +103,7 @@ public class CLIServiceTest {
          */
     @Test
     public final void testConfigGet() {
-        assertEquals("1337", dut.handleInputString("configuration get Network.Port"));
+        assertEquals("1337", dut.handleInputString("configuration get Network.Port").trim());
     }
 
     /**
