@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hydra:configuration name="configuration"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:hydra="http://www.gethydrated.org/schema/configuration"
-	xsi:schemaLocation="http://www.gethydrated.com/schema/configuration.xsd">
+	xsi:schemaLocation="http://www.gethydrated.org/schema/configuration.xsd">
 	<configuration name="subitemlist">
 		<configuration name="subitem1" value="Some value" />
 		<configuration name="subitem2" value="Some more value" />
