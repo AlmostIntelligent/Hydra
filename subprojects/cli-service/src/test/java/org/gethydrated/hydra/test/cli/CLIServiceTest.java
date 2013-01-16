@@ -67,7 +67,7 @@ public class CLIServiceTest {
         str = dut.handleInputString("echo Some String, \"more Strings\" and even more \"Strings here with content\" all done");
         assertEquals("Some String, more Strings and even more Strings here with content all done", str.trim());
     }
-    
+
     /**
      * 
      */
@@ -114,5 +114,15 @@ public class CLIServiceTest {
         assertEquals("Port" + System.getProperty("line.separator") + "Host"
                 + System.getProperty("line.separator"), dut.handleInputString("configuration list Network"));
     }
+
+    @Test
+    public final void testVariables() {
+
+        assertEquals("hallo", dut.handleInputString("$var = echo hallo").trim());
+        assertEquals("hallo", dut.handleInputString("echo $var").trim());
+
+    }
+
+
 
 }
