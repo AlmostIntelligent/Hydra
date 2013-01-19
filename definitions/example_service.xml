@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="service.xsd">
+<hydra:service xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:hydra="http://www.gethydrated.org/schema/service"
+	xsi:schemaLocation="http://www.gethydrated.org/schema/service.xsd">
 	<name>www</name>
 	<version>1.0alpha</version>
 	<dependencies>
 		<dependency name="network" />
 	</dependencies>
 	<configuration name="hostname" value="localhost" />
-</service>
+</hydra:service>

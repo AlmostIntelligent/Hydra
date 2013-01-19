@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="archive.xsd">
+<hydra:archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:hydra="http://www.gethydrated.org/schema/archive"
+	xsi:schemaLocation="http://www.gethydrated.org/schema/archive.xsd">
 
 	<name>Webserver</name>
 	<version>1.0nightly</version>
@@ -21,4 +22,4 @@
 			</dependencies>
 		</service>
 	</services>
-</archive>
+</hydra:archive>
