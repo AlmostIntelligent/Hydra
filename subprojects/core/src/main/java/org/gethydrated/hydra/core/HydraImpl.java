@@ -63,7 +63,8 @@ public final class HydraImpl implements Hydra {
     public synchronized void start() throws HydraException {
         if(actorSystem==null) {
             logger.info("Starting Hydra.");
-            try {
+            new ArchiveLoader(cfg).load();
+            /*try {
                 new ArchiveLoader(cfg).load();
                 actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
                 services = actorSystem.spawnActor(new ActorFactory() {
@@ -76,7 +77,7 @@ public final class HydraImpl implements Hydra {
             } catch (ConfigItemNotFoundException|ConfigItemTypeException  e) {
                 logger.error("Invalid configuration.", e);
                 throw new HydraException(e);
-            }
+            }    */
         }
     }
 
@@ -102,7 +103,7 @@ public final class HydraImpl implements Hydra {
     @Override
     public synchronized SID startService(final String name) throws HydraException {
         if(actorSystem==null) {
-            throw new IllegalStateException("Hydra not running.");
+            throw new HydraException("Hydra not running.");
         }
         Future f = services.ask(new StartService(name));
         try {
