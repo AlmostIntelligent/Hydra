@@ -49,30 +49,31 @@ public class CLICommandConfigList extends CLICommand {
     @Override
     public final String execute(final String[] args) {
         StringBuilder sb = new StringBuilder();
+        String elem = null;
         if (args.length >= 1) {
-            List<String> l;
-            try {
-                l = getContext().getConfiguration().list(args[0]);
-                if (l.size() > 0) {
+            elem = args[0];
+        } else {
+            elem = "";
+        }
+        List<String> l;
+        try {
+            l = getContext().getConfiguration().list(elem);
+            if (l.size() > 0) {
                 for (String s : l) {
                     sb.append(s);
                     sb.append(System.getProperty("line.separator"));
                 }
-                } else {
-                    sb.append(args[0]);
-                    sb.append(" has no children");
-                    sb.append(System.getProperty("line.separator"));
-                }
-            } catch (ConfigItemNotFoundException e) {
-                sb.append(String.format("Configuration item %s not found", args[0]));
-                sb.append(System.getProperty("line.separator"));
-            } catch (NullPointerException e) {
-                sb.append("Caught Nullpointer exception. No Context defined?");
+            } else {
+                sb.append(args[0]);
+                sb.append(" has no children");
                 sb.append(System.getProperty("line.separator"));
             }
-
-        } else {
-            sb.append("No key given.");
+        } catch (ConfigItemNotFoundException e) {
+            sb.append(String.format("Configuration item %s not found", args[0]));
+            sb.append(System.getProperty("line.separator"));
+        } catch (NullPointerException e) {
+            sb.append("Caught Nullpointer exception. No Context defined?");
+            sb.append(System.getProperty("line.separator"));
         }
         return sb.toString();
     }

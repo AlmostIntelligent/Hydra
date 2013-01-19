@@ -5,7 +5,12 @@
 	
 	Version 1.0
 -->
-<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+<xs:schema 
+	xmlns:cfg="http://www.gethydrated.org/schema/configuration" 
+	targetNamespace="http://www.gethydrated.org/schema/configuration" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	version="1.0" 
+	>
 	
 	<!-- 
 		A name starts with a letter followed by any sequence of letters and numbers 
@@ -15,22 +20,24 @@
 			<xs:pattern value="[a-zA-Z][a-zA-Z0-9_]*" />
 		</xs:restriction>
 	</xs:simpleType>
+
+	<!--
+		Configuration: Tree of configuration items
+	-->
+	<xs:complexType name="ConfigItem">
+		<!-- A List of sub items -->
+		<xs:sequence>
+			<xs:element name="configuration" type="cfg:ConfigItem" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<!-- Required attribute: Configuration item name -->
+		<xs:attribute name="name" type="cfg:Name" use="required" />
+		<!-- Configuration item type -->
+		<xs:attribute name="value" type="xs:string" use="optional" />
+	</xs:complexType>
 	
 	<!-- 
 		A configuration element requires a name. 
 		It has a value or a list of sub items
 	-->
-	<xs:element name="configuration">
-		<xs:complexType>
-			<!-- A List of sub items -->
-			<xs:sequence>
-				<xs:element ref="configuration" minOccurs="0" maxOccurs="unbounded" />
-			</xs:sequence>
-			<!-- Required attribute: Configuration item name -->
-			<xs:attribute name="name" type="Name" use="required" />
-			<!-- Configuration item type -->
-			<xs:attribute name="value" type="xs:string" />
-		</xs:complexType>
-	</xs:element>
-	
+	<xs:element name="configuration" type="cfg:ConfigItem" />
 </xs:schema>

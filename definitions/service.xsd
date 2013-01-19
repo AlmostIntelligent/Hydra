@@ -5,12 +5,18 @@
 	
 	Version 1.0
 -->
-<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="1.0">
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:srv="http://www.gethydrated.org/schema/service"
+	xmlns:cfg="http://www.gethydrated.org/schema/configuration"
+	targetNamespace="http://www.gethydrated.org/schema/service" 
+	version="1.0">
 	
 	<!--
 		Include configuration schema
 	-->
-	<xs:include schemaLocation="configuration.xsd" />
+	<xs:import namespace="http://www.gethydrated.org/schema/configuration" 
+		schemaLocation="http://www.gethydrated.org/schema/configuration.xsd" />
 
 	<!--
 		A Version has the format X.X
@@ -26,35 +32,38 @@
 	</xs:simpleType>
 	
 	<!--
+		Service type
+	-->
+	<xs:complexType name="Service">
+		<xs:all>
+			<!-- Required: Service name -->
+			<xs:element name="name" type="cfg:Name" maxOccurs="1" />
+			<!-- Optional: Version of the service -->
+			<xs:element name="version" type="srv:Version" minOccurs="0" maxOccurs="1" />
+			<!-- Optional: Dependencies on other services -->
+			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="dependency" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<!-- Requiered attribute: Depended service name -->
+								<xs:attribute name="name" type="cfg:Name" use="required" />
+								<!-- Optional attribute: Depended version -->
+								<xs:attribute name="version" type="srv:Version" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- Optional: Configration Tree -->
+			<xs:element name="configuration" type="cfg:ConfigItem" minOccurs="0" />
+		</xs:all>
+	</xs:complexType>
+	
+	<!--
 		Main Entity
 	-->
-	<xs:element name="service">
-		<xs:complexType>
-			<xs:sequence>
-				<!-- Required: Service name -->
-				<xs:element name="name" type="Name" maxOccurs="1" />
-				<!-- Optional: Version of the service -->
-				<xs:element name="version" type="Version" minOccurs="0" maxOccurs="1" />
-				<!-- Optional: Dependencies on other services -->
-				<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="dependency" minOccurs="0" maxOccurs="unbounded">
-								<xs:complexType>
-									<!-- Requiered attribute: Depended service name -->
-									<xs:attribute name="name" type="Name" use="required" />
-									<!-- Optional attribute: Depended version -->
-									<xs:attribute name="version" type="Version" />
-								</xs:complexType>
-							</xs:element>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				<!-- Optional: Configration Tree -->
-				<xs:element ref="configuration" minOccurs="0" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
+	<xs:element name="service" type="srv:Service" />
 	
 </xs:schema>
 
