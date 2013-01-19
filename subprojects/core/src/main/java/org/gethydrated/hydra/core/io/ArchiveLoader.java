@@ -40,7 +40,9 @@ public final class ArchiveLoader {
                 public FileVisitResult visitFile( Path path, BasicFileAttributes attribs )
                 {
                     try {
-                    if(path.endsWith(".jar") || path.endsWith(".war") || path.endsWith(".ear")) {
+                    logger.debug("found '{}'", path.toString());
+                    if(path.toString().endsWith(".jar") || path.toString().endsWith(".war") || path.toString().endsWith(".ear")) {
+                        logger.debug("Checking '{}'", path.toString());
                         Archive ar = ArchiveParser.parse(path);
                         if(ar != null) {
                             archives.add(ar);

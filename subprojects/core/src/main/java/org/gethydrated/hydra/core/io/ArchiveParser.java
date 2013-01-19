@@ -5,6 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.*;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -27,20 +34,27 @@ public class ArchiveParser {
                     return ar;
                 }
             }
-        } catch (SAXException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             logger.error("Parse Exception at file: {} : {}", path, e);
         }
         return null;
     }
 
-    private static Archive parse(InputStream is) throws SAXException {
+    private static Archive parse(InputStream is) throws SAXException, IOException, ParserConfigurationException {
 
-        final Archive ar = new Archive();
-
-        final XMLReader xmlReader = XMLReaderFactory.createXMLReader();
+        Source[] sources = {
+        new SAXSource(new InputSource(ArchiveParser.class.getClassLoader().getResourceAsStream("archive.xsd"))),
+        new SAXSource(new InputSource(ArchiveParser.class.getClassLoader().getResourceAsStream("service.xsd"))),
+        new SAXSource(new InputSource(ArchiveParser.class.getClassLoader().getResourceAsStream("configuration.xsd")))
+        };
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(sources);
+        SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+        parserFactory.setSchema(schema);
+        final XMLReader xmlReader = parserFactory.newSAXParser().getXMLReader();
         ArchiveHandler archiveHandler = new ArchiveHandler();
         xmlReader.setContentHandler(archiveHandler);
-
+        xmlReader.parse(new InputSource(is));
         return archiveHandler.getResult();
     }
 
