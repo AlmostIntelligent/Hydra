@@ -1,11 +1,27 @@
 package org.gethydrated.hydra.core.io;
 
-import java.nio.file.Path;
-
 /**
  *
  */
 public class Archive {
-    public void addPath(Path path) {
+
+    String name;
+
+    String version;
+
+    public void setName(String name) {
+        if(this.name==null) {
+            this.name = name;
+        }
+    }
+
+    public void setVersion(String version) {
+        if(this.version==null) {
+            this.version = version;
+        }
+    }
+
+    public String toString() {
+        return "<Archive:"+name+":"+version+">";
     }
 }

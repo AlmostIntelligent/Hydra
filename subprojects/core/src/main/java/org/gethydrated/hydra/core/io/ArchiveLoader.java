@@ -1,9 +1,11 @@
 package org.gethydrated.hydra.core.io;
 
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.core.xml.ArchiveReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -18,6 +20,8 @@ public final class ArchiveLoader {
     private final Path directory;
 
     private final Logger logger = LoggerFactory.getLogger(ArchiveLoader.class);
+
+    private final ArchiveReader archiveReader = new ArchiveReader();
 
     public ArchiveLoader(final Configuration cfg) {
         directory = Paths.get(System.getProperty("hydra.home") + "/service");
@@ -43,7 +47,7 @@ public final class ArchiveLoader {
                     logger.debug("found '{}'", path.toString());
                     if(path.toString().endsWith(".jar") || path.toString().endsWith(".war") || path.toString().endsWith(".ear")) {
                         logger.debug("Checking '{}'", path.toString());
-                        Archive ar = ArchiveParser.parse(path);
+                        Archive ar = archiveReader.parse(new FileInputStream(path.toFile()));
                         if(ar != null) {
                             archives.add(ar);
                         }
