@@ -10,7 +10,7 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.config.ConfigurationImpl;
-import org.gethydrated.hydra.core.io.ArchiveLoader;
+import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.Services;
 import org.slf4j.Logger;
@@ -47,6 +47,8 @@ public final class HydraImpl implements Hydra {
 
     private ActorRef services;
 
+    private Archives archives;
+
     /**
      * Constructor.
      * 
@@ -55,22 +57,19 @@ public final class HydraImpl implements Hydra {
      */
     public HydraImpl(final ConfigurationImpl cfg) {
         this.cfg = cfg;
-
-
     }
 
     @Override
     public synchronized void start() throws HydraException {
         if(actorSystem==null) {
             logger.info("Starting Hydra.");
-            new ArchiveLoader(cfg).load();
             try {
-                new ArchiveLoader(cfg).load();
+                archives = new Archives(cfg);
                 actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
                 services = actorSystem.spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
-                        return new Services(cfg);
+                        return new Services(cfg, archives);
                     }
                 }, "services");
                 shutdownhook.register();

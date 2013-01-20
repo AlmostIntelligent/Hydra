@@ -53,6 +53,7 @@ public final class ArchiveLoader {
                         try (InputStream is = jf.getInputStream(jf.getEntry("HYDRA-INF/archive.xml"))) {
                             Archive ar = archiveReader.parse(is);
                             if(ar != null) {
+                                ar.addArchiveURL(path.toUri().toURL());
                                 archives.add(ar);
                             }
                         }

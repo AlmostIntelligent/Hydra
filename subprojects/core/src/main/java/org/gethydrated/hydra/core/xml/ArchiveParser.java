@@ -38,6 +38,7 @@ public class ArchiveParser implements XMLParser<Archive> {
             case "services":    parseServicesStart(element);
                 break;
             case "service":     parseServiceStart(element);
+                break;
             default:
                 if(delegate!=null) {
                     delegate.startElement(element);
@@ -53,6 +54,7 @@ public class ArchiveParser implements XMLParser<Archive> {
             case "services":    parseServicesEnd(element);
                 break;
             case "service":     parseServiceEnd(element);
+                break;
             default:
                 if (delegate!=null) {
                     delegate.endElement(element);
@@ -69,11 +71,19 @@ public class ArchiveParser implements XMLParser<Archive> {
     }
 
     private void parseName(Element element) {
-        archive.setName(element.getTextContent());
+        if(delegate==null) {
+            archive.setName(element.getTextContent());
+        } else {
+            delegate.startElement(element);
+        }
     }
 
     private void parseVersion(Element element) {
-        archive.setVersion(element.getTextContent());
+        if(delegate==null) {
+            archive.setVersion(element.getTextContent());
+        } else {
+            delegate.startElement(element);
+        }
     }
 
     private void parseServicesStart(Element element) {

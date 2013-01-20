@@ -4,10 +4,12 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.util.IDGenerator;
+import org.gethydrated.hydra.core.internal.Archives;
+import org.gethydrated.hydra.core.internal.Service;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.locator.ServiceLocator;
 import org.gethydrated.hydra.core.service.locator.SystemServiceLocator;
-import org.gethydrated.hydra.api.util.IDGenerator;
 import org.slf4j.Logger;
 
 /**
@@ -34,6 +36,8 @@ public class Services extends Actor {
      * Configuration.
      */
     private final Configuration cfg;
+
+    private final Archives archives;
     
     /**
      * Constructor.
@@ -41,8 +45,9 @@ public class Services extends Actor {
      * @param cfg
      *            Configuration.
      */
-    public Services(final Configuration cfg) {
+    public Services(final Configuration cfg, final Archives archives) {
         sl = new SystemServiceLocator(cfg);
+        this.archives = archives;
         idGen = new IDGenerator();
         this.cfg = cfg;
     }
@@ -57,7 +62,18 @@ public class Services extends Actor {
     private void startService(String serviceName) {
         try {
             Long id = idGen.getId();
-            final ServiceInfo si = sl.locate(serviceName);
+            final Service service = archives.getService(serviceName);
+            if(service != null) {
+                ActorRef ref = getContext().spawnActor(new ActorFactory() {
+                    @Override
+                    public Actor create() throws Exception {
+                        return new ServiceImpl(service.getActivator(), service.getClassLoader(), cfg);
+                    }
+                }, id.toString());
+                getSender().tell(new SIDImpl(ref), getSelf());
+            }
+            throw new RuntimeException("Service not found:"+serviceName);
+            /*final ServiceInfo si = sl.locate(serviceName);
             if(si != null) {
                 ActorRef service = getContext().spawnActor(new ActorFactory() {
                     @Override
@@ -66,7 +82,7 @@ public class Services extends Actor {
                     }
                 }, id.toString());
                 getSender().tell(new SIDImpl(service), getSelf());
-            }
+            }  */
         } catch (Throwable e) {
             getSender().tell(e, getSelf());
         }

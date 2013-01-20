@@ -39,6 +39,7 @@ public class ServiceParser implements XMLParser<Service> {
                 break;
             case "version":     parseVersion(element);
                 break;
+            case "activator":   parseActivator(element);
             case "dependencies":parseDepencendiesStart(element);
                 break;
             case "dependency":  parseDependency(element);
@@ -73,11 +74,16 @@ public class ServiceParser implements XMLParser<Service> {
     }
 
     private void parseName(Element element) {
+        logger.info("Setting service name: {}", element.getTextContent());
         service.setName(element.getTextContent());
     }
 
     private void parseVersion(Element element) {
         service.setVersion(element.getTextContent());
+    }
+
+    private void parseActivator(Element element) {
+        service.setActivator(element.getTextContent());
     }
 
     private void parseDepencendiesStart(Element element) {
