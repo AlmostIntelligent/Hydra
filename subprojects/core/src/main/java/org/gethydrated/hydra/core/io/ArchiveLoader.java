@@ -1,16 +1,18 @@
 package org.gethydrated.hydra.core.io;
 
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.core.internal.Archive;
 import org.gethydrated.hydra.core.xml.ArchiveReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.jar.JarFile;
 
 /**
  *
@@ -47,10 +49,14 @@ public final class ArchiveLoader {
                     logger.debug("found '{}'", path.toString());
                     if(path.toString().endsWith(".jar") || path.toString().endsWith(".war") || path.toString().endsWith(".ear")) {
                         logger.debug("Checking '{}'", path.toString());
-                        Archive ar = archiveReader.parse(new FileInputStream(path.toFile()));
-                        if(ar != null) {
-                            archives.add(ar);
+                        JarFile jf = new JarFile(path.toFile());
+                        try (InputStream is = jf.getInputStream(jf.getEntry("HYDRA-INF/archive.xml"))) {
+                            Archive ar = archiveReader.parse(is);
+                            if(ar != null) {
+                                archives.add(ar);
+                            }
                         }
+
                     }
                     } catch (IOException e) {
                         logger.error("Error while parsing archive data: {}", e);

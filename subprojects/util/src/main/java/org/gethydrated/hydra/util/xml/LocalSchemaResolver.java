@@ -7,7 +7,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.*;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,35 +27,32 @@ public class LocalSchemaResolver implements EntityResolver {
     @Override
     public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         if(systemId != null) {
-            URL url = this.getClass().getResource("/"+mappings.get(systemId));
-            logger.debug("found mapping: systemId - {}", url.getFile());
-            return new InputSource(url.getFile());
+            InputStream inputStream = this.getClass().getResourceAsStream("/"+mappings.get(systemId));
+            if(inputStream!=null) {
+                logger.debug("found mapping: {} - {}", systemId, mappings.get(systemId));
+                return new InputSource(inputStream);
+            }
         }
         return null;
     }
 
     private Map<String, String> readSchemaMappingFile() {
         Map<String, String> map = new HashMap<>();
-        URL url = this.getClass().getResource(DEFAULT_SCHEMA_MAPPING);
-        if(url != null) {
-            try (FileReader fileReader = new FileReader(url.getFile())) {
-                BufferedReader input = new BufferedReader(fileReader);
-                String s;
-                while((s = input.readLine()) != null) {
-                    String[] arr = s.split("=");
-                    if(arr.length == 2) {
-                        map.put(arr[0], arr[1]);
-                    }
+        try (InputStream inputStream = this.getClass().getResourceAsStream(DEFAULT_SCHEMA_MAPPING)) {
+            BufferedReader input = new BufferedReader(new InputStreamReader(inputStream));
+            String s;
+            while((s = input.readLine()) != null) {
+                String[] arr = s.split("=");
+                if(arr.length == 2) {
+                    map.put(arr[0], arr[1]);
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-        } else {
-            logger.debug("no schema mappings found");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
+        logger.debug("found {} mappings: {}", map.size(), map);
         return map;
     }
 }

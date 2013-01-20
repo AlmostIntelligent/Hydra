@@ -1,6 +1,6 @@
 package org.gethydrated.hydra.test.core.xml;
 
-import org.gethydrated.hydra.core.io.Archive;
+import org.gethydrated.hydra.core.internal.Archive;
 import org.gethydrated.hydra.core.xml.ArchiveReader;
 import org.junit.Test;
 import org.xml.sax.SAXException;

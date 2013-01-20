@@ -43,7 +43,7 @@ public final class HydraImpl implements Hydra {
      */
     private final ConfigurationImpl cfg;
     
-    private ActorSystem actorSystem;
+    private volatile ActorSystem actorSystem;
 
     private ActorRef services;
 
@@ -64,7 +64,7 @@ public final class HydraImpl implements Hydra {
         if(actorSystem==null) {
             logger.info("Starting Hydra.");
             new ArchiveLoader(cfg).load();
-            /*try {
+            try {
                 new ArchiveLoader(cfg).load();
                 actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
                 services = actorSystem.spawnActor(new ActorFactory() {
@@ -77,12 +77,12 @@ public final class HydraImpl implements Hydra {
             } catch (ConfigItemNotFoundException|ConfigItemTypeException  e) {
                 logger.error("Invalid configuration.", e);
                 throw new HydraException(e);
-            }    */
+            }
         }
     }
 
     @Override
-    public synchronized void stop() {
+    public void stop() {
         if(actorSystem!=null) {
             logger.info("Stopping Hydra.");
             shutdownhook.unregister();
@@ -101,7 +101,7 @@ public final class HydraImpl implements Hydra {
 
 
     @Override
-    public synchronized SID startService(final String name) throws HydraException {
+    public SID startService(final String name) throws HydraException {
         if(actorSystem==null) {
             throw new HydraException("Hydra not running.");
         }
@@ -115,7 +115,7 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
-    public synchronized void stopService(final SID id) throws HydraException {
+    public void stopService(final SID id) throws HydraException {
         if(actorSystem==null) {
             throw new IllegalStateException("Hydra not running.");
         }

@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="archive.xsd">
+<hydra:archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:hydra="http://www.gethydrated.org/schema/archive"
+               xsi:schemaLocation="http://www.gethydrated.org/schema/archive http://www.gethydrated.org/schema/archive.xsd">
+    <name>jetty</name>
+    <version>1.0</version>
 
-    <name>hydra-jetty</name>
-    <version>0.2</version>
     <services>
         <service>
             <name>http</name>
             <version>1.0</version>
             <activator>org.gethydrated.hydra.http.JettyActivator</activator>
-            <configuration name="port" value="8080" />
-        </service>
-        <service>
-            <name>example</name>
-            <version>1.0</version>
-            <activator>org.gethydrated.hydra.http.ExampleActivator</activator>
         </service>
     </services>
-</archive>
+</hydra:archive>

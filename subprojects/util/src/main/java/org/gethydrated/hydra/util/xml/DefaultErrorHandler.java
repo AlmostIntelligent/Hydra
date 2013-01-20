@@ -20,11 +20,11 @@ public class DefaultErrorHandler implements ErrorHandler {
 
     @Override
     public void error(SAXParseException exception) throws SAXException {
-        logger.error("{}", exception.getLocalizedMessage());
+        throw exception;
     }
 
     @Override
     public void fatalError(SAXParseException exception) throws SAXException {
-        logger.error("{}", exception.getLocalizedMessage());
+        throw exception;
     }
 }

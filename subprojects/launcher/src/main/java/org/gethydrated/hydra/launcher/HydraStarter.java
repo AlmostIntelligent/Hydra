@@ -2,6 +2,8 @@ package org.gethydrated.hydra.launcher;
 
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.core.HydraFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -30,11 +32,16 @@ public final class HydraStarter {
      */
     public static void start(final String[] args) throws Exception {
         configureLogback(System.getProperty("hydra.home"));
-        Hydra hydra = HydraFactory.getHydra();
-        hydra.start();
-        hydra.startService("CLI");
-        hydra.startService("JETTY");
-        hydra.await();
+        Logger logger = LoggerFactory.getLogger(HydraStarter.class);
+        try {
+            Hydra hydra = HydraFactory.getHydra();
+            hydra.start();
+            hydra.startService("CLI");
+            hydra.startService("JETTY");
+            hydra.await();
+        } catch (Exception e) {
+            logger.error("An error occured while running hydra:", e);
+        }
     }
 
     /**

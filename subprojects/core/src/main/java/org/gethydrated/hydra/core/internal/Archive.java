@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.io;
+package org.gethydrated.hydra.core.internal;
 
 /**
  *
@@ -23,5 +23,8 @@ public class Archive {
 
     public String toString() {
         return "<Archive:"+name+":"+version+">";
+    }
+
+    public void addService(Service service) {
     }
 }
