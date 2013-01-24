@@ -22,22 +22,31 @@
 	</xs:simpleType>
 
 	<!--
-		Configuration: Tree of configuration items
+		Configuration List: A List of configuration items, can contain sub lists
 	-->
-	<xs:complexType name="ConfigItem">
+	<xs:complexType name="ConfigList">
 		<!-- A List of sub items -->
 		<xs:sequence>
-			<xs:element name="configuration" type="cfg:ConfigItem" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="configlist" type="cfg:ConfigList" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="configvalue" type="cfg:ConfigValue" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
 		<!-- Required attribute: Configuration item name -->
 		<xs:attribute name="name" type="cfg:Name" use="required" />
+	</xs:complexType>
+	
+	<!--
+		Configuration Value: A single configuration value
+	-->
+	<xs:complexType name="ConfigValue">
+		<!-- Required attribute: Configuration item name -->
+		<xs:attribute name="name" type="cfg:Name" use="required" />
 		<!-- Configuration item type -->
-		<xs:attribute name="value" type="xs:string" use="optional" />
+		<xs:attribute name="value" type="xs:string" use="required" />
 	</xs:complexType>
 	
 	<!-- 
 		A configuration element requires a name. 
 		It has a value or a list of sub items
 	-->
-	<xs:element name="configuration" type="cfg:ConfigItem" />
+	<xs:element name="configuration" type="cfg:ConfigList" />
 </xs:schema>

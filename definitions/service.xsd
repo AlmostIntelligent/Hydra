@@ -56,7 +56,7 @@
 				</xs:complexType>
 			</xs:element>
 			<!-- Optional: Configration Tree -->
-			<xs:element name="configuration" type="cfg:ConfigItem" minOccurs="0" />
+			<xs:element name="configuration" type="cfg:ConfigList" minOccurs="0" />
 		</xs:all>
 	</xs:complexType>
 	
