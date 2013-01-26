@@ -19,7 +19,7 @@ public interface Cancellable {
     boolean cancel();
 
     /**
-     * Returns true if this task was cancelled before execution.
+     * Returns if this task was cancelled before execution.
      * @return true if this task was cancelled before execution.
      */
     boolean isCancelled();
