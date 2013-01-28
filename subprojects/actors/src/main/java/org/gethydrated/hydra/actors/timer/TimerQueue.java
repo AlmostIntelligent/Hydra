@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.scheduling;
+package org.gethydrated.hydra.actors.timer;
 
 import java.util.Set;
 
@@ -27,9 +27,17 @@ public interface TimerQueue {
     Runnable getQueueWorker();
 
     /**
-     * Stops current queue workers and returns all unhandled {@link Timed} objects.
-     * @return {@link Timed} objects that were not yet handled by the queue worker.
+     * Enqueue a new task in the {@link TimerQueue}. If the queue is already
+     * stopped this must throw an {@link IllegalStateException}.
+     * @param task new task
+     * @return a {@link Timeout} object as handle to the scheduled task
      */
-    Set<Timed> stop();
+    Timeout enqueue(TimerTask task);
+
+    /**
+     * Stops current queue workers and returns all unhandled {@link Timeout} objects.
+     * @return {@link Timeout} objects that were not yet handled by the queue worker.
+     */
+    Set<Timeout> stop();
 
 }

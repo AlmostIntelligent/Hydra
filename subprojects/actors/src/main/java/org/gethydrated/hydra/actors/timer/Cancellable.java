@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.scheduling;
+package org.gethydrated.hydra.actors.timer;
 
 /**
  * A Task that can be cancelled. Cancellation is performed by

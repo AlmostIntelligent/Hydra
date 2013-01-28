@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.scheduling;
+package org.gethydrated.hydra.actors.timer;
 
 import org.gethydrated.hydra.actors.ActorRef;
 
@@ -20,10 +20,10 @@ public interface Timer {
      * @param delay initial delay
      * @param timeUnit delay granularity
      * @param task scheduled task
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnit, Runnable task);
+    Timeout schedule(long delay, TimeUnit timeUnit, Runnable task);
 
     /**
      * Schedules a task to run after an initial delay and then repeatedly at a fixed rate until
@@ -33,10 +33,10 @@ public interface Timer {
      * @param repeat repetition delay
      * @param timeUnitRepeat repetition delay granularity
      * @param task scheduled task
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, Runnable task);
+    Timeout schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, Runnable task);
 
     /**
      * Schedules a task to run after an initial delay. The execution is handled by the given executor.
@@ -44,10 +44,10 @@ public interface Timer {
      * @param timeUnit delay granularity
      * @param task scheduled task
      * @param executor executor that handles the task execution.
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnit, Runnable task, Executor executor);
+    Timeout schedule(long delay, TimeUnit timeUnit, Runnable task, Executor executor);
 
     /**
      * Schedules a task to run after an initial delay and then repeatedly at a fixed rate until
@@ -58,10 +58,10 @@ public interface Timer {
      * @param timeUnitRepeat repetition delay granularity
      * @param task scheduled task
      * @param executor executor that handles the task execution.
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, Runnable task, Executor executor);
+    Timeout schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, Runnable task, Executor executor);
 
     /**
      * Schedules a message to be send after an initial delay. Will be executed by the default executor.
@@ -69,10 +69,10 @@ public interface Timer {
      * @param timeUnit delay granularity
      * @param ref target actor ref
      * @param message message object
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnit, ActorRef ref, Object message);
+    Timeout schedule(long delay, TimeUnit timeUnit, ActorRef ref, Object message);
 
     /**
      * Schedules a message to be send after an initial delay and then repeatedly at a fixed rate until
@@ -83,10 +83,10 @@ public interface Timer {
      * @param timeUnitRepeat repetition delay granularity
      * @param ref target actor ref
      * @param message message object
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, ActorRef ref, Object message);
+    Timeout schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, ActorRef ref, Object message);
 
     /**
      * Schedules a message to be send after an initial delay. The execution is handled by the given executor.
@@ -95,10 +95,10 @@ public interface Timer {
      * @param ref target actor ref
      * @param message message object
      * @param executor executor that handles the task execution.
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnit, ActorRef ref, Object message, Executor executor);
+    Timeout schedule(long delay, TimeUnit timeUnit, ActorRef ref, Object message, Executor executor);
 
     /**
      * Schedules a message to be send after an initial delay and then repeatedly at a fixed rate until
@@ -110,10 +110,10 @@ public interface Timer {
      * @param ref target actor ref
      * @param message message object
      * @param executor executor that handles the task execution.
-     * @return a {@link Timed} object as handle to the scheduled task
+     * @return a {@link Timeout} object as handle to the scheduled task
      * @throws IllegalStateException if the task could not be scheduled.
      */
-    Timed schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, ActorRef ref, Object message, Executor executor);
+    Timeout schedule(long delay, TimeUnit timeUnitDelay, long repeat, TimeUnit timeUnitRepeat, ActorRef ref, Object message, Executor executor);
 
     /**
      * Stops the timer and releases all acquired resources. If the timer has already been
@@ -121,8 +121,8 @@ public interface Timer {
      *
      * Cancels all scheduled tasks.
      *
-     * @return {@link Timed} objects that were cancelled by this method.
+     * @return {@link Timeout} objects that were cancelled by this method.
      */
-    Set<Timed> stop();
+    Set<Timeout> stop();
 
 }

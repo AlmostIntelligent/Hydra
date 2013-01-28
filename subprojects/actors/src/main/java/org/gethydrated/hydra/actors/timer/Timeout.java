@@ -1,10 +1,10 @@
-package org.gethydrated.hydra.actors.scheduling;
+package org.gethydrated.hydra.actors.timer;
 
 /**
  * Handle for a task that was successfully scheduled by
  * a {@link Timer}.
  */
-public interface Timed extends Cancellable {
+public interface Timeout extends Cancellable {
 
     /**
      * Returns the {@link Timer} that created this handle.
