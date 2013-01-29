@@ -10,6 +10,7 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.config.ConfigurationImpl;
+import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.Services;
 import org.slf4j.Logger;
@@ -42,9 +43,11 @@ public final class HydraImpl implements Hydra {
      */
     private final ConfigurationImpl cfg;
     
-    private ActorSystem actorSystem;
+    private volatile ActorSystem actorSystem;
 
     private ActorRef services;
+
+    private Archives archives;
 
     /**
      * Constructor.
@@ -54,7 +57,6 @@ public final class HydraImpl implements Hydra {
      */
     public HydraImpl(final ConfigurationImpl cfg) {
         this.cfg = cfg;
-
     }
 
     @Override
@@ -62,12 +64,12 @@ public final class HydraImpl implements Hydra {
         if(actorSystem==null) {
             logger.info("Starting Hydra.");
             try {
-                System.out.println(cfg.list());
+                archives = new Archives(cfg);
                 actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
                 services = actorSystem.spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
-                        return new Services(cfg);
+                        return new Services(cfg, archives);
                     }
                 }, "services");
                 shutdownhook.register();
@@ -79,7 +81,7 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
-    public synchronized void stop() {
+    public void stop() {
         if(actorSystem!=null) {
             logger.info("Stopping Hydra.");
             shutdownhook.unregister();
@@ -98,9 +100,9 @@ public final class HydraImpl implements Hydra {
 
 
     @Override
-    public synchronized SID startService(final String name) throws HydraException {
+    public SID startService(final String name) throws HydraException {
         if(actorSystem==null) {
-            throw new IllegalStateException("Hydra not running.");
+            throw new HydraException("Hydra not running.");
         }
         Future f = services.ask(new StartService(name));
         try {
@@ -112,7 +114,7 @@ public final class HydraImpl implements Hydra {
     }
 
     @Override
-    public synchronized void stopService(final SID id) throws HydraException {
+    public void stopService(final SID id) throws HydraException {
         if(actorSystem==null) {
             throw new IllegalStateException("Hydra not running.");
         }

@@ -10,4 +10,5 @@ package org.gethydrated.hydra.api.service;
 public interface Service {
 
     <T> void addMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler);
+
 }

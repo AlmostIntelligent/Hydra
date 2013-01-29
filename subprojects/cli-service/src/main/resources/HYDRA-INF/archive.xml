@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hydra:archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:hydra="http://www.gethydrated.org/schema/archive"
+               xsi:schemaLocation="http://www.gethydrated.org/schema/archive http://www.gethydrated.org/schema/archive.xsd">
+    <name>CLI</name>
+    <version>1.0</version>
+
+    <services>
+        <service>
+            <name>CLI</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.cli.CLIServiceActivator</activator>
+        </service>
+    </services>
+</hydra:archive>

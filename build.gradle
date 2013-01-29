@@ -87,6 +87,7 @@ project("core") {
 		compile project(':api') 
 		compile project(':actors')
         compile project(':config')
+        compile project(':util')
         compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"   //Workaround for jetty dependency copying.
 	}
 }
@@ -96,6 +97,7 @@ project("config") {
 
     dependencies {
         compile project(':api')
+        compile project(':util')
     }
 }
 
@@ -115,6 +117,10 @@ project("jetty-service") {
         compile project(':api')
         compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"
     }
+}
+
+project("util") {
+    description = 'Hydra support classes'
 }
 
 configure(rootProject) {

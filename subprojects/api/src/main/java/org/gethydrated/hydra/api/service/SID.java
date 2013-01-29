@@ -9,6 +9,8 @@ import java.util.concurrent.Future;
  */
 public interface SID {
 
+    USID getUSID();
+
     void tell(Object message, SID sender);
 
     Future<?> ask(Object message);
