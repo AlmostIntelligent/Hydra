@@ -40,6 +40,8 @@
 			<xs:element name="name" type="cfg:Name" maxOccurs="1" />
 			<!-- Optional: Version of the service -->
 			<xs:element name="version" type="srv:Version" minOccurs="0" maxOccurs="1" />
+            <!-- Service activator -->
+            <xs:element name="activator" type="xs:string" minOccurs="1" maxOccurs="1" />
 			<!-- Optional: Dependencies on other services -->
 			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
 				<xs:complexType>
