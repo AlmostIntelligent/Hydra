@@ -1,0 +1,120 @@
+package org.gethydrated.hydra.core.cli;
+
+import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.InputEvent;
+import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.commands.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * CLI Service.
+ * 
+ * @author Hanno Sternberg
+ * @since 0.1.0
+ * 
+ */
+public class CLIService extends Actor {
+    
+    /**
+     * 
+     */
+    private final Logger log = LoggerFactory.getLogger(CLIService.class);
+
+    /**
+     * Root command, parent of all sub commands
+     */
+    private final CLICommand commands;
+
+    /**
+     * Dictionary for variables
+     */
+    private Map<String, String> variable_dict;
+
+    private ActorRef output;
+
+    /**
+     * @param hydra
+     *            Handle to hydra system implementation.
+     */
+    public CLIService(final InternalHydra hydra) {
+        commands = new CLICommandRoot(hydra);
+        commands.addSubCommand(new CLICommandEcho(hydra));
+        commands.addSubCommand(new CLICommandConfig(hydra));
+        commands.addSubCommand(new CLICommandService(hydra));
+        commands.addSubCommand(new CLICommandShutdown(hydra));
+        commands.addSubCommand(new CLICommandHelp(hydra, commands));
+
+        variable_dict = new HashMap<String, String>();
+    }
+
+    /**
+     * 
+     * @param str
+     *            command String
+     */
+    public final String handleInputString(final String str) {
+        String command = null;
+        String var = null;
+        if (str.trim().startsWith("$")){
+            /* Got variable, handle it*/
+            var = str.substring(1, str.indexOf('=')).trim();    //1. extract variable name
+            command = str.substring(str.indexOf('=')+1).trim(); //2. extract command
+        } else {
+            command = str;
+        }
+        if (command.contains("$")) {
+            /* Variables inside the command, replace 'em*/
+            for(String k : variable_dict.keySet()) {
+                command = command.replace("$"+k, variable_dict.get(k));
+            }
+        }
+        if (var != null) {
+            /* Assign result to variable */
+            String result = commands.parse(command);
+            variable_dict.put(var, result);
+            return result;
+        } else {
+            /* No need for assignment  */
+            return commands.parse(command);
+        }
+    }
+
+    /**
+     * Stops the service.
+     */
+    @Override
+    public final void onStop() {
+        getSystem().getEventStream().unsubscribe(getSelf());
+    }
+
+    public final void onStart() {
+        output = getContext().getActor("/sys/out");
+        getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
+        log.info("CLI Service initialised.");
+    }
+
+    @Override
+    public void onReceive(Object message) throws Exception {
+        if(message instanceof InputEvent) {
+            handle((InputEvent) message, null);
+        }
+    }
+
+    public void handle(InputEvent message, SID sender) {
+        String out = handleInputString(message.toString());
+        output.tell(
+                "local: " + out,
+                getSelf()
+        );
+        /*sender.tell(
+                "remote: " + out,
+                getSelf()
+        );    */
+    }
+}

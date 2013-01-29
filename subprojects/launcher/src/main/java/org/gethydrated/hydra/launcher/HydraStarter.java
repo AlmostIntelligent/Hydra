@@ -36,7 +36,6 @@ public final class HydraStarter {
         try {
             Hydra hydra = HydraFactory.getHydra();
             hydra.start();
-            hydra.startService("CLI::CLI");
             hydra.await();
         } catch (Exception e) {
             logger.error("An error occured while running hydra:", e);

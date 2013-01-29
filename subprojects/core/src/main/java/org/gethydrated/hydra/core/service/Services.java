@@ -75,7 +75,7 @@ public class Services extends Actor {
             throw new RuntimeException("Service not found:"+serviceName);
             /*final ServiceInfo si = sl.locate(serviceName);
             if(si != null) {
-                ActorRef service = getContext().spawnActor(new ActorFactory() {
+                ActorRef service = getHydra().spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
                         return new ServiceImpl(si, cfg);

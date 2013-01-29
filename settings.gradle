@@ -5,7 +5,6 @@ include 'actors'
 include 'core'
 include 'config'
 include 'launcher'
-include 'cli-service'
 include 'jetty-service'
 include 'util'
 

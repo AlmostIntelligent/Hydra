@@ -8,8 +8,10 @@ import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
+import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.config.ConfigurationImpl;
+import org.gethydrated.hydra.core.cli.CLIService;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.service.Services;
@@ -26,7 +28,7 @@ import java.util.concurrent.Future;
  * @since 0.1.0
  * 
  */
-public final class HydraImpl implements Hydra {
+public final class HydraImpl implements InternalHydra {
 
     /**
      * Logger.
@@ -72,6 +74,12 @@ public final class HydraImpl implements Hydra {
                         return new Services(cfg, archives);
                     }
                 }, "services");
+                actorSystem.spawnActor(new ActorFactory() {
+                    @Override
+                    public Actor create() throws Exception {
+                        return new CLIService(HydraImpl.this);
+                    }
+                }, "cli");
                 shutdownhook.register();
             } catch (ConfigItemNotFoundException|ConfigItemTypeException  e) {
                 logger.error("Invalid configuration.", e);
@@ -120,4 +128,13 @@ public final class HydraImpl implements Hydra {
         }
     }
 
+    @Override
+    public ActorSystem getActorSystem() {
+        return actorSystem;
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return cfg;
+    }
 }

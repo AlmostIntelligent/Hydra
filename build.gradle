@@ -101,15 +101,6 @@ project("config") {
     }
 }
 
-project("cli-service") {
-	description = 'Hydra CLI'
-
-	dependencies { 
-	   compile project(':api')
-	   testCompile project(':core') 
-	}
-}
-
 project("jetty-service") {
     description = 'Hydra Jetty http server'
 
