@@ -1,16 +1,17 @@
 package org.gethydrated.hydra.test.cli;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.util.concurrent.Future;
-
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
+import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.config.ConfigurationImpl;
+import org.gethydrated.hydra.core.service.SIDImpl;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.concurrent.Future;
 
 /**
  * 
@@ -39,7 +40,7 @@ public class CLITestContext implements ServiceContext {
      * @return OutputStream.
      */
     public final SID getOutput() {
-        return new SID() {
+        return new SIDImpl(null) {
 
             @Override
             public void tell(Object message, SID sender) {

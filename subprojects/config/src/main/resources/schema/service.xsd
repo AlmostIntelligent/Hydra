@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Hydra Service
+	XML Schema Defintion
+	
+	Version 1.0
+-->
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:srv="http://www.gethydrated.org/schema/service"
+	xmlns:cfg="http://www.gethydrated.org/schema/configuration"
+	targetNamespace="http://www.gethydrated.org/schema/service" 
+	version="1.0">
+	
+	<!--
+		Include configuration schema
+	-->
+	<xs:import namespace="http://www.gethydrated.org/schema/configuration" 
+		schemaLocation="http://www.gethydrated.org/schema/configuration.xsd" />
+
+	<!--
+		A Version has the format X.X
+		plus an optional suffix:
+			alpha
+			beta
+			nightly
+	-->
+	<xs:simpleType name="Version">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[0-9]+\.[0-9]+(alpha|beta|nightly)?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!--
+		Service type
+	-->
+	<xs:complexType name="Service">
+		<xs:all>
+			<!-- Required: Service name -->
+			<xs:element name="name" type="cfg:Name" maxOccurs="1" />
+			<!-- Optional: Version of the service -->
+			<xs:element name="version" type="srv:Version" minOccurs="0" maxOccurs="1" />
+            <!-- Service activator -->
+            <xs:element name="activator" type="xs:string" minOccurs="1" maxOccurs="1" />
+			<!-- Optional: Dependencies on other services -->
+			<xs:element name="dependencies" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="dependency" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<!-- Requiered attribute: Depended service name -->
+								<xs:attribute name="name" type="cfg:Name" use="required" />
+								<!-- Optional attribute: Depended version -->
+								<xs:attribute name="version" type="srv:Version" />
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<!-- Optional: Configration Tree -->
+			<xs:element name="configuration" type="cfg:ConfigList" minOccurs="0" />
+		</xs:all>
+	</xs:complexType>
+	
+	<!--
+		Main Entity
+	-->
+	<xs:element name="service" type="srv:Service" />
+	
+</xs:schema>
+

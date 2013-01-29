@@ -1,17 +1,15 @@
 package org.gethydrated.hydra.core.configuration;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.gethydrated.hydra.config.ConfigurationImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.config.files.XMLConfigurationReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 
 /**
@@ -74,20 +72,17 @@ public class ConfigurationInitializer {
      * @throws ConfigItemNotFoundException .
      */
     public final void configure(String configurationFile) throws ConfigItemNotFoundException {
-        try {
-            configureBasic();
-            final XMLConfigurationReader rdr = new XMLConfigurationReader();
-            final Configuration usrCfg = rdr.load(configurationFile);
+        configureBasic();
+        final XMLConfigurationReader rdr = new XMLConfigurationReader();
+        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(configurationFile);
+        final Configuration usrCfg = rdr.parse(inputStream);
+        if(usrCfg!= null) {
             cfg = (ConfigurationImpl) ConfigMerger.merge(cfg, usrCfg);
-        } catch (SAXException e) {
-            LOG.error("Error while parsing the configuration file.");
-            // Todo: Add fallback config generation
+        }
+        try {
+            inputStream.close();
         } catch (IOException e) {
-            LOG.error("Invalid configuration file.");
-            // Todo: Add fallback config generation
-        } catch (ParserConfigurationException e) {
-            LOG.error("Invalid parser configuration.");
-            // Todo: Add fallback config generation
+            LOG.error("An IO error occured.",e);
         }
     }
 }
