@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.service;
+package org.gethydrated.hydra.core.sid;
 
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.FutureImpl;
@@ -7,11 +7,11 @@ import org.gethydrated.hydra.api.service.USID;
 
 import java.util.concurrent.Future;
 
-public class SIDImpl implements SID {
+public class LocalSID implements SID {
 
-    ActorRef ref;
+    private ActorRef ref;
 
-    public SIDImpl(ActorRef ref) {
+    public LocalSID(ActorRef ref) {
         this.ref = ref;
     }
 
@@ -25,7 +25,7 @@ public class SIDImpl implements SID {
         if(sender == null) {
             ref.tell(message, null);
         } else {
-            ref.tell(message, ((SIDImpl)sender).ref);
+            ref.tell(message, ((LocalSID)sender).ref);
         }
     }
 
@@ -35,4 +35,9 @@ public class SIDImpl implements SID {
         ref.tell(message, future);
         return future;
     }
+
+    public String toString() {
+        return "<0:0:"+ref.getName()+">";
+    }
+
 }

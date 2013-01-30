@@ -109,7 +109,7 @@ public class CLIService extends Actor {
     public void handle(InputEvent message, SID sender) {
         String out = handleInputString(message.toString());
         output.tell(
-                "local: " + out,
+                /*"local: " + */out,
                 getSelf()
         );
         /*sender.tell(

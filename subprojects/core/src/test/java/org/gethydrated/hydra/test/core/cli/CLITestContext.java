@@ -7,7 +7,7 @@ import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.config.ConfigurationImpl;
-import org.gethydrated.hydra.core.service.SIDImpl;
+import org.gethydrated.hydra.core.sid.LocalSID;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -40,7 +40,7 @@ public class CLITestContext implements ServiceContext {
      * @return OutputStream.
      */
     public final SID getOutput() {
-        return new SIDImpl(null) {
+        return new LocalSID(null) {
 
             @Override
             public void tell(Object message, SID sender) {

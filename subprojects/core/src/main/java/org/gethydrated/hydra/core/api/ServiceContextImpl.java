@@ -5,7 +5,7 @@ import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.configuration.ConfigurationSecurityWrapper;
-import org.gethydrated.hydra.core.service.SIDImpl;
+import org.gethydrated.hydra.core.sid.LocalSID;
 import org.gethydrated.hydra.core.service.ServiceImpl;
 
 /**
@@ -35,12 +35,12 @@ public class ServiceContextImpl extends ServiceApiImpl implements
 
     @Override
     public SID getSelf() {
-        return new SIDImpl(service.getSelf());
+        return new LocalSID(service.getSelf());
     }
 
     @Override
     public SID getOutput() {
-        return new SIDImpl(service.getContext().getActor("/sys/out"));
+        return new LocalSID(service.getContext().getActor("/sys/out"));
     }
 
     @Override

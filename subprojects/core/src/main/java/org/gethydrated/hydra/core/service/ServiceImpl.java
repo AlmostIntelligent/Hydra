@@ -4,6 +4,7 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
+import org.gethydrated.hydra.core.sid.LocalSID;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -68,7 +69,7 @@ public class ServiceImpl extends Actor implements Service {
     public void onReceive(Object message) throws Exception {
         SID sender = null;
         if(getSender() != null) {
-            sender = new SIDImpl(getSender());
+            sender = new LocalSID(getSender());
         }
         for (Class<?> c : handlers.keySet()) {
             if(c.isInstance(message)) {

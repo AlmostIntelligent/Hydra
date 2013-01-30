@@ -7,7 +7,7 @@ public class StdOutActor extends Actor {
 
 	@Override
 	public void onReceive(Object message) throws Exception {
-		System.out.println(message.toString());
+		System.out.print(message.toString());
 	}
 
 	@Override

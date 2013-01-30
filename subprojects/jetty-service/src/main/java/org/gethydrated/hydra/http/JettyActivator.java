@@ -17,7 +17,6 @@ public class JettyActivator implements ServiceActivator {
 
     @Override
     public void start(ServiceContext context) throws Exception {
-        System.out.println("jetty startet");
         server = new Server(8080);
         server.setHandler(new AbstractHandler() {
             @Override
@@ -27,7 +26,6 @@ public class JettyActivator implements ServiceActivator {
                 response.setStatus(HttpServletResponse.SC_OK);
                 baseRequest.setHandled(true);
                 response.getWriter().println("<h1>Hello World</h1>");
-
             }
         });
         server.start();
