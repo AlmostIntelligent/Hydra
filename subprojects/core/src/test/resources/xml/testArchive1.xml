@@ -9,14 +9,18 @@
         <service>
             <name>www</name>
             <version>1.0alpha</version>
+            <activator>www.activator</activator>
             <dependencies>
                 <dependency name="network" />
             </dependencies>
-            <configuration name="hostname" value="localhost" />
+            <configuration name="hostname">
+                <configvalue name="hostname" value="localhost" />
+            </configuration>
         </service>
         <service>
             <name>db</name>
             <version>1.0</version>
+            <activator>db.activator</activator>
             <dependencies>
                 <dependency name="network" />
             </dependencies>

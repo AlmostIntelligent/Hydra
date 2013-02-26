@@ -8,6 +8,8 @@ import org.gethydrated.hydra.api.util.IDGenerator;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.Service;
 import org.gethydrated.hydra.core.messages.StartService;
+import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.sid.InternalSID;
 import org.gethydrated.hydra.core.sid.LocalSID;
 import org.slf4j.Logger;
 
@@ -48,15 +50,22 @@ public class Services extends Actor {
     @Override
     public void onReceive(Object message) throws Exception {
         if(message instanceof StartService) {
-            startService(((StartService) message).getServiceName());
+            startService(((StartService) message).name);
         }
+        if(message instanceof StopService) {
+            stopService(((StopService) message).sid);
+        }
+    }
+
+    private void stopService(InternalSID sid) {
+        getContext().stop(sid.getRef());
     }
 
     private void startService(String serviceName) {
         try {
-            Long id = idGen.getId();
             final Service service = archives.getService(serviceName);
             if(service != null) {
+                Long id = idGen.getId();
                 ActorRef ref = getContext().spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
@@ -64,8 +73,9 @@ public class Services extends Actor {
                     }
                 }, id.toString());
                 getSender().tell(new LocalSID(ref), getSelf());
+            } else {
+                throw new RuntimeException("Service not found:"+serviceName);
             }
-            throw new RuntimeException("Service not found:"+serviceName);
         } catch (Throwable e) {
             getSender().tell(e, getSelf());
         }

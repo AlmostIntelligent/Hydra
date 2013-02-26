@@ -7,17 +7,25 @@ import org.gethydrated.hydra.api.service.USID;
 
 import java.util.concurrent.Future;
 
-public class LocalSID implements SID {
+public class LocalSID implements InternalSID {
 
-    private ActorRef ref;
+    private final ActorRef ref;
+
+    private final USID usid;
 
     public LocalSID(ActorRef ref) {
-        this.ref = ref;
+       this.ref = ref;
+       usid = new USID(0L, 0, Long.parseLong(ref.getName()));
     }
 
     @Override
     public USID getUSID() {
-        return null;
+        return usid;
+    }
+
+    @Override
+    public ActorRef getRef() {
+        return ref;
     }
 
     @Override
@@ -37,7 +45,7 @@ public class LocalSID implements SID {
     }
 
     public String toString() {
-        return "<0:0:"+ref.getName()+">";
+        return usid.toString();
     }
 
 }

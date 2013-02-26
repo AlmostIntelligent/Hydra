@@ -35,7 +35,6 @@ public final class HydraStarter {
         Logger logger = LoggerFactory.getLogger(HydraStarter.class);
         try {
             Hydra hydra = HydraFactory.getHydra();
-            hydra.start();
             hydra.await();
         } catch (Exception e) {
             logger.error("An error occured while running hydra:", e);

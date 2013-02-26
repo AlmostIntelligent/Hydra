@@ -51,6 +51,18 @@ public class ActorPath implements Serializable {
         return new ActorPath(newPathStack);
     }
 
+    public boolean isChildOf(ActorPath parent) {
+        if(this.pathStack.length <= parent.pathStack.length) {
+            return false;
+        }
+        for(int i = 0; i < parent.pathStack.length; i++) {
+            if(!pathStack[i].equals(parent.pathStack[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Returns the target actors name.
      * @return actor name.
@@ -116,5 +128,9 @@ public class ActorPath implements Serializable {
         } catch (Exception e) {
             throw new MalformedURLException("Cannot apply " + uri +" to '" + path + "'");
         }
+    }
+
+    public static ActorPath apply(String uri) throws MalformedURLException {
+        return apply(new ActorPath(), uri);
     }
 }

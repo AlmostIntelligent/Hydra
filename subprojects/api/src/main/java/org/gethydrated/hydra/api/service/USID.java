@@ -30,4 +30,16 @@ public class USID implements Serializable {
     public String toString(){
         return "<"+nodeId+":"+typeId+":"+serviceId+">";
     }
+
+    public static USID parse(String sid) {
+        if(sid == null) {
+            throw new RuntimeException("Sid string cannot be null");
+        }
+        if(!sid.matches("<[0-9]*:[01]:[0-9]*>")) {
+            throw new RuntimeException("Invalid sid string.");
+        }
+        sid = sid.substring(1,sid.length()-1);
+        String[] arr = sid.split(":");
+        return new USID(Long.parseLong(arr[0]),Integer.parseInt(arr[1]),Long.parseLong(arr[2]));
+    }
 }

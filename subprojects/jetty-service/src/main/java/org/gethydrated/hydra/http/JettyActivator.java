@@ -1,8 +1,10 @@
 package org.gethydrated.hydra.http;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.gethydrated.hydra.api.service.ServiceActivator;
 import org.gethydrated.hydra.api.service.ServiceContext;
 
@@ -17,7 +19,11 @@ public class JettyActivator implements ServiceActivator {
 
     @Override
     public void start(ServiceContext context) throws Exception {
-        server = new Server(8080);
+        server = new Server();
+        SelectChannelConnector connector = new SelectChannelConnector();
+        connector.setReuseAddress(false);
+        connector.setPort(8080);
+        server.setConnectors(new Connector[]{connector});
         server.setHandler(new AbstractHandler() {
             @Override
             public void handle(String target, Request baseRequest, HttpServletRequest request,

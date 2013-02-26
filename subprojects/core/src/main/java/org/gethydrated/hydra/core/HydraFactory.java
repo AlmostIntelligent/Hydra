@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core;
 
 import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
@@ -32,7 +33,7 @@ public final class HydraFactory {
      * Creates new Hydra instance.
      * @return Hydra instance.
      */
-    public static Hydra getHydra() {
+    public static Hydra getHydra() throws HydraException {
         if (!initialized) {
             init();
         }

@@ -40,7 +40,7 @@ public class ShutdownHook implements Runnable {
     @Override
     public final void run() {
         LOG.debug("JVM Shutdown detected.");
-        hydra.stop();
+        hydra.shutdown();
     }
 
     /**

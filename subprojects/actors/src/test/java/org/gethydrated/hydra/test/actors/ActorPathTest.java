@@ -45,6 +45,26 @@ public class ActorPathTest {
     }
 
     @Test
+    public void testActorPathChildOf() throws MalformedURLException {
+        ActorPath root = new ActorPath();
+        ActorPath a = ActorPath.apply(root, "child1");
+        ActorPath b = ActorPath.apply(root, "child2");
+        ActorPath c = ActorPath.apply(root, "child1/grandchild1");
+
+        assertTrue(a.isChildOf(root));
+        assertTrue(b.isChildOf(root));
+        assertTrue(c.isChildOf(root));
+        assertTrue(c.isChildOf(a));
+        assertFalse(c.isChildOf(b));
+        assertFalse(a.isChildOf(b));
+        assertFalse(b.isChildOf(a));
+        assertFalse(root.isChildOf(a));
+        assertFalse(root.isChildOf(b));
+        assertFalse(root.isChildOf(root));
+        assertFalse(root.isChildOf(root));
+    }
+
+    @Test
     public void testActorPathApplyRoot() throws MalformedURLException {
         ActorPath a = new ActorPath();
         a = ActorPath.apply(a, "/child/test");

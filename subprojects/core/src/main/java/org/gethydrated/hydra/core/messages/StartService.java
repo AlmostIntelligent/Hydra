@@ -4,13 +4,9 @@ package org.gethydrated.hydra.core.messages;
  *
  */
 public class StartService {
-    private final String value;
+    public final String name;
 
     public StartService(String name) {
-        value = name;
-    }
-
-    public String getServiceName() {
-        return value;
+        this.name = name;
     }
 }

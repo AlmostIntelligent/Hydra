@@ -164,7 +164,7 @@ public class ActorNode implements ActorSource, ActorContext {
 
     @Override
     public void stop(ActorRef target) {
-        ((InternalRef)target).tellSystem(new Stop(), self);
+        new InternalRefImpl(target.getPath(), dispatchers).tellSystem(new Stop(), self);
     }
 
     public ActorRef getRef() {
