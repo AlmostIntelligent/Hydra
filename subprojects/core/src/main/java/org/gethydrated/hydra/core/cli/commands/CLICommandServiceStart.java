@@ -46,7 +46,7 @@ public class CLICommandServiceStart extends CLICommand {
     public String execute(String[] args) {
         try {
             SID id = getHydra().startService(args[0]);
-            return "Service started with SID: " + id.toString();
+            return String.format("Service started with SID: %s", id.toString());
         } catch (HydraException e) {
             return String.format("An exception occurred:"+e.getMessage());
         }

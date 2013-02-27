@@ -13,9 +13,12 @@ import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
+import org.gethydrated.hydra.core.coordinator.Coordinator;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.node.NodeConnector;
+import org.gethydrated.hydra.core.node.Nodes;
 import org.gethydrated.hydra.core.service.Services;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.ForeignSID;
@@ -93,6 +96,24 @@ public final class HydraImpl implements InternalHydra {
                 return new CLIService(HydraImpl.this);
             }
         }, "cli");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
+                return new Coordinator(cfg);
+            }
+        }, "coordinator");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
+                return new Nodes(cfg);
+            }
+        }, "nodes");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
+                return new NodeConnector(cfg);
+            }
+        }, "connector");
     }
 
     @Override

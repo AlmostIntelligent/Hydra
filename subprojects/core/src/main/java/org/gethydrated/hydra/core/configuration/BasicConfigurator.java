@@ -26,8 +26,13 @@ public final class BasicConfigurator {
      */
     public static void configure(final ConfigurationImpl cfg)
             throws ConfigItemNotFoundException {
-        // TO-DO: initialize standard config values
+
+        /* Actor configuration */
         cfg.setString("actors.test", "test");
-        cfg.setBoolean("hydra.test", Boolean.TRUE);
+
+        /* Network configuration */
+        //Set standard to local only.
+        cfg.setInteger("network.port", 0);
+
     }
 }

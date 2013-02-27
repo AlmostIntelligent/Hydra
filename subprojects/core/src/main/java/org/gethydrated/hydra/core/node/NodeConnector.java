@@ -1,16 +1,13 @@
-package org.gethydrated.hydra.core.coordinator;
+package org.gethydrated.hydra.core.node;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.configuration.Configuration;
 
 /**
- * 
- * @author Christian Kulpa
  *
  */
-public class Coordinator extends Actor {
-
-    public Coordinator(Configuration cfg) {
+public class NodeConnector extends Actor {
+    public NodeConnector(Configuration cfg) {
 
     }
 
