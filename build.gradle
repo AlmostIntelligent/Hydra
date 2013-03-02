@@ -5,6 +5,8 @@ apply from: "gradle/coverage.gradle"
 apply from: "gradle/codequality.gradle"
 apply from: "gradle/idea.gradle"
 
+import org.apache.tools.ant.filters.*
+
 project.sourceCompatibility = 1.7
 project.targetCompatibility = 1.7
 
@@ -90,6 +92,15 @@ project("core") {
         compile project(':util')
         compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"   //Workaround for jetty dependency copying.
 	}
+
+    task copyVersionTemplate(type: Copy) {
+        from("/src/main/template")
+        into("/src/main/resources/org/gethydrated/hydra/core")
+        filter(ReplaceTokens, tokens: [version: project.version])
+    }
+
+    ideaModule.dependsOn(copyVersionTemplate)
+    compileJava.dependsOn(copyVersionTemplate)
 }
 
 project("config") {
