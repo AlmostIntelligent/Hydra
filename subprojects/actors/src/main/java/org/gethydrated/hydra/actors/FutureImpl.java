@@ -63,7 +63,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
                 unit.timedWait(lock, timeout);
             }
             if(!done){
-                throw new TimeoutException();
+                throw new TimeoutException("Timeout while waiting for result.");
             }
             if(error!=null) {
                 throw new ExecutionException(error);
