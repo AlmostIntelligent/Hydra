@@ -1,10 +1,10 @@
 package org.gethydrated.hydra.actors.node;
 
-import java.util.concurrent.ExecutorService;
-
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSource;
+
+import java.util.List;
 
 public interface ActorContext extends ActorSource {
 
@@ -19,4 +19,6 @@ public interface ActorContext extends ActorSource {
     void unwatch(ActorRef target);
 
     ActorRef getActor(ActorPath path);
+
+    List<String> getChildren();
 }

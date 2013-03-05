@@ -54,7 +54,7 @@ public class CLICommandNodes extends CLICommand {
             StringBuilder sb = new StringBuilder();
             sb.append("Connected Nodes: \n");
             for(String n : connectedNodes) {
-                sb.append("n\n");
+                sb.append(n+"\n");
             }
             return sb.toString();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {

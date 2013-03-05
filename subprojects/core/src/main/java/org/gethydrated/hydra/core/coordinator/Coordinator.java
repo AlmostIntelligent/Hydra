@@ -10,12 +10,25 @@ import org.gethydrated.hydra.api.configuration.Configuration;
  */
 public class Coordinator extends Actor {
 
+    private int nodeid = 2;
+
+    private int ownId = 1;
+
     public Coordinator(Configuration cfg) {
 
     }
 
     @Override
     public void onReceive(Object message) throws Exception {
-
+        if(message instanceof String) {
+            switch ((String ) message) {
+                case "newNodeId":
+                    getSender().tell(nodeid++,getSelf());
+                    break;
+                case "ownId":
+                    getSender().tell(ownId, getSelf());
+                    break;
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ import org.gethydrated.hydra.api.util.Util;
 import org.slf4j.Logger;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  * @author Christian Kulpa
@@ -142,8 +143,13 @@ public class ActorNode implements ActorSource, ActorContext {
 	public ActorRef getActor(ActorPath path) {
 		return system.getActor(path);
 	}
-	
-	@Override
+
+    @Override
+    public List<String> getChildren() {
+        return children.getAllChildren();
+    }
+
+    @Override
 	public String getName() {
 		return self.getName();
 	}

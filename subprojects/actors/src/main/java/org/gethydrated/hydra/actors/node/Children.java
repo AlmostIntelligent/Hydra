@@ -8,6 +8,8 @@ import org.gethydrated.hydra.actors.internal.NodeRef;
 import org.gethydrated.hydra.actors.internal.NodeRefImpl;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,5 +58,13 @@ public class Children {
 
     public synchronized boolean isEmpty() {
         return children.isEmpty();
+    }
+
+    /**
+     * Returns a list of all names.
+     * @return
+     */
+    public List<String> getAllChildren() {
+        return new LinkedList<>(children.keySet());
     }
 }

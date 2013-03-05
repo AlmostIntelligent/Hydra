@@ -5,6 +5,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.Version;
 import org.gethydrated.hydra.core.cli.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,7 @@ public class CLIService extends Actor {
         output = getContext().getActor("/sys/out");
         getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
         log.info("CLI Service initialised.");
+        output.tell("Hydra <" + Version.getVersionString() + ">  (Use shutdown or :sd to quit)\n", null);
     }
 
     @Override
