@@ -13,10 +13,11 @@ import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
-import org.gethydrated.hydra.core.coordinator.Coordinator;
+import org.gethydrated.hydra.core.coordinator.CoordinatorActor;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.node.NodeConnector;
 import org.gethydrated.hydra.core.node.Nodes;
 import org.gethydrated.hydra.core.service.Services;
@@ -27,6 +28,7 @@ import org.gethydrated.hydra.core.sid.LocalSID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -62,6 +64,8 @@ public final class HydraImpl implements InternalHydra {
 
     private DefaultSIDFactory sidFactory;
 
+    private IdMatcher idMatcher = new IdMatcher();
+
     /**
      * Constructor.
      * 
@@ -73,9 +77,10 @@ public final class HydraImpl implements InternalHydra {
         this.cfg = cfg;
         shutdownhook.register();
         archives = new Archives(cfg);
+        createNodeUUID();
         try {
             actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
-            sidFactory = new DefaultSIDFactory(actorSystem);
+            sidFactory = new DefaultSIDFactory(actorSystem, idMatcher);
             initSystemActors();
         } catch (ConfigItemNotFoundException|ConfigItemTypeException  e) {
             logger.error("Invalid configuration.", e);
@@ -83,11 +88,17 @@ public final class HydraImpl implements InternalHydra {
         }
     }
 
+    private void createNodeUUID() {
+        UUID localId = UUID.randomUUID();
+        idMatcher.setLocal(localId);
+        logger.debug("Local node uuid: {}", localId);
+    }
+
     private void initSystemActors() {
         services = actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Services(cfg, archives);
+                return new Services(cfg, archives, sidFactory);
             }
         }, "services");
         actorSystem.spawnActor(new ActorFactory() {
@@ -99,7 +110,7 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Coordinator(cfg);
+                return new CoordinatorActor(cfg);
             }
         }, "coordinator");
         actorSystem.spawnActor(new ActorFactory() {
@@ -120,8 +131,10 @@ public final class HydraImpl implements InternalHydra {
     public void shutdown() {
         logger.info("Stopping Hydra.");
         shutdownhook.unregister();
-        actorSystem.shutdown();
-        actorSystem = null;
+        if(actorSystem != null) {
+            actorSystem.shutdown();
+            actorSystem = null;
+        }
     }
 
     @Override

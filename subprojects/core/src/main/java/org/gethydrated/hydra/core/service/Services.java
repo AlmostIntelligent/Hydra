@@ -9,8 +9,8 @@ import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.Service;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.InternalSID;
-import org.gethydrated.hydra.core.sid.LocalSID;
 import org.slf4j.Logger;
 
 /**
@@ -34,15 +34,19 @@ public class Services extends Actor {
     private final Configuration cfg;
 
     private final Archives archives;
+
+    private final DefaultSIDFactory sidFactory;
     
     /**
      * Constructor.
-     * 
+     *
      * @param cfg
      *            Configuration.
+     * @param sidFactory
      */
-    public Services(final Configuration cfg, final Archives archives) {
+    public Services(final Configuration cfg, final Archives archives, DefaultSIDFactory sidFactory) {
         this.archives = archives;
+        this.sidFactory = sidFactory;
         idGen = new IDGenerator();
         this.cfg = cfg;
     }
@@ -69,10 +73,10 @@ public class Services extends Actor {
                 ActorRef ref = getContext().spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
-                        return new ServiceImpl(service.getActivator(), service.getClassLoader(), cfg);
+                        return new ServiceImpl(service.getActivator(), service.getClassLoader(), cfg, sidFactory);
                     }
                 }, id.toString());
-                getSender().tell(new LocalSID(ref), getSelf());
+                getSender().tell(sidFactory.fromActorRef(ref), getSelf());
             } else {
                 throw new RuntimeException("Service not found:"+serviceName);
             }

@@ -8,6 +8,7 @@ import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.USID;
 
 import java.net.MalformedURLException;
+import java.util.UUID;
 
 /**
  * Service id factory.
@@ -16,18 +17,30 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private final ActorSystem actorSystem;
 
-    public DefaultSIDFactory(ActorSystem actorSystem) {
+    private final IdMatcher idMatcher;
+
+    public DefaultSIDFactory(ActorSystem actorSystem, IdMatcher idMatcher) {
         this.actorSystem = actorSystem;
+        this.idMatcher = idMatcher;
     }
 
     @Override
     public SID fromString(String sid) {
-        return fromUSID(USID.parse(sid));
+        if (sid == null) {
+            throw new RuntimeException("SID string is null.");
+        }
+        if (!sid.matches("<[0-9]*:[01]:[0-9]*>")) {
+            throw new RuntimeException("Invalid SID string.");
+        }
+        sid = sid.substring(1, sid.length()-1);
+        String[] arr = sid.split(":");
+        UUID uuid = idMatcher.getID(Long.parseLong(arr[0]));
+        return fromUSID(new USID(uuid ,Integer.parseInt(arr[1]),Long.parseLong(arr[2])));
     }
 
     @Override
     public SID fromUSID(USID usid) {
-        if (usid.nodeId!=0) {
+        if (!usid.nodeId.equals(idMatcher.getLocal())) {
             return buildForeignNodeSID(usid);
         }
         if (usid.typeId==1) {
@@ -43,31 +56,32 @@ public class DefaultSIDFactory implements SIDFactory {
      */
     public SID fromActorPath(ActorPath path) {
         USID usid = null;
+        UUID localNode = idMatcher.getLocal();
         try {
             if(path.isChildOf(ActorPath.apply("/app/services"))) {
-                usid = new USID(0L, 0, Long.parseLong(path.getName()));
+                usid = new USID(localNode, 0, Long.parseLong(path.getName()));
             } else {
                 switch (path.toString()) {
                     case "/app/cli":
-                        usid = new USID(0L, 1, 0);
+                        usid = new USID(localNode, 1, 0);
                         break;
                     case "/app/coordinator":
-                        usid = new USID(0L, 1, 1);
+                        usid = new USID(localNode, 1, 1);
                         break;
                     case "/app/services":
-                        usid = new USID(0L, 1, 2);
+                        usid = new USID(localNode, 1, 2);
                         break;
                     case "/app/nodes":
-                        usid = new USID(0L, 1, 3);
+                        usid = new USID(localNode, 1, 3);
                         break;
                     case "/sys/in":
-                        usid = new USID(0L, 1, 4);
+                        usid = new USID(localNode, 1, 4);
                         break;
                     case "/sys/out":
-                        usid = new USID(0L, 1, 5);
+                        usid = new USID(localNode, 1, 5);
                         break;
                     case "/sys/log":
-                        usid = new USID(0L, 1, 6);
+                        usid = new USID(localNode, 1, 6);
                         break;
                 }
             }
@@ -93,7 +107,7 @@ public class DefaultSIDFactory implements SIDFactory {
         try {
             ActorPath path = ActorPath.apply("/app/services/"+usid.serviceId);
             ActorRef ref = actorSystem.getActor(path);
-            return new LocalSID(ref);
+            return new LocalSID(idMatcher.getLocal(),ref);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

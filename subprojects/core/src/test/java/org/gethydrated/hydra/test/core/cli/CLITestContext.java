@@ -40,7 +40,7 @@ public class CLITestContext implements ServiceContext {
      * @return OutputStream.
      */
     public final SID getOutput() {
-        return new LocalSID(null) {
+        return new LocalSID(null,null) {
 
             @Override
             public void tell(Object message, SID sender) {

@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.api.service;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Unique service identifier.
@@ -15,13 +16,13 @@ import java.io.Serializable;
  */
 public class USID implements Serializable {
 
-    public final long nodeId;
+    public final UUID nodeId;
 
     public final int typeId;
 
     public final long serviceId;
 
-    public USID(Long nodeId, int typeId, long serviceId) {
+    public USID(UUID nodeId, int typeId, long serviceId) {
         this.nodeId = nodeId;
         this.typeId = typeId;
         this.serviceId = serviceId;
@@ -30,7 +31,7 @@ public class USID implements Serializable {
     public String toString(){
         return "<"+nodeId+":"+typeId+":"+serviceId+">";
     }
-
+    /*
     public static USID parse(String sid) {
         if(sid == null) {
             throw new RuntimeException("Sid string cannot be null");
@@ -40,6 +41,6 @@ public class USID implements Serializable {
         }
         sid = sid.substring(1,sid.length()-1);
         String[] arr = sid.split(":");
-        return new USID(Long.parseLong(arr[0]),Integer.parseInt(arr[1]),Long.parseLong(arr[2]));
-    }
+        return new USID(UUID.fromString(arr[0]),Integer.parseInt(arr[1]),Long.parseLong(arr[2]));
+    } */
 }

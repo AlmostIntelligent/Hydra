@@ -3,6 +3,6 @@ package org.gethydrated.hydra.core.coordinator;
 /**
  *
  */
-public interface Coordinator {
+public class LocalCoordinator implements Coordinator{
 
 }

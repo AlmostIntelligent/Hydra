@@ -1,17 +1,11 @@
 package org.gethydrated.hydra.test.api.services;
 
-import org.gethydrated.hydra.api.service.USID;
-import org.junit.Test;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 /**
  *
  */
 public class USIDTest {
 
-    @Test
+/*    @Test
     public void testParse1() {
         USID usid = USID.parse("<0:0:0>");
 
@@ -54,5 +48,5 @@ public class USIDTest {
     @Test(expected = RuntimeException.class)
     public void testParseFailure5() {
         USID usid = USID.parse("<0:2:0>");
-    }
+    }*/
 }

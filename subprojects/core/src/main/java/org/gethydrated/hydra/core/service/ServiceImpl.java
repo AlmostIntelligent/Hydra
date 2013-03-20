@@ -4,7 +4,7 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
-import org.gethydrated.hydra.core.sid.LocalSID;
+import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -35,14 +35,18 @@ public class ServiceImpl extends Actor implements Service {
 
     private final ConcurrentMap<Class<?>, MessageHandler> handlers = new ConcurrentHashMap<>();
 
+    private final DefaultSIDFactory sidFactory;
     /**
      * Constructor.
+     *
      * @param cfg Configuration.
+     * @param sidFactory
      * @throws ServiceException on failure.
      */
-    public ServiceImpl(String activator, ClassLoader cl, Configuration cfg) throws ServiceException {
+    public ServiceImpl(String activator, ClassLoader cl, Configuration cfg, DefaultSIDFactory sidFactory) throws ServiceException {
         this.cl = cl;
-        ctx = new ServiceContextImpl(this, cfg);
+        this.sidFactory = sidFactory;
+        ctx = new ServiceContextImpl(this, cfg, sidFactory);
         try {
             Class<?> clazz = cl.loadClass(activator);
             if (clazz == null) {
@@ -69,7 +73,7 @@ public class ServiceImpl extends Actor implements Service {
     public void onReceive(Object message) throws Exception {
         SID sender = null;
         if(getSender() != null) {
-            sender = new LocalSID(getSender());
+            sender = sidFactory.fromActorRef(getSender());
         }
         for (Class<?> c : handlers.keySet()) {
             if(c.isInstance(message)) {

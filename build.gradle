@@ -94,8 +94,8 @@ project("core") {
 	}
 
     task copyVersionTemplate(type: Copy) {
-        from("/src/main/template")
-        into("/src/main/resources/org/gethydrated/hydra/core")
+        from("src/main/template")
+        into("src/main/resources/org/gethydrated/hydra/core")
         filter(ReplaceTokens, tokens: [version: project.version])
     }
 

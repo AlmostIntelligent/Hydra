@@ -2,11 +2,11 @@ package org.gethydrated.hydra.core.api;
 
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
-import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.core.configuration.ConfigurationSecurityWrapper;
-import org.gethydrated.hydra.core.sid.LocalSID;
 import org.gethydrated.hydra.core.service.ServiceImpl;
+import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 
 /**
  * Service context api implementation.
@@ -24,23 +24,26 @@ public class ServiceContextImpl extends ServiceApiImpl implements
 
     private final ServiceImpl service;
 
+    private final DefaultSIDFactory sidFactory;
     /**
      * Constructor.
      * @param cfg Configuration.
+     * @param sidFactory
      */
-    public ServiceContextImpl(final ServiceImpl service, final Configuration cfg) {
+    public ServiceContextImpl(final ServiceImpl service, final Configuration cfg, DefaultSIDFactory sidFactory) {
+        this.sidFactory = sidFactory;
         this.cfg = new ConfigurationSecurityWrapper(cfg);
         this.service = service;
     }
 
     @Override
     public SID getSelf() {
-        return new LocalSID(service.getSelf());
+        return sidFactory.fromActorRef(service.getSelf());
     }
 
     @Override
     public SID getOutput() {
-        return new LocalSID(service.getContext().getActor("/sys/out"));
+        return sidFactory.fromActorRef(service.getContext().getActor("/sys/out"));
     }
 
     @Override
