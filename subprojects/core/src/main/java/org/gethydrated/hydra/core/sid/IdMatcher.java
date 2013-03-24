@@ -1,7 +1,8 @@
 package org.gethydrated.hydra.core.sid;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+
 import java.util.UUID;
 
 /**
@@ -9,27 +10,35 @@ import java.util.UUID;
  */
 public class IdMatcher {
 
-    Map<Long, UUID> nodeIds = new HashMap<>();
+    private final BiMap<Integer, UUID> nodeIds = HashBiMap.create();
 
-    long nextId = 0;
+    private int nextId = 0;
 
     public synchronized void setLocal(UUID localId) {
         if(nodeIds.containsKey(0)) {
             throw new IllegalStateException("Local node already set.");
         }
-        nodeIds.put(0L, localId);
+        nodeIds.put(0, localId);
     }
 
-    public UUID getLocal() {
-        return nodeIds.get(0L);
+    public synchronized UUID getLocal() {
+        return nodeIds.get(0);
     }
 
-    public synchronized long addUUID(UUID nodeId) {
+    public synchronized int addUUID(UUID nodeId) {
         nodeIds.put(++nextId, nodeId);
         return nextId;
     }
 
-    public synchronized UUID getID(long localId) {
-        return nodeIds.get(localId);
+    public synchronized UUID getUUID(int nodeId) {
+        return nodeIds.get(nodeId);
+    }
+
+    public synchronized int getId(UUID nodeUUID) {
+        return nodeIds.inverse().get(nodeUUID);
+    }
+
+    public synchronized boolean contains(UUID nodeUUID) {
+        return nodeIds.containsValue(nodeUUID);
     }
 }

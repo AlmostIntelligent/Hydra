@@ -18,8 +18,8 @@ import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.sid.IdMatcher;
-import org.gethydrated.hydra.core.node.NodeConnector;
-import org.gethydrated.hydra.core.node.Nodes;
+import org.gethydrated.hydra.core.internal.NodeConnector;
+import org.gethydrated.hydra.core.internal.Nodes;
 import org.gethydrated.hydra.core.service.Services;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.ForeignSID;
@@ -116,13 +116,13 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Nodes(cfg);
+                return new Nodes(idMatcher);
             }
         }, "nodes");
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new NodeConnector(cfg);
+                return new NodeConnector(cfg, idMatcher);
             }
         }, "connector");
     }
@@ -187,5 +187,10 @@ public final class HydraImpl implements InternalHydra {
     @Override
     public SIDFactory getDefaultSIDFactory() {
         return sidFactory;
+    }
+
+    @Override
+    public IdMatcher getIdMatcher() {
+        return idMatcher;
     }
 }

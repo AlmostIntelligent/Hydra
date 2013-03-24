@@ -34,7 +34,7 @@ public class DefaultSIDFactory implements SIDFactory {
         }
         sid = sid.substring(1, sid.length()-1);
         String[] arr = sid.split(":");
-        UUID uuid = idMatcher.getID(Long.parseLong(arr[0]));
+        UUID uuid = idMatcher.getUUID(Integer.parseInt(arr[0]));
         return fromUSID(new USID(uuid ,Integer.parseInt(arr[1]),Long.parseLong(arr[2])));
     }
 
