@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -33,7 +34,7 @@ public class CLICommandConfigGet extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
+    public final CLIResponse execute(final String[] args) {
         StringBuilder sb = new StringBuilder();
         if (args.length >= 1) {
             try {
@@ -49,7 +50,7 @@ public class CLICommandConfigGet extends CLICommand {
         } else {
            sb.append("No key given.");
         }
-        return sb.toString();
+        return new CLIResponse(sb.toString());
     }
 
     @Override

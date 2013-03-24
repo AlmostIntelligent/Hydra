@@ -16,6 +16,7 @@ public class Envelope {
     private Map<UUID,NodeAddress> nodes;
     private String reason;
     private NodeAddress connector;
+    private SerializedObject sobject;
 
     public Envelope(MessageType type) {
         this.type = type;
@@ -57,8 +58,18 @@ public class Envelope {
         return nodes;
     }
 
+    @Override
     public String toString() {
-        return "Envelope: type="+type+" sender="+sender+" target="+target+" cookie:"+cookie;
+        return "Envelope{" +
+                "type=" + type +
+                ", sender=" + sender +
+                ", target=" + target +
+                ", cookie='" + cookie + '\'' +
+                ", nodes=" + nodes +
+                ", reason='" + reason + '\'' +
+                ", connector=" + connector +
+                ", sobject=" + sobject +
+                '}';
     }
 
     public String getReason() {
@@ -77,6 +88,14 @@ public class Envelope {
         return connector;
     }
 
+    public SerializedObject getSObject() {
+        return sobject;
+    }
+
+    public void setSObject(SerializedObject sobject) {
+        this.sobject = sobject;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -89,6 +108,7 @@ public class Envelope {
         if (nodes != null ? !nodes.equals(envelope.nodes) : envelope.nodes != null) return false;
         if (reason != null ? !reason.equals(envelope.reason) : envelope.reason != null) return false;
         if (sender != null ? !sender.equals(envelope.sender) : envelope.sender != null) return false;
+        if (sobject != null ? !sobject.equals(envelope.sobject) : envelope.sobject != null) return false;
         if (target != null ? !target.equals(envelope.target) : envelope.target != null) return false;
         if (type != envelope.type) return false;
 
@@ -104,6 +124,9 @@ public class Envelope {
         result = 31 * result + (nodes != null ? nodes.hashCode() : 0);
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
         result = 31 * result + (connector != null ? connector.hashCode() : 0);
+        result = 31 * result + (sobject != null ? sobject.hashCode() : 0);
         return result;
     }
+
+
 }

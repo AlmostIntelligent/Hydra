@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -39,9 +40,9 @@ public class CLICommandShutdown extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
+    public final CLIResponse execute(final String[] args) {
         getHydra().shutdown();
-        return "Shutdown";
+        return new CLIResponse("");
     }
 
     @Override

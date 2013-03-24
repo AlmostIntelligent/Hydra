@@ -3,6 +3,7 @@ package org.gethydrated.hydra.core.cli.commands;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,12 +44,12 @@ public class CLICommandServiceStart extends CLICommand {
     }
 
     @Override
-    public String execute(String[] args) {
+    public CLIResponse execute(String[] args) {
         try {
             SID id = getHydra().startService(args[0]);
-            return String.format("Service started with SID: %s", id.toString());
+            return new CLIResponse(String.format("Service started with SID: %s", id.toString()));
         } catch (HydraException e) {
-            return String.format("An exception occurred:"+e.getMessage());
+            return new CLIResponse(String.format("An exception occurred:"+e.getMessage()));
         }
     }
 

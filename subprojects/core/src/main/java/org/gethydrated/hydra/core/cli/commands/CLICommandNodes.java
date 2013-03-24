@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.transport.NodeAddress;
 
 import java.util.HashMap;
@@ -44,14 +45,14 @@ public class CLICommandNodes extends CLICommand {
     }
 
     @Override
-    public String execute(String[] args) {
+    public CLIResponse execute(String[] args) {
         ActorRef nodes = getHydra().getActorSystem().getActor("/app/nodes");
         Future result = nodes.ask("nodes");
         try {
             @SuppressWarnings("unchecked")
             HashMap<UUID,NodeAddress> connectedNodes = (HashMap<UUID,NodeAddress>) result.get(1, TimeUnit.SECONDS);
             if(connectedNodes.size() == 0) {
-                return String.format("No nodes connected.\n");
+                return new CLIResponse(String.format("No nodes connected.\n"));
             }
             StringBuilder sb = new StringBuilder();
             sb.append("Connected Nodes: \n");
@@ -67,9 +68,9 @@ public class CLICommandNodes extends CLICommand {
                 sb.append(uuid);
                 sb.append(")\n");
             }
-            return sb.toString();
+            return new CLIResponse(sb.toString());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            return String.format("An error occured: %s\n", e.getMessage());
+            return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
         }
     }
 

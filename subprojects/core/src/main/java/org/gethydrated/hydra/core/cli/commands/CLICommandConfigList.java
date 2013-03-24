@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class CLICommandConfigList extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
+    public final CLIResponse execute(final String[] args) {
         StringBuilder sb = new StringBuilder();
         String elem = null;
         if (args.length >= 1) {
@@ -76,7 +77,7 @@ public class CLICommandConfigList extends CLICommand {
             sb.append("Caught Nullpointer exception. No Context defined?");
             sb.append(System.getProperty("line.separator"));
         }
-        return sb.toString();
+        return new CLIResponse(sb.toString());
     }
 
     @Override

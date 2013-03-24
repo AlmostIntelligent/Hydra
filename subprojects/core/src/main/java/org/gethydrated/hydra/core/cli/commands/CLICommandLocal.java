@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  *
@@ -34,9 +35,9 @@ public class CLICommandLocal extends CLICommand {
     }
 
     @Override
-    public String execute(String[] args) {
+    public CLIResponse execute(String[] args) {
         getRootCommand().setCurrentNodeId(0);
-        return "You are now on your local node.\n";
+        return new CLIResponse("You are now on your local node.\n");
     }
 
     @Override

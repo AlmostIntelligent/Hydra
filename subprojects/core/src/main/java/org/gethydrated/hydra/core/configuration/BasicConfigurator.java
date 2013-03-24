@@ -13,7 +13,7 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
 public final class BasicConfigurator {
     
     /**
-     * Hide constructor to prevent instanciation.
+     * Hidden constructor to prevent instantiation.
      */
     private BasicConfigurator() {
     }
@@ -33,6 +33,10 @@ public final class BasicConfigurator {
         /* Network configuration */
         //Set standard to local only.
         cfg.setInteger("network.port", 0);
+        cfg.setInteger("network.timeout-connect", 10000);
+        cfg.setInteger("network.timeout-read", 0);
+        cfg.setBoolean("network.keep-alive", true);
 
+        cfg.setInteger("cli.distributed-timeout", 20);
     }
 }

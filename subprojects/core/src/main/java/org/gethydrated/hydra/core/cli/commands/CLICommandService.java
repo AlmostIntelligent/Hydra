@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -41,12 +42,12 @@ public class CLICommandService extends CLICommand {
     }
 
     @Override
-    public String execute(String[] args) {
-        return displayHelp();
+    public CLIResponse execute(String[] args) {
+        return new CLIResponse(displayHelp());
     }
 
     @Override
     protected boolean localOnly() {
-        return true;
+        return false;
     }
 }

@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -30,8 +31,8 @@ public class CLICommandRoot extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
-        return "";
+    public final CLIResponse execute(final String[] args) {
+        return new CLIResponse("");
 
     }
 

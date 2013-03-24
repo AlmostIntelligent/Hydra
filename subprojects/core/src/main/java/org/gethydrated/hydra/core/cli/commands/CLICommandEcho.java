@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * A simple echo command, simply prints out what comes in.
@@ -30,7 +31,7 @@ public class CLICommandEcho extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
+    public final CLIResponse execute(final String[] args) {
         StringBuilder sb = new StringBuilder();
         int i = 0;
         for (i = 0; i < args.length; i++) {
@@ -38,7 +39,7 @@ public class CLICommandEcho extends CLICommand {
             sb.append(" ");
         }
         sb.append("\n");
-        return sb.toString();
+        return new CLIResponse(sb.toString());
     }
 
     @Override

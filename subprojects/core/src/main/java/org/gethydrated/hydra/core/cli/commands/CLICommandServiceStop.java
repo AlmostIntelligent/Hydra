@@ -4,6 +4,7 @@ import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * Created with IntelliJ IDEA.
@@ -45,13 +46,13 @@ public class CLICommandServiceStop extends CLICommand {
     }
 
     @Override
-    public String execute(String[] args) {
+    public CLIResponse execute(String[] args) {
         try {
             SID sid = sidFactory.fromString(args[0]);
             getHydra().stopService(sid);
-            return String.format("Service %s stopped.", sid);
+            return new CLIResponse(String.format("Service %s stopped.", sid));
         } catch (HydraException e) {
-            return "Exception while stopping service";
+            return new CLIResponse("Exception while stopping service");
         }
     }
 

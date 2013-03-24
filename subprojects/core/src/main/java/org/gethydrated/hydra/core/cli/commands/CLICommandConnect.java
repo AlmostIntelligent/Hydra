@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.messages.ConnectTo;
 
 import java.util.concurrent.ExecutionException;
@@ -41,7 +42,7 @@ public class CLICommandConnect extends CLICommand {
     }
 
     @Override
-    public String execute(String[] args) {
+    public CLIResponse execute(String[] args) {
         String ip;
         int port;
         if (args.length == 1) {
@@ -52,14 +53,14 @@ public class CLICommandConnect extends CLICommand {
             ip = args[0];
             port = Integer.parseInt(args[1]);
         } else {
-            return "Invalid number of arguments. Please use 'connect ip:port' or 'connect ip port'.\n";
+            return new CLIResponse("Invalid number of arguments. Please use 'connect ip:port' or 'connect ip port'.\n");
         }
         ActorRef connector = getHydra().getActorSystem().getActor("/app/connector");
         Future res = connector.ask(new ConnectTo(ip, port));
         try {
-            return (String) res.get(10, TimeUnit.SECONDS) + "\n";
+            return new CLIResponse((String) res.get(10, TimeUnit.SECONDS) + "\n");
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            return String.format("An error occured: %s\n", e.getMessage());
+            return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
         }
     }
 

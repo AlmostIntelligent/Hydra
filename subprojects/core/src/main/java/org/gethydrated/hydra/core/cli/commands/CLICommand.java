@@ -1,6 +1,9 @@
 package org.gethydrated.hydra.core.cli.commands;
 
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -147,20 +150,18 @@ public abstract class CLICommand {
      * @param args
      *            Array with arguments.
      */
-    public abstract String execute(final String[] args);
+    public abstract CLIResponse execute(final String[] args);
 
     /**
      * 
      * @param args
      *            Array with arguments.
      */
-    private String executeSecure(final String[] args) {
+    private CLIResponse executeSecure(final String[] args) {
         try {
             return execute(args);
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Caught exception in command execution!";
-
+            return new CLIResponse("Caught exception in command execution! "+ e);
         }
     }
 
@@ -240,15 +241,15 @@ public abstract class CLICommand {
      * @param cmd
      *            The command string.
      */
-    public final String parse(final String cmd) {
+    public final CLIResponse parse(final String cmd) {
         if (cmd.contains("\"")) {
             List<String> list = new ArrayList<String>();
             Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(cmd);
             while (m.find())
                 list.add(m.group(1).replace("\"", ""));
-            return parse(list.toArray(new String[list.size()]));
+            return parse(list.toArray(new String[list.size()]), cmd);
         } else {
-            return parse(cmd.split(" "));
+            return parse(cmd.split(" "), cmd);
         }
     }
 
@@ -257,23 +258,31 @@ public abstract class CLICommand {
      * @param cmds
      *            .
      */
-    public final String parse(final String[] cmds) {
+    public final CLIResponse parse(final String[] cmds, String input) {
         if (cmds.length > 0
                 && (cmds[0].equalsIgnoreCase("-help")
                         || cmds[0].equalsIgnoreCase("--h") || cmds[0]
                             .equalsIgnoreCase("-?"))) {
-            return displayHelp();
+            return new CLIResponse(displayHelp());
         } else if (cmds.length > 0 && hasSubCommands()) {
             try {
                 CLICommand subCmd = isSubCommand(cmds[0]);
-                String[] rest = new String[cmds.length - 1];
-                int i;
-                for (i = 1; i < cmds.length; i++) {
-                    rest[i - 1] = cmds[i];
+                if(!isNodeLocal() && !subCmd.localOnly()) {
+                    ActorRef ref = getHydra().getActorSystem().getActor("/app/nodes/"+getCurrentNodeId());
+                    ref.tell(new InputEvent(input, null), null);
+                    //return (CLIResponse) f.get(getHydra().getConfiguration().getInteger("cli.distributed-timeout"),
+                    //        TimeUnit.SECONDS);
+                    return new CLIResponse("");
+                } else {
+                    String[] rest = new String[cmds.length - 1];
+                    int i;
+                    for (i = 1; i < cmds.length; i++) {
+                        rest[i - 1] = cmds[i];
+                    }
+                    return subCmd.parse(rest, input);
                 }
-                return subCmd.parse(rest);
             } catch (CLISubCommandDoesNotExistsException e) {
-                return String.format("No sub command: %s \n", cmds[0]);
+                return new CLIResponse(String.format("No sub command: %s \n", cmds[0]));
             }
         } else {
             return executeSecure(cmds);
@@ -282,12 +291,16 @@ public abstract class CLICommand {
 
     protected abstract boolean localOnly();
 
-    public void setCurrentNodeId(int id) {
+    protected void setCurrentNodeId(int id) {
         currentNodeId = id;
     }
 
-    public int getCurrentNodeId() {
+    protected int getCurrentNodeId() {
         return currentNodeId;
+    }
+
+    protected boolean isNodeLocal() {
+        return (0 == currentNodeId);
     }
 
 }

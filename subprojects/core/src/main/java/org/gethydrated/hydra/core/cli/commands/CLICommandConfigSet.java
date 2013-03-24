@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -33,7 +34,7 @@ public class CLICommandConfigSet extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
+    public final CLIResponse execute(final String[] args) {
            StringBuilder sb = new StringBuilder();
         if (args.length >= 2) {
             getHydra().getConfiguration().set(args[0], args[1]);
@@ -55,7 +56,7 @@ public class CLICommandConfigSet extends CLICommand {
             sb.append("Not enough parameters.");
             sb.append(System.getProperty("line.separator"));
         }
-        return sb.toString();
+        return new CLIResponse(sb.toString());
     }
 
     @Override

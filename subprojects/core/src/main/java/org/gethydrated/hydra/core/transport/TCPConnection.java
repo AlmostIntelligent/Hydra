@@ -3,6 +3,7 @@ package org.gethydrated.hydra.core.transport;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 
@@ -41,6 +42,7 @@ public class TCPConnection implements Connection {
         objectMapper.configure(Feature.AUTO_CLOSE_TARGET, false);
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
         objectMapper.registerModule(new EnvelopeModule());
+        objectMapper.registerModule(new JaxbAnnotationModule());
     }
 
     @Override
@@ -178,15 +180,18 @@ public class TCPConnection implements Connection {
             while (!stopped) {
                 try {
                     if(isClosed()) {
-                        stopped = true;
-                        callback.tell("disconnected", null);
+                        if(!stopped) {
+                            stopped = true;
+                            callback.tell("disconnected", null);
+                        }
                     } else {
                         Envelope env = objectMapper.readValue(socket.getInputStream(), Envelope.class);
                         if(env.getType() == MessageType.DISCONNECT) {
                             callback.tell("disconnected", null);
                             closed = true;
+                        } else {
+                            callback.tell(env, null);
                         }
-                        callback.tell(env, null);
                     }
                 } catch (IOException  e) {
                     stopped = true;

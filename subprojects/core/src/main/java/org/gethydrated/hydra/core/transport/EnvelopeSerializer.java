@@ -36,6 +36,10 @@ public class EnvelopeSerializer extends JsonSerializer<Envelope> {
                 break;
             case DISCONNECT:
                 break;
+            case SYSTEM:
+                jGen.writeFieldName("sobject");
+                jGen.writeObject(envelope.getSObject());
+                break;
         }
         jGen.writeEndObject();
     }

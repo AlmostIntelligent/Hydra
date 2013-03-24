@@ -20,7 +20,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  *
  */
-public class SerialisationTest {
+public class EnvelopeSerialisationTest {
 
     private static final UUID senderUUID = UUID.randomUUID();
 

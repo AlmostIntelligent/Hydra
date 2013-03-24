@@ -59,6 +59,12 @@ public class EnvelopeDeserializer extends JsonDeserializer<Envelope> {
                         envelope.setReason(jsonParser.getValueAsString());
                     }
                     break;
+                case "sobject":
+                    jsonParser.nextToken();
+                    if(type == MessageType.SYSTEM) {
+                        envelope.setSObject(jsonParser.readValueAs(SerializedObject.class));
+                    }
+                    break;
             }
         }
         return envelope;

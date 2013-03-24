@@ -92,6 +92,7 @@ project("core") {
         compile project(':util')
         compile 'com.fasterxml.jackson.core:jackson-core:2.1.4'
         compile 'com.fasterxml.jackson.core:jackson-databind:2.1.4'
+        compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.1.4'
         compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"   //Workaround for jetty dependency copying.
 	}
 

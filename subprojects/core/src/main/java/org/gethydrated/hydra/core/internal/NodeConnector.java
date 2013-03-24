@@ -12,6 +12,7 @@ import org.gethydrated.hydra.core.transport.TCPConnection;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -38,6 +39,7 @@ public class NodeConnector extends Actor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        try {
         if(message instanceof String) {
             switch ((String)message) {
                 case "portchanged":
@@ -47,6 +49,9 @@ public class NodeConnector extends Actor {
             connectNode((ConnectTo) message);
         } else if(message instanceof Connection) {
             createNodeActor((Connection) message);
+        }
+        } catch (ConfigItemNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
@@ -62,11 +67,13 @@ public class NodeConnector extends Actor {
         serverSocket.close();
     }
 
-    private void connectNode(ConnectTo target) throws IOException {
+    private void connectNode(ConnectTo target) throws IOException, ConfigItemNotFoundException {
         try {
             getLogger(NodeConnector.class).info("connecting to: " + target.ip + ":" + target.port);
-            Socket s = new Socket(target.ip, target.port);
-
+            Socket s = new Socket();
+            s.connect(new InetSocketAddress(target.ip, target.port),cfg.getInteger("network.timeout-connect"));
+            s.setSoTimeout(cfg.getInteger("network.timeout-read"));
+            s.setKeepAlive(cfg.getBoolean("network.keep-alive"));
             Connection connection = new TCPConnection(s, idMatcher);
             connection.setConnector(new NodeAddress(InetAddress.getByName(target.ip).getHostAddress(), target.port));
             Map<UUID, NodeAddress> knownNodes =
@@ -119,6 +126,8 @@ public class NodeConnector extends Actor {
             while (!ssocket.isClosed()) {
                 try {
                     Socket s = ssocket.accept();
+                    s.setSoTimeout(cfg.getInteger("network.timeout-read"));
+                    s.setKeepAlive(cfg.getBoolean("network.keep-alive"));
                     Connection connection = new TCPConnection(s, idMatcher);
                     ActorRef ref = getContext().getActor("/app/nodes");
                     Future f = ref.ask("nodes");

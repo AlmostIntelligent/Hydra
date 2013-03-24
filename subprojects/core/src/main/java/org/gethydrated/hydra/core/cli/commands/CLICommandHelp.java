@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -47,11 +48,11 @@ public class CLICommandHelp extends CLICommand {
     }
 
     @Override
-    public final String execute(final String[] args) {
+    public final CLIResponse execute(final String[] args) {
         if (args.length == 0) {
-            return displayHelp();
+            return new CLIResponse(displayHelp());
         } else {
-            return findHelp(args, cmdRoot);
+            return new CLIResponse(findHelp(args, cmdRoot));
         }
     }
 

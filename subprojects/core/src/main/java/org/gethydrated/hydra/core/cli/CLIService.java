@@ -63,7 +63,7 @@ public class CLIService extends Actor {
      * @param str
      *            command String
      */
-    public final String handleInputString(final String str) {
+    public final CLIResponse handleInputString(final String str) {
         String command = null;
         String var = null;
         if (str.trim().startsWith("$")){
@@ -81,8 +81,8 @@ public class CLIService extends Actor {
         }
         if (var != null) {
             /* Assign result to variable */
-            String result = commands.parse(command);
-            variable_dict.put(var, result);
+            CLIResponse result = commands.parse(command);
+            variable_dict.put(var, result.getVar());
             return result;
         } else {
             /* No need for assignment  */
@@ -109,11 +109,23 @@ public class CLIService extends Actor {
     public void onReceive(Object message) throws Exception {
         if(message instanceof InputEvent) {
             handle((InputEvent) message);
+        } else if (message instanceof CLIResponse) {
+            handleCR((CLIResponse) message);
         }
     }
 
+    private void handleCR(CLIResponse message) {
+        output.tell(message.getOutput(), getSelf());
+    }
+
     public void handle(InputEvent message) {
-        String out = handleInputString(message.toString());
-        output.tell(out, getSelf());
+        CLIResponse out = handleInputString(message.getInput());
+        if(message.getSource() == null || message.getSource().equals("/sys/in")) {
+            output.tell(out.getOutput(), getSelf());
+        } else {
+            System.out.println(message.getSource());
+            ActorRef ref = getContext().getActor(message.getSource());
+            ref.tell(out, getSelf());
+        }
     }
 }
