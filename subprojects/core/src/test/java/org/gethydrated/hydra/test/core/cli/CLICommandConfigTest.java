@@ -34,7 +34,7 @@ public class CLICommandConfigTest {
     @Before
     public final void setUp() throws Exception {
         ctx = new CLITestContext();
-        dut = new CLICommandConfig(null);
+        dut = new CLICommandConfig(null, null);
     }
 
     /**

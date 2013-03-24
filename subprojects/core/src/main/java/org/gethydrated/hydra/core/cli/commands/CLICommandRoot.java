@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.core.HydraImpl;
 import org.gethydrated.hydra.core.InternalHydra;
 
 /**
@@ -18,7 +16,7 @@ public class CLICommandRoot extends CLICommand {
      *            .
      */
     public CLICommandRoot(final InternalHydra ctx) {
-        super(ctx);
+        super(ctx, null);
     }
 
     @Override
@@ -35,6 +33,11 @@ public class CLICommandRoot extends CLICommand {
     public final String execute(final String[] args) {
         return "";
 
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 
     @Override

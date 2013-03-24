@@ -11,8 +11,8 @@ public class CLICommandPort extends CLICommand {
     /**
      * @param hydra Service hydra.
      */
-    public CLICommandPort(InternalHydra hydra) {
-        super(hydra);
+    public CLICommandPort(InternalHydra hydra, CLICommand root) {
+        super(hydra, root);
     }
 
     @Override
@@ -56,5 +56,10 @@ public class CLICommandPort extends CLICommand {
         } else {
             return "Invalid number of arguments!\n";
         }
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return true;
     }
 }

@@ -1,6 +1,6 @@
 package org.gethydrated.hydra.api.event;
 
-public final class OutputEvent {
+public final class OutputEvent implements SystemEvent {
 
     private final String input;
     

@@ -133,7 +133,6 @@ public final class HydraImpl implements InternalHydra {
         shutdownhook.unregister();
         if(actorSystem != null) {
             actorSystem.shutdown();
-            actorSystem = null;
         }
     }
 

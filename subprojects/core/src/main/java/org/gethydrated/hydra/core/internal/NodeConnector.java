@@ -114,6 +114,7 @@ public class NodeConnector extends Actor {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void run() {
             while (!ssocket.isClosed()) {
                 try {
@@ -123,6 +124,8 @@ public class NodeConnector extends Actor {
                     Future f = ref.ask("nodes");
                     connection.handshake((HashMap<UUID,NodeAddress>) f.get(10, TimeUnit.SECONDS));
                     getSelf().tell(connection, getSelf());
+                } catch (IOException e) {
+                    // skip.
                 } catch (Throwable e) {
                     getLogger(SocketRunner.class).error(e.getMessage() ,e);
                 }

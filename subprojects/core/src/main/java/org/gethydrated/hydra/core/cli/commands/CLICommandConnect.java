@@ -16,8 +16,8 @@ public class CLICommandConnect extends CLICommand {
     /**
      * @param hydra Service hydra.
      */
-    public CLICommandConnect(InternalHydra hydra) {
-        super(hydra);
+    public CLICommandConnect(InternalHydra hydra, CLICommand root) {
+        super(hydra, root);
     }
 
     @Override
@@ -61,5 +61,10 @@ public class CLICommandConnect extends CLICommand {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return String.format("An error occured: %s\n", e.getMessage());
         }
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 }

@@ -37,12 +37,21 @@ public abstract class CLICommand {
     private final String shortDescr;
 
     /**
+     * Current node too execute commands on.
+     * Id 0 is always the local node.
+     */
+    private int currentNodeId;
+
+    private CLICommand root;
+
+    /**
      * 
      * @param hydra
      *            Service hydra.
      */
-    public CLICommand(final InternalHydra hydra) {
+    public CLICommand(final InternalHydra hydra, CLICommand root) {
         setHydra(hydra);
+        setRoot(root);
         subCommands = new LinkedList<>();
         helpText = generateHelpText();
         shortDescr = generateShortDescr();
@@ -74,6 +83,18 @@ public abstract class CLICommand {
      */
     private void setHydra(final InternalHydra hydra) {
         this.hydra = hydra;
+    }
+
+    private void setRoot(CLICommand root) {
+        if(root != null) {
+            this.root = root;
+        } else {
+            this.root = this;
+        }
+    }
+
+    protected CLICommand getRootCommand() {
+        return root;
     }
 
     /**
@@ -257,7 +278,16 @@ public abstract class CLICommand {
         } else {
             return executeSecure(cmds);
         }
+    }
 
+    protected abstract boolean localOnly();
+
+    public void setCurrentNodeId(int id) {
+        currentNodeId = id;
+    }
+
+    public int getCurrentNodeId() {
+        return currentNodeId;
     }
 
 }

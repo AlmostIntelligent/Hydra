@@ -1,32 +1,42 @@
 package org.gethydrated.hydra.core.transport;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gethydrated.hydra.actors.ActorRef;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 /**
  *
  */
 public interface Connection {
 
-    public Map<UUID, NodeAddress> connect(NodeAddress connectorAddress) throws IOException;
+    Map<UUID, NodeAddress> connect(NodeAddress connectorAddress) throws IOException;
 
-    public boolean handshake(Map<UUID, NodeAddress> nodes) throws IOException;
+    boolean handshake(Map<UUID, NodeAddress> nodes) throws IOException;
 
-    public void disconnect();
+    void disconnect() throws IOException;
 
-    public void setReceiveCallback(ActorRef target);
+    void sendEnvelope(Envelope envelope) throws IOException;
 
-    public UUID getUUID();
-
-    public InetAddress getIp();
-
-    public int getPort();
+    void setReceiveCallback(ActorRef target, ExecutorService executorService);
 
     NodeAddress getConnector();
 
     void setConnector(NodeAddress addr);
+
+    UUID getUUID();
+
+    InetAddress getIp();
+
+    int getPort();
+
+    ObjectMapper getMapper();
+
+    boolean isConnected();
+
+    boolean isClosed() throws IOException;
 }

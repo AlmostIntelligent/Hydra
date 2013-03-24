@@ -19,8 +19,8 @@ public class CLICommandNodes extends CLICommand {
     /**
      * @param hydra Service hydra.
      */
-    public CLICommandNodes(InternalHydra hydra) {
-        super(hydra);
+    public CLICommandNodes(InternalHydra hydra, CLICommand root) {
+        super(hydra, root);
     }
 
     @Override
@@ -71,5 +71,10 @@ public class CLICommandNodes extends CLICommand {
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return String.format("An error occured: %s\n", e.getMessage());
         }
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 }

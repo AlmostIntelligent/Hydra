@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.core.HydraImpl;
 import org.gethydrated.hydra.core.InternalHydra;
 
 import java.util.List;
@@ -18,9 +17,10 @@ public class CLICommandConfigList extends CLICommand {
      *
      * @param ctx
      *            Service Context.
+     * @param root
      */
-    public CLICommandConfigList(final InternalHydra ctx) {
-        super(ctx);
+    public CLICommandConfigList(final InternalHydra ctx, CLICommand root) {
+        super(ctx, root);
     }
 
     @Override
@@ -77,6 +77,11 @@ public class CLICommandConfigList extends CLICommand {
             sb.append(System.getProperty("line.separator"));
         }
         return sb.toString();
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 
 }

@@ -41,4 +41,12 @@ public class IdMatcher {
     public synchronized boolean contains(UUID nodeUUID) {
         return nodeIds.containsValue(nodeUUID);
     }
+
+    public synchronized boolean contains(int id) {
+        return nodeIds.containsKey(id);
+    }
+
+    public void remove(UUID uuid) {
+        nodeIds.inverse().remove(uuid);
+    }
 }

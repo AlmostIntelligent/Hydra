@@ -41,6 +41,11 @@ public class ShutdownHook implements Runnable {
     public final void run() {
         LOG.debug("JVM Shutdown detected.");
         hydra.shutdown();
+        try {
+            hydra.await();
+        } catch (InterruptedException e) {
+            LOG.debug("Error while waiting for hydra shutdown:", e);
+        }
     }
 
     /**

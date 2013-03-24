@@ -33,7 +33,7 @@ public class CLICommandEchoTest {
     @Before
     public final void setUp() throws Exception {
         ctx = new CLITestContext();
-        dut = new CLICommandEcho(null);
+        dut = new CLICommandEcho(null, null);
     }
 
     /**

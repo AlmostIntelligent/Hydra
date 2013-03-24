@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 /**
  *
@@ -27,7 +28,11 @@ public class TCPConnection implements Connection {
 
     private boolean connected = false;
 
+    private boolean closed = false;
+
     private NodeAddress nodeAddress;
+
+    private SocketRunner socketRunner;
 
     public TCPConnection(Socket socket, IdMatcher idMatcher) {
         this.socket = socket;
@@ -53,6 +58,7 @@ public class TCPConnection implements Connection {
             throw new IllegalArgumentException(handShake.getReason());
         }
         nodeid = handShake.getSender();
+        connected = true;
         return handShake.getNodes();
     }
 
@@ -79,17 +85,39 @@ public class TCPConnection implements Connection {
         response.setTarget(connect.getSender());
         response.setNodes(nodes);
         objectMapper.writeValue(socket.getOutputStream(),response);
+        connected = true;
         return true;
     }
 
     @Override
-    public void disconnect() {
-
+    public void disconnect() throws IOException {
+        if(!connected) {
+            throw new IllegalStateException("Connection not connected.");
+        }
+        if(!isClosed()) {
+            Envelope disconnect = new Envelope(MessageType.DISCONNECT);
+            disconnect.setSender(idMatcher.getLocal());
+            disconnect.setTarget(nodeid);
+            objectMapper.writeValue(socket.getOutputStream(), disconnect);
+            idMatcher.remove(nodeid);
+            socket.shutdownOutput();
+            socket.shutdownInput();
+            socket.close();
+        }
     }
 
     @Override
-    public void setReceiveCallback(ActorRef target) {
+    public void sendEnvelope(Envelope envelope) throws IOException {
+        objectMapper.writeValue(socket.getOutputStream(), envelope);
+    }
 
+    @Override
+    public void setReceiveCallback(final ActorRef target, ExecutorService executorService) {
+        if(socketRunner != null) {
+            socketRunner.stop();
+        }
+        socketRunner = new SocketRunner(target);
+        executorService.execute(socketRunner);
     }
 
     @Override
@@ -108,12 +136,70 @@ public class TCPConnection implements Connection {
     }
 
     @Override
+    public ObjectMapper getMapper() {
+        return objectMapper;
+    }
+
+    @Override
     public void setConnector(NodeAddress addr) {
         this.nodeAddress = addr;
     }
 
     @Override
+    public boolean isConnected() {
+        return connected;
+    }
+
+    @Override
+    public boolean isClosed() throws IOException {
+        return closed ||socket.isClosed() ;
+    }
+
+    @Override
     public NodeAddress getConnector() {
         return nodeAddress;
+    }
+
+    public class SocketRunner implements Runnable {
+
+        private volatile boolean stopped = false;
+
+        private Thread thread;
+
+        private ActorRef callback;
+
+        public SocketRunner(ActorRef callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public void run() {
+            thread = Thread.currentThread();
+            while (!stopped) {
+                try {
+                    if(isClosed()) {
+                        stopped = true;
+                        callback.tell("disconnected", null);
+                    } else {
+                        Envelope env = objectMapper.readValue(socket.getInputStream(), Envelope.class);
+                        if(env.getType() == MessageType.DISCONNECT) {
+                            callback.tell("disconnected", null);
+                            closed = true;
+                        }
+                        callback.tell(env, null);
+                    }
+                } catch (IOException  e) {
+                    stopped = true;
+                    callback.tell(e, null);
+                }
+            }
+        }
+
+        public void stop() {
+            stopped = true;
+            if(thread != null) {
+                thread.interrupt();
+            }
+        }
     }
 }

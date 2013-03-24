@@ -18,8 +18,8 @@ public class CLICommandServiceStart extends CLICommand {
     /**
      * @param ctx Service context.
      */
-    public CLICommandServiceStart(final InternalHydra ctx) {
-        super(ctx);
+    public CLICommandServiceStart(final InternalHydra ctx, CLICommand root) {
+        super(ctx, root);
     }
 
     @Override
@@ -50,5 +50,10 @@ public class CLICommandServiceStart extends CLICommand {
         } catch (HydraException e) {
             return String.format("An exception occurred:"+e.getMessage());
         }
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 }

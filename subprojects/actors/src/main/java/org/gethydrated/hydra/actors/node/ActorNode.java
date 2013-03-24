@@ -205,13 +205,8 @@ public class ActorNode implements ActorSource, ActorContext {
         status = ActorLifecyle.STOPPING;
         mailbox.setSuspended(true);
 		children.stopChildren();
-		try {
-		    actor.onStop();
-        } catch (Exception e) {
-            logger.error("Error shutting down actor '{}':", self, e);
-        }
-
         if(children.isEmpty()) {
+
             terminate();
         }
 	}
@@ -237,6 +232,11 @@ public class ActorNode implements ActorSource, ActorContext {
 
     private void terminate() {
         watchers.close();
+        try {
+            actor.onStop();
+        } catch (Exception e) {
+            logger.error("Error shutting down actor '{}':", self, e);
+        }
         parent.tellSystem(new Stopped(self.getPath()), self);
         status = ActorLifecyle.STOPPED;
         logger.info("Actor '{}' stopped.", self);

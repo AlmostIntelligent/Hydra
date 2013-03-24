@@ -14,10 +14,10 @@ public class CLICommandService extends CLICommand {
     /**
      * @param hydra Service context.
      */
-    public CLICommandService(final InternalHydra hydra) {
-        super(hydra);
-        addSubCommand(new CLICommandServiceStart(hydra));
-        addSubCommand(new CLICommandServiceStop(hydra));
+    public CLICommandService(final InternalHydra hydra, CLICommand root) {
+        super(hydra, root);
+        addSubCommand(new CLICommandServiceStart(hydra, root));
+        addSubCommand(new CLICommandServiceStop(hydra, root));
     }
 
     @Override
@@ -43,5 +43,10 @@ public class CLICommandService extends CLICommand {
     @Override
     public String execute(String[] args) {
         return displayHelp();
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return true;
     }
 }

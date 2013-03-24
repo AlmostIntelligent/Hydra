@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.core.HydraImpl;
 import org.gethydrated.hydra.core.InternalHydra;
 
 /**
@@ -24,7 +22,7 @@ public class CLICommandHelp extends CLICommand {
      * @param root
      */
     public CLICommandHelp(final InternalHydra ctx, final CLICommand root) {
-        super(ctx);
+        super(ctx, root);
         cmdRoot = root;
     }
 
@@ -55,6 +53,11 @@ public class CLICommandHelp extends CLICommand {
         } else {
             return findHelp(args, cmdRoot);
         }
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return true;
     }
 
     /**

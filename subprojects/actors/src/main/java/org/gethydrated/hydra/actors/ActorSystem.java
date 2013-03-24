@@ -138,6 +138,14 @@ public final class ActorSystem implements ActorSource {
         return eventStream;
     }
 
+    public Dispatcher getDispatcher(String name) {
+        return dispatchers.lookupDispatcher(name);
+    }
+
+    public Dispatcher getDefaultDispatcher() {
+        return defaultDispatcher;
+    }
+
     @Override
     public ActorRef spawnActor(final Class<? extends Actor> actorClass, final String name) {
         return appGuardian.unwrap().spawnActor(actorClass, name);

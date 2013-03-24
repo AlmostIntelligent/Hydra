@@ -15,8 +15,8 @@ public class CLICommandEcho extends CLICommand {
      * @param hydra
      *            Service context.
      */
-    public CLICommandEcho(final InternalHydra hydra) {
-        super(hydra);
+    public CLICommandEcho(final InternalHydra hydra, CLICommand root) {
+        super(hydra, root);
     }
 
     @Override
@@ -39,6 +39,11 @@ public class CLICommandEcho extends CLICommand {
         }
         sb.append("\n");
         return sb.toString();
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.core.HydraImpl;
 import org.gethydrated.hydra.core.InternalHydra;
 
 /**
@@ -16,8 +14,8 @@ public class CLICommandShutdown extends CLICommand {
      *
      * @param ctx context.
      */
-    public CLICommandShutdown(final InternalHydra ctx) {
-        super(ctx);
+    public CLICommandShutdown(final InternalHydra ctx, CLICommand root) {
+        super(ctx, root);
     }
 
     @Override
@@ -42,8 +40,13 @@ public class CLICommandShutdown extends CLICommand {
 
     @Override
     public final String execute(final String[] args) {
-        System.exit(0);   /* Is there a smoother way to do this?*/
+        getHydra().shutdown();
         return "Shutdown";
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 
 }

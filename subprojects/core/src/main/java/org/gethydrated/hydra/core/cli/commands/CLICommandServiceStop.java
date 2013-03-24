@@ -19,8 +19,8 @@ public class CLICommandServiceStop extends CLICommand {
     /**
      * @param hydra Service context.
      */
-    public CLICommandServiceStop(final InternalHydra hydra) {
-        super(hydra);
+    public CLICommandServiceStop(final InternalHydra hydra, CLICommand root) {
+        super(hydra, root);
         sidFactory = hydra.getDefaultSIDFactory();
     }
 
@@ -53,5 +53,10 @@ public class CLICommandServiceStop extends CLICommand {
         } catch (HydraException e) {
             return "Exception while stopping service";
         }
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 }

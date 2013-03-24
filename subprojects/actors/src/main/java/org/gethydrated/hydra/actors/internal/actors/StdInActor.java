@@ -1,12 +1,12 @@
 package org.gethydrated.hydra.actors.internal.actors;
 
+import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.api.event.InputEvent;
+import org.slf4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.event.InputEvent;
-import org.slf4j.Logger;
 
 public class StdInActor extends Actor {
 
@@ -17,7 +17,7 @@ public class StdInActor extends Actor {
 	@Override
 	public void onReceive(Object message) throws Exception {
 		if(message instanceof String) {
-			getSystem().getEventStream().publish(new InputEvent((String) message, getSelf().getName()));
+			getSystem().getEventStream().publish(new InputEvent((String) message, getSelf().toString()));
 		}
 	}
 

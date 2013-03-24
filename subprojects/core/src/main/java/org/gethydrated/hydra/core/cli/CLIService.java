@@ -3,7 +3,6 @@ package org.gethydrated.hydra.core.cli;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.InputEvent;
-import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.Version;
 import org.gethydrated.hydra.core.cli.commands.*;
@@ -45,13 +44,15 @@ public class CLIService extends Actor {
      */
     public CLIService(final InternalHydra hydra) {
         commands = new CLICommandRoot(hydra);
-        commands.addSubCommand(new CLICommandEcho(hydra));
-        commands.addSubCommand(new CLICommandConfig(hydra));
-        commands.addSubCommand(new CLICommandService(hydra));
-        commands.addSubCommand(new CLICommandShutdown(hydra));
-        commands.addSubCommand(new CLICommandNodes(hydra));
-        commands.addSubCommand(new CLICommandPort(hydra));
-        commands.addSubCommand(new CLICommandConnect(hydra));
+        commands.addSubCommand(new CLICommandEcho(hydra, commands));
+        commands.addSubCommand(new CLICommandConfig(hydra, commands));
+        commands.addSubCommand(new CLICommandService(hydra, commands));
+        commands.addSubCommand(new CLICommandShutdown(hydra, commands));
+        commands.addSubCommand(new CLICommandNodes(hydra, commands));
+        commands.addSubCommand(new CLICommandPort(hydra, commands));
+        commands.addSubCommand(new CLICommandLocal(hydra, commands));
+        commands.addSubCommand(new CLICommandNode(hydra, commands));
+        commands.addSubCommand(new CLICommandConnect(hydra, commands));
         commands.addSubCommand(new CLICommandHelp(hydra, commands));
 
         variable_dict = new HashMap<String, String>();
@@ -107,19 +108,12 @@ public class CLIService extends Actor {
     @Override
     public void onReceive(Object message) throws Exception {
         if(message instanceof InputEvent) {
-            handle((InputEvent) message, null);
+            handle((InputEvent) message);
         }
     }
 
-    public void handle(InputEvent message, SID sender) {
+    public void handle(InputEvent message) {
         String out = handleInputString(message.toString());
-        output.tell(
-                /*"local: " + */out,
-                getSelf()
-        );
-        /*sender.tell(
-                "remote: " + out,
-                getSelf()
-        );    */
+        output.tell(out, getSelf());
     }
 }

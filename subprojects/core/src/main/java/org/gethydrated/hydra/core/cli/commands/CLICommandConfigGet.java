@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.core.HydraImpl;
 import org.gethydrated.hydra.core.InternalHydra;
 
 /**
@@ -16,9 +15,10 @@ public class CLICommandConfigGet extends CLICommand {
      *
      * @param ctx
      *            Service context.
+     * @param root
      */
-    public CLICommandConfigGet(final InternalHydra ctx) {
-        super(ctx);
+    public CLICommandConfigGet(final InternalHydra ctx, CLICommand root) {
+        super(ctx, root);
 
     }
 
@@ -50,6 +50,11 @@ public class CLICommandConfigGet extends CLICommand {
            sb.append("No key given.");
         }
         return sb.toString();
+    }
+
+    @Override
+    protected boolean localOnly() {
+        return false;
     }
 
     @Override

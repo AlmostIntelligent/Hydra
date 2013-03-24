@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 
-public abstract class LogEvent {
+public abstract class LogEvent implements SystemEvent {
 
 	protected final String threadname = Thread.currentThread().getName();
 	

@@ -78,7 +78,9 @@ public class RootGuardian implements NodeRef {
         if(o instanceof Stopped) {
             if(sysGuardian.equals(sender)) {
                 running = false;
+                logger.info("Root guardian stopped.");
                 runTerminationHooks();
+                logger.debug("Termination hooks done.");
             }
         }
     }

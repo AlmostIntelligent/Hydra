@@ -56,7 +56,7 @@ public class Nodes extends Actor {
         getContext().spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Node(connection);
+                return new Node(connection, idMatcher);
             }
         }, ""+idMatcher.getId(connection.getUUID()));
     }
