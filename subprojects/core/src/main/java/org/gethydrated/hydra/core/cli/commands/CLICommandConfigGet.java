@@ -49,6 +49,7 @@ public class CLICommandConfigGet extends CLICommand {
             }
         } else {
            sb.append("No key given.");
+	   sb.append(System.getProperty("line.separator"));
         }
         return new CLIResponse(sb.toString());
     }
@@ -64,12 +65,13 @@ public class CLICommandConfigGet extends CLICommand {
         sb.append("Aspects one parameter:");
         sb.append(System.getProperty("line.separator"));
         sb.append("The parameter is the key for the configuration value");
+	sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
 
     @Override
     protected final String generateShortDescr() {
-        return "Reads a configuration value";
+        return "Reads a configuration value\n";
     }
 
 }

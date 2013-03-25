@@ -189,6 +189,7 @@ public abstract class CLICommand {
         }
         sb.append("Type '<command> -help' for further information");
         sb.append(System.getProperty("line.separator"));
+        sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
 

@@ -40,12 +40,13 @@ public class CLICommandConfigList extends CLICommand {
         sb.append("Aspects one parameter:");
         sb.append(System.getProperty("line.separator"));
         sb.append("The parameter is the key for the configuration value");
+        sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
 
     @Override
     protected final String generateShortDescr() {
-        return "List all configuration sub items.";
+        return "List all configuration sub items.\n";
     }
 
     @Override
@@ -65,6 +66,7 @@ public class CLICommandConfigList extends CLICommand {
                     sb.append(s);
                     sb.append(System.getProperty("line.separator"));
                 }
+		sb.append(System.getProperty("line.separator"));
             } else {
                 sb.append(args[0]);
                 sb.append(" has no children");
