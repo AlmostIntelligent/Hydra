@@ -16,11 +16,9 @@ setup(
 	url='',
 	packages=['components'],
 	py_modules=['hydra','typhon','__main__'],
-	license=read('LICENSE'),
-	long_description=read('README.md'),
 	entry_points={
 		'setuptools.installation':[
-			"eggsecutable = typhon:main"
+			"eggsecutable = typhon:typhon"
 		]
 	},
 	zip_safe=True,

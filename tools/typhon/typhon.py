@@ -52,7 +52,7 @@ class TyphonGUI():
 		self._command.grid(row=1, column=0, sticky=W+E)
 		self._send.grid(row=1, column=1)
 		
-		self.protocol("WM_DELETE_WINDOW", self.close)
+		self._wHnd.protocol("WM_DELETE_WINDOW", self.close)
 		self._wHnd.bind("<Control-q>", lambda e:self.close() )
 		self._command.bind("<Return>", lambda e:self.execute() )
 		
