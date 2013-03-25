@@ -23,6 +23,8 @@ class Hydra():
 	def shutdown(self):
 		if self._pHnd is not None:
 			self.write("shutdown")
+			self._listenThread = {}
+			self._listener = {}
 			
 	
 	
@@ -58,7 +60,7 @@ class Hydra():
 	def __listener(self, type, stream):
 		line = ''
 		print "Listener {} started".format(type)
-		while self._pHnd.poll() == None:
+		while self._pHnd is not None and self._pHnd.poll() == None:
 			char = stream.read(1)
 			if char != '\n':
 				line += char
