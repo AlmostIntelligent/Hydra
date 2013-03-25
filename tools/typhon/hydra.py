@@ -8,7 +8,6 @@ import threading
 
 class Hydra():
 
-
 	def __init__(self, path = ""):
 		self._path = path
 		self._pHnd = None
@@ -25,8 +24,6 @@ class Hydra():
 			self.write("shutdown")
 			self._listenThread = {}
 			self._listener = {}
-			
-	
 	
 	def write(self, msg):
 		if self._pHnd is not None:
@@ -39,9 +36,13 @@ class Hydra():
 		else:
 			self._listener[type].append(listener)
 		
-	def removeListener(self, type, listener):
-		if type in self._listener:
-			self._listener[type].remove(listener)
+	def removeListener(self, type, listener = None, all = False):
+		if not all:
+			if type in self._listener:
+				self._listener[type].remove(listener)
+		else:
+			self._listener[type] = []
+			
 	
 	def stdout(self):
 		return self._pHnd.stdout
