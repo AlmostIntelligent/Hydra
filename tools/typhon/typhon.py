@@ -85,7 +85,13 @@ class TyphonGUI():
 				self.startHydra()
 			
 	def restart(self):
-		self._textListener("Restarting ....", "note")
+		if self._hydra is None:
+			if os.name == "nt":
+				self._hydra = Hydra(os.path.abspath("../../build/assemble/bin/hydra.bat"))
+			else:
+				self._hydra = Hydra(os.path.abspath("../../build/assemble/bin/hydra"))
+		else:
+			self._textListener("Restarting ....", "note")
 		self._hydra.shutdown()
 		self.startHydra()
 			
