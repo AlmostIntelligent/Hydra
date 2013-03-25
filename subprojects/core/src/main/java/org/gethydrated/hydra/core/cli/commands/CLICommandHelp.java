@@ -21,6 +21,7 @@ public class CLICommandHelp extends CLICommand {
      * @param ctx
      *            Service context.
      * @param root
+     *            Root command.
      */
     public CLICommandHelp(final InternalHydra ctx, final CLICommand root) {
         super(ctx, root);

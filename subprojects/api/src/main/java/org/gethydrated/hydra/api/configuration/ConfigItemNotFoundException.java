@@ -14,7 +14,7 @@ public class ConfigItemNotFoundException extends Exception {
     private String itemName;
 
     /**
-     * @var unique ID.
+     * unique ID.
      */
     private static final long serialVersionUID = 1421698206247465742L;
 

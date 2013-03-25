@@ -55,7 +55,7 @@ public class CLIService extends Actor {
         commands.addSubCommand(new CLICommandConnect(hydra, commands));
         commands.addSubCommand(new CLICommandHelp(hydra, commands));
 
-        variable_dict = new HashMap<String, String>();
+        variable_dict = new HashMap<>();
     }
 
     /**
@@ -101,8 +101,9 @@ public class CLIService extends Actor {
     public final void onStart() {
         output = getContext().getActor("/sys/out");
         getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
-        log.info("CLI Service initialised.");
         output.tell("Hydra <" + Version.getVersionString() + ">  (Use shutdown or :sd to quit)\n", null);
+        log.info("CLI Service initialised.");
+
     }
 
     @Override

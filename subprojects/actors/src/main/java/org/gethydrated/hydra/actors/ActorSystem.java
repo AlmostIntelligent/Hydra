@@ -78,7 +78,7 @@ public final class ActorSystem implements ActorSource {
 
     /**
      * Private constructor.
-     * @param cfg
+     * @param cfg configuration.
      */
     private ActorSystem(Configuration cfg) {
         eventStream.subscribe(fallbackLogger, LogEvent.class);

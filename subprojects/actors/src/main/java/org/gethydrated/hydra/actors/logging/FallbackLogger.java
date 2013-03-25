@@ -18,10 +18,7 @@ public class FallbackLogger implements EventListener {
 
     @Override
     public boolean equals(Object o) {
-        if(o == null) {
-            return false;
-        }
-        return o instanceof FallbackLogger;
+        return o != null && o instanceof FallbackLogger;
     }
 
     @Override

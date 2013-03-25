@@ -28,7 +28,7 @@ public class InputOutputTest {
         
         @Override
         public void onStart() {
-            out = getContext().getActor("/system/out");
+            out = getContext().getActor("/sys/out");
             getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
         }
     }
