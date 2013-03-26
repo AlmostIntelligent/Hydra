@@ -50,13 +50,13 @@ public class CLICommandEcho extends CLICommand {
     @Override
     protected final String generateHelpText() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Echos everything given as a parameter.");
+        sb.append("Echos everything given as a parameter.\n");
         return sb.toString();
     }
 
     @Override
     protected final String generateShortDescr() {
-        return "Echos the given parameters.";
+        return "Echos the given parameters.\n";
     }
 
 }

@@ -40,12 +40,12 @@ public class CLICommandHelp extends CLICommand {
 
     @Override
     protected final String generateHelpText() {
-        return "Syntax: help <command> (<subcommand>).";
+        return "Syntax: help <command> (<subcommand>).\n";
     }
 
     @Override
     protected final String generateShortDescr() {
-        return "Displays help to a given command.";
+        return "Displays help to a given command.\n";
     }
 
     @Override

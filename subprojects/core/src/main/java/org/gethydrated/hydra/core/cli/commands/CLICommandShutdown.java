@@ -36,7 +36,7 @@ public class CLICommandShutdown extends CLICommand {
 
     @Override
     protected final String generateShortDescr() {
-        return "Start hydra shutdown ";
+        return "Start hydra shutdown";
     }
 
     @Override

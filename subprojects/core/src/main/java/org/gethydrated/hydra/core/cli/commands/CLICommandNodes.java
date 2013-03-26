@@ -36,12 +36,12 @@ public class CLICommandNodes extends CLICommand {
 
     @Override
     protected String generateHelpText() {
-        return "Shows a list of all currently connected hydra nodes";
+        return "Shows a list of all currently connected hydra nodes\n";
     }
 
     @Override
     protected String generateShortDescr() {
-        return "Shows all connected nodes";
+        return "Shows all connected nodes\n";
     }
 
     @Override
@@ -68,6 +68,7 @@ public class CLICommandNodes extends CLICommand {
                 sb.append(uuid);
                 sb.append(")\n");
             }
+	    sb.append("\n");
             return new CLIResponse(sb.toString());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));

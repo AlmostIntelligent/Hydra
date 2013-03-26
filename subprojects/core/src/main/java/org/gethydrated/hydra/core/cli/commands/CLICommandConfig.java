@@ -56,7 +56,7 @@ public class CLICommandConfig extends CLICommand {
 
     @Override
     protected final String generateShortDescr() {
-        return "Access configuration";
+        return "Access configuration\n";
     }
 
 }
