@@ -20,6 +20,7 @@ public class Envelope {
     private boolean future;
     private Integer futureId;
     private boolean futureResult;
+    private boolean hiddenNode;
 
     public Envelope(MessageType type) {
         this.type = type;
@@ -153,5 +154,13 @@ public class Envelope {
 
     public boolean isFutureResult() {
         return futureResult;
+    }
+
+    public boolean isHiddenNode() {
+        return hiddenNode;
+    }
+
+    public void setHiddenNode(boolean hiddenNode) {
+        this.hiddenNode = hiddenNode;
     }
 }

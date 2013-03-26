@@ -46,7 +46,9 @@ public class Nodes extends Actor {
             ActorRef r = getContext().getActor(p);
             Future f = r.ask("connector");
             NodeAddress addr = (NodeAddress) f.get(1, TimeUnit.SECONDS);
-            result.put(uuid, addr);
+            if(addr != null) {
+                result.put(uuid, addr);
+            }
         }
         getSender().tell(result, getSelf());
 

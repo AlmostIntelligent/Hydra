@@ -39,4 +39,6 @@ public interface Connection {
     boolean isConnected();
 
     boolean isClosed() throws IOException;
+
+    boolean isHidden();
 }

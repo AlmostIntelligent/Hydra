@@ -32,6 +32,8 @@ public class TCPConnection implements Connection {
 
     private boolean closed = false;
 
+    private boolean hidden = false;
+
     private NodeAddress nodeAddress;
 
     private SocketRunner socketRunner;
@@ -54,6 +56,7 @@ public class TCPConnection implements Connection {
         }
         Envelope connect = new Envelope(MessageType.CONNECT);
         connect.setCookie("nocookie");
+        connect.setHiddenNode(hidden);
         connect.setSender(idMatcher.getLocal());
         connect.setConnector(connectorAddress);
         objectMapper.writeValue(socket.getOutputStream(), connect);
@@ -74,6 +77,7 @@ public class TCPConnection implements Connection {
         Envelope connect = objectMapper.readValue(socket.getInputStream(), Envelope.class);
         nodeid = connect.getSender();
         nodeAddress = connect.getConnector();
+        hidden = connect.isHiddenNode();
         Envelope response;
         if (idMatcher.contains(connect.getSender())) {
             response = new Envelope(MessageType.DECLINE);
@@ -157,6 +161,11 @@ public class TCPConnection implements Connection {
     @Override
     public boolean isClosed() throws IOException {
         return closed ||socket.isClosed() ;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Override

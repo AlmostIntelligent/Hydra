@@ -42,7 +42,7 @@ public class LocalCoordinator implements Coordinator {
     public void releaseLock(UUID uuid) {
         System.out.println("lockholder: " + lockHolder);
         System.out.println("uuid: " + uuid);
-        if(lockHolder.equals(uuid)) {
+        if(lockHolder != null && lockHolder.equals(uuid)) {
             lockHolder = null;
             if(!queue.isEmpty()) {
                 UUID newLockID = queue.remove();

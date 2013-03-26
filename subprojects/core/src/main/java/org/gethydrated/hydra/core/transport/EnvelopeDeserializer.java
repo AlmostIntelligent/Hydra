@@ -40,6 +40,12 @@ public class EnvelopeDeserializer extends JsonDeserializer<Envelope> {
                         envelope.setCookie(jsonParser.getValueAsString());
                     }
                     break;
+                case "hidden":
+                    jsonParser.nextToken();
+                    if(type == MessageType.CONNECT) {
+                        envelope.setHiddenNode(jsonParser.getValueAsBoolean());
+                    }
+                    break;
                 case "connector":
                     jsonParser.nextToken();
                     if(type == MessageType.CONNECT) {

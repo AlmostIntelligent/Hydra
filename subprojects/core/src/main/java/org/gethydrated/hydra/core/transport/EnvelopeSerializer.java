@@ -24,6 +24,7 @@ public class EnvelopeSerializer extends JsonSerializer<Envelope> {
         switch (envelope.getType()) {
             case CONNECT:
                 jGen.writeStringField("secureCookie", envelope.getCookie());
+                jGen.writeStringField("hidden", String.valueOf(envelope.isHiddenNode()));
                 jGen.writeFieldName("connector");
                 jGen.writeObject(envelope.getConnector());
                 break;

@@ -40,7 +40,11 @@ public class Node extends Actor {
         if(message instanceof String) {
             switch ((String) message) {
                 case "connector":
-                    getSender().tell(connection.getConnector(), getSelf());
+                    if(!connection.isHidden()) {
+                        getSender().tell(connection.getConnector(), getSelf());
+                    } else {
+                        getSender().tell(null, getSelf());
+                    }
                     break;
                 case "disconnected":
                     logger.info("Node disconnected: ", getSelf().toString());
@@ -65,13 +69,17 @@ public class Node extends Actor {
     @Override
     public void onStart() {
         setCallback();
-        getSystem().getEventStream().publish(new NodeUp(connection.getUUID()));
+        if(!connection.isHidden()) {
+            getSystem().getEventStream().publish(new NodeUp(connection.getUUID()));
+        }
     }
 
     @Override
     public void onStop() throws IOException {
         connection.disconnect();
-        getSystem().getEventStream().publish(new NodeDown(connection.getUUID()));
+        if(!connection.isHidden()) {
+            getSystem().getEventStream().publish(new NodeDown(connection.getUUID()));
+        }
     }
 
     private void setCallback() {

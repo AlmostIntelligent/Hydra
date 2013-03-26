@@ -42,7 +42,7 @@ public class EnvelopeSerialisationTest {
         Envelope env = createConnectEnvelope();
         String serialized = mapper.writeValueAsString(env);
         assertNotNull(serialized);
-        assertTrue(serialized.matches("\\{\"type\":\"CONNECT\",\"sender\":\"[0-f]+-[0-f]+-[0-f]+-[0-f]+-[0-f]+\",\"target\":null,\"secureCookie\":\"nocookie\",\"connector\":\\{\"ip\":\"localhost\",\"port\":8080}}"));
+        assertTrue(serialized.matches("\\{\"type\":\"CONNECT\",\"sender\":\"[0-f]+-[0-f]+-[0-f]+-[0-f]+-[0-f]+\",\"target\":null,\"secureCookie\":\"nocookie\",\"hidden\":\"false\",\"connector\":\\{\"ip\":\"localhost\",\"port\":8080}}"));
     }
 
     @Test
