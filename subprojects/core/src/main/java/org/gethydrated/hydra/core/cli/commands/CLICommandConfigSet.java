@@ -72,12 +72,13 @@ public class CLICommandConfigSet extends CLICommand {
         sb.append("The first parameter is the key for the configuration value");
         sb.append(System.getProperty("line.separator"));
         sb.append("The second parameter is the new configuration value");
+        sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
 
     @Override
     protected final String generateShortDescr() {
-        return "Set a configuration value";
+        return "Set a configuration value\n";
     }
 
 }

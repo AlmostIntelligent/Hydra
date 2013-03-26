@@ -29,13 +29,13 @@ public class CLICommandPort extends CLICommand {
     @Override
     protected String generateHelpText() {
         return "Shows the current port used for hydra node connections.\n" +
-                "If used with an integer parameter, this will set a new port." +
-                "If the port is set to 0, no new connections will be established.";
+                "If used with an integer parameter, this will set a new port.\n" +
+                "If the port is set to 0, no new connections will be established.\n";
     }
 
     @Override
     protected String generateShortDescr() {
-        return "Hydra port informations";
+        return "Hydra port informations\n";
     }
 
     @Override

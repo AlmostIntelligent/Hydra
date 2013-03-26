@@ -26,12 +26,12 @@ public class CLICommandNode extends CLICommand {
 
     @Override
     protected String generateHelpText() {
-        return "Changes the processing context of the cli to another node.";
+        return "Changes the processing context of the cli to another node.\n";
     }
 
     @Override
     protected String generateShortDescr() {
-        return "Access to a distant hydra node.";
+        return "Access to a distant hydra node.\n";
     }
 
     @Override
