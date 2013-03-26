@@ -271,7 +271,7 @@ public abstract class CLICommand {
                     ActorRef ref = getHydra().getActorSystem().getActor("/app/nodes/"+getCurrentNodeId());
                     ref.tell(new InputEvent(input, null), null);
                     //return (CLIResponse) f.get(getHydra().getConfiguration().getInteger("cli.distributed-timeout"),
-                    //        TimeUnit.SECONDS);
+                           // TimeUnit.SECONDS);
                     return new CLIResponse("");
                 } else {
                     String[] rest = new String[cmds.length - 1];

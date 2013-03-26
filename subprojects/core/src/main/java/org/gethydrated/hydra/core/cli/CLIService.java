@@ -53,6 +53,8 @@ public class CLIService extends Actor {
         commands.addSubCommand(new CLICommandLocal(hydra, commands));
         commands.addSubCommand(new CLICommandNode(hydra, commands));
         commands.addSubCommand(new CLICommandConnect(hydra, commands));
+        commands.addSubCommand(new CLICommandLock(hydra, commands));
+        commands.addSubCommand(new CLICommandUnLock(hydra, commands));
         commands.addSubCommand(new CLICommandHelp(hydra, commands));
 
         variable_dict = new HashMap<String, String>();

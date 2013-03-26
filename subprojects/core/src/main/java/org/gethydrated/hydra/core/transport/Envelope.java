@@ -17,6 +17,9 @@ public class Envelope {
     private String reason;
     private NodeAddress connector;
     private SerializedObject sobject;
+    private boolean future;
+    private Integer futureId;
+    private boolean futureResult;
 
     public Envelope(MessageType type) {
         this.type = type;
@@ -96,6 +99,22 @@ public class Envelope {
         this.sobject = sobject;
     }
 
+    public boolean isFuture() {
+        return future;
+    }
+
+    public void setFuture(boolean future) {
+        this.future = future;
+    }
+
+    public void setFutureId(Integer futureId) {
+        this.futureId = futureId;
+    }
+
+    public Integer getFutureId() {
+        return futureId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -128,5 +147,11 @@ public class Envelope {
         return result;
     }
 
+    public void setFutureResult(boolean futureResult) {
+        this.futureResult = futureResult;
+    }
 
+    public boolean isFutureResult() {
+        return futureResult;
+    }
 }

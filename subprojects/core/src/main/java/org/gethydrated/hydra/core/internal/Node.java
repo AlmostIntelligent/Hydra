@@ -5,6 +5,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.core.cli.CLIResponse;
+import org.gethydrated.hydra.core.messages.*;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.Connection;
 import org.gethydrated.hydra.core.transport.Envelope;
@@ -13,6 +14,8 @@ import org.gethydrated.hydra.core.transport.SerializedObject;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.Random;
+import java.util.concurrent.*;
 
 /**
  *
@@ -23,6 +26,9 @@ public class Node extends Actor {
 
     private final Logger logger = getLogger(Node.class);
     private final IdMatcher idMatcher;
+
+    private final ConcurrentMap<Integer, ActorRef> futureMap = new ConcurrentHashMap<>();
+    private final Random random = new Random();
 
     public Node(Connection connection, IdMatcher idMatcher) {
         this.connection = connection;
@@ -43,24 +49,29 @@ public class Node extends Actor {
                     break;
             }
         } else if (message instanceof SystemEvent) {
-            sendSystemEnvelope(message);
+            Envelope env = makeSystemEnvelope(message);
+            connection.sendEnvelope(env);
         } else if (message instanceof IOException) {
             logger.warn("Error while reading socket input", (IOException)message);
         } else if (message instanceof Envelope) {
             if(((Envelope) message).getType() == MessageType.SYSTEM) {
                 handleSystemEnvelope((Envelope) message);
             }
+        } else {
+            logger.debug("discarded message: {}", message.getClass().getName());
         }
     }
 
     @Override
     public void onStart() {
         setCallback();
+        getSystem().getEventStream().publish(new NodeUp(connection.getUUID()));
     }
 
     @Override
     public void onStop() throws IOException {
         connection.disconnect();
+        getSystem().getEventStream().publish(new NodeDown(connection.getUUID()));
     }
 
     private void setCallback() {
@@ -75,17 +86,48 @@ public class Node extends Actor {
             InputEvent i = (InputEvent)o;
             i.setSource(getSelf().toString());
             getSystem().getEventStream().publish(i);
-        } else if(o instanceof CLIResponse) {
-            CLIResponse cr = (CLIResponse) o;
-            ActorRef ref = getContext().getActor("/app/cli");
-            ref.tell(cr, getSelf());
+        } else {
+            ActorRef ref = getRecipient(o);
+            if(ref != null) {
+                if(envelope.isFuture()) {
+                    Future f = ref.ask(o);
+                    Object res;
+                    try {
+                        res = f.get(10, TimeUnit.SECONDS);
+                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                        res = e;
+                    }
+                    Envelope env = makeSystemEnvelope(res);
+                    env.setFutureResult(true);
+                    env.setFutureId(envelope.getFutureId());
+                    connection.sendEnvelope(env);
+                } else if (envelope.isFutureResult()) {
+                    ref = futureMap.remove(envelope.getFutureId());
+                    if(ref != null) {
+                        ref.tell(o, getSelf());
+                    }
+                } else {
+                    ref.tell(o, getSelf());
+                }
+            } else {
+                logger.debug("discarded received message: {}", o.getClass().getName());
+            }
+
         }
     }
 
-    private void sendSystemEnvelope(Object systemEvent) throws IOException {
-        logger.debug("Sending system message: " + systemEvent.getClass().getName());
-        logger.debug(systemEvent.toString());
-        logger.debug("Message:" + connection.getMapper().writeValueAsString(systemEvent));
+    private ActorRef getRecipient(Object o) {
+        if(o instanceof CLIResponse) {
+            return getContext().getActor("/app/cli");
+        }
+        if(o instanceof Election || o instanceof ElectionOK || o instanceof NewCoordinator ||
+                o instanceof GlobalLockRelease || o instanceof GlobalLockRequest || o instanceof GlobalLockGranted) {
+            return getContext().getActor("/app/coordinator");
+        }
+        return null;
+    }
+
+    private Envelope makeSystemEnvelope(Object systemEvent) throws IOException {
         Envelope env = new Envelope(MessageType.SYSTEM);
         env.setTarget(connection.getUUID());
         env.setSender(idMatcher.getLocal());
@@ -94,6 +136,15 @@ public class Node extends Actor {
         so.setFormat("json");
         so.setData(connection.getMapper().writeValueAsBytes(systemEvent));
         env.setSObject(so);
-        connection.sendEnvelope(env);
+        if(getSender() != null &&getSender().getName().equals("future")) {
+            Integer id = random.nextInt();
+            while (futureMap.containsKey(id)) {
+                id = random.nextInt();
+            }
+            futureMap.put(id, getSender());
+            env.setFuture(true);
+            env.setFutureId(id);
+        }
+        return env;
     }
 }

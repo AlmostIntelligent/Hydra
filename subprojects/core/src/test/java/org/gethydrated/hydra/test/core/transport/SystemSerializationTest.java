@@ -37,9 +37,8 @@ public class SystemSerializationTest {
     public void testCLIResponse() throws IOException {
         CLIResponse cr = new CLIResponse("test", "var");
         String s = mapper.writeValueAsString(cr);
-        assertEquals("{\"output\":\"test\",\"var\":\"var\"}",s);
+        assertEquals("{\"output\":\"test\",\"var\":\"var\"}", s);
         CLIResponse crr = mapper.readValue(s, CLIResponse.class);
         assertEquals(cr, crr);
     }
-
 }

@@ -77,6 +77,9 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 
     public synchronized void processSystem(Message message) {
+        if(status == ActorLifecyle.STOPPED) {
+            return;
+        }
         try {
             Object o = message.getMessage();
             if(o instanceof Start) {
@@ -239,6 +242,7 @@ public class ActorNode implements ActorSource, ActorContext {
         }
         parent.tellSystem(new Stopped(self.getPath()), self);
         status = ActorLifecyle.STOPPED;
+        mailbox.setScheduled(false);
         logger.info("Actor '{}' stopped.", self);
     }
 

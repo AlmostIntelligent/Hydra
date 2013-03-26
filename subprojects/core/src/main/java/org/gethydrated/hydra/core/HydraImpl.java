@@ -110,7 +110,7 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new CoordinatorActor(cfg);
+                return new CoordinatorActor(idMatcher);
             }
         }, "coordinator");
         actorSystem.spawnActor(new ActorFactory() {

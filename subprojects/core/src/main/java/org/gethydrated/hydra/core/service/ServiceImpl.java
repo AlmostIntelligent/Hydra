@@ -4,6 +4,8 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
+import org.gethydrated.hydra.core.messages.ServiceDown;
+import org.gethydrated.hydra.core.messages.ServiceUp;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,10 +64,12 @@ public class ServiceImpl extends Actor implements Service {
     @Override
     public void onStart() throws Exception {
         activator.start(ctx);
+        getSystem().getEventStream().publish(new ServiceUp(sidFactory.fromActorRef(getSelf())));
     }
 
     public void onStop() throws Exception {
         activator.stop(ctx);
+        getSystem().getEventStream().publish(new ServiceDown(sidFactory.fromActorRef(getSelf())));
     }
 
     @Override

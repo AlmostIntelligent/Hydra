@@ -49,4 +49,20 @@ public class LocalSID implements InternalSID {
         return "<0:" + usid.typeId + ":" + usid.serviceId + ">";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LocalSID localSID = (LocalSID) o;
+
+        if (usid != null ? !usid.equals(localSID.usid) : localSID.usid != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return usid != null ? usid.hashCode() : 0;
+    }
 }

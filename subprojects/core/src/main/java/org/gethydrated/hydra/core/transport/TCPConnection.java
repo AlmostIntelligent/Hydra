@@ -3,6 +3,7 @@ package org.gethydrated.hydra.core.transport;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.sid.IdMatcher;
@@ -41,6 +42,7 @@ public class TCPConnection implements Connection {
         objectMapper = new ObjectMapper();
         objectMapper.configure(Feature.AUTO_CLOSE_TARGET, false);
         objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.registerModule(new EnvelopeModule());
         objectMapper.registerModule(new JaxbAnnotationModule());
     }

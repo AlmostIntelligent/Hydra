@@ -64,7 +64,9 @@ public class NodeConnector extends Actor {
 
     @Override
     public void onStop() throws IOException {
-        serverSocket.close();
+        if(serverSocket != null) {
+            serverSocket.close();
+        }
     }
 
     private void connectNode(ConnectTo target) throws IOException, ConfigItemNotFoundException {
