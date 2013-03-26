@@ -243,7 +243,7 @@ public abstract class CLICommand {
      */
     public final CLIResponse parse(final String cmd) {
         if (cmd.contains("\"")) {
-            List<String> list = new ArrayList<String>();
+            List<String> list = new ArrayList<>();
             Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(cmd);
             while (m.find())
                 list.add(m.group(1).replace("\"", ""));

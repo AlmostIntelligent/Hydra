@@ -62,7 +62,7 @@ public class Children {
 
     /**
      * Returns a list of all names.
-     * @return
+     * @return list of all names.
      */
     public List<String> getAllChildren() {
         return new LinkedList<>(children.keySet());

@@ -51,8 +51,8 @@ public class DefaultSIDFactory implements SIDFactory {
 
     /**
      * Can only find local sids
-     * @param path
-     * @return
+     * @param path source actor path
+     * @return created sid
      */
     public SID fromActorPath(ActorPath path) {
         USID usid = null;
@@ -96,8 +96,8 @@ public class DefaultSIDFactory implements SIDFactory {
 
     /**
      * Can only find local sids
-     * @param ref
-     * @return
+     * @param ref source actor ref
+     * @return created sid
      */
     public SID fromActorRef(ActorRef ref) {
         return fromActorPath(ref.getPath());

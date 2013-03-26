@@ -47,8 +47,6 @@ public class LocalSchemaResolver implements EntityResolver {
                     map.put(arr[0], arr[1]);
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

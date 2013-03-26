@@ -3,6 +3,8 @@ package org.gethydrated.hydra.core.configuration;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.config.ConfigurationImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,7 +23,8 @@ public class ConfigMerger {
                 }
             }
         } catch (ConfigItemNotFoundException e) {
-
+            Logger logger = LoggerFactory.getLogger(ConfigMerger.class);
+            logger.error(e.getMessage(), e);
         }
         return cfg;
     }

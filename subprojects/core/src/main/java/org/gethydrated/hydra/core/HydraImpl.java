@@ -150,8 +150,7 @@ public final class HydraImpl implements InternalHydra {
         }
         Future f = services.ask(new StartService(name));
         try {
-            SID i =  (SID)f.get();
-            return i;
+            return (SID)f.get();
         } catch (InterruptedException|ExecutionException e) {
             throw new HydraException(e);
         }

@@ -37,7 +37,7 @@ public class ConfigurationInitializer {
     }
 
 
-    private final void configureBasic() throws ConfigItemNotFoundException {
+    private void configureBasic() throws ConfigItemNotFoundException {
         BasicConfigurator.configure(cfg);
     }
 
