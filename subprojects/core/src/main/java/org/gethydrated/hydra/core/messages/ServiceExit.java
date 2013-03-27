@@ -5,12 +5,12 @@ import org.gethydrated.hydra.api.service.USID;
 /**
  *
  */
-public class ServiceDown {
+public class ServiceExit {
     private USID sid;
 
     private String reason;
 
-    public ServiceDown(USID sid, String reason) {
+    public ServiceExit(USID sid, String reason) {
         this.sid = sid;
         this.reason = reason;
     }

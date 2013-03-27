@@ -17,6 +17,7 @@ import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.registry.LocalRegistry;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.internal.NodeConnector;
 import org.gethydrated.hydra.core.internal.Nodes;
@@ -125,6 +126,12 @@ public final class HydraImpl implements InternalHydra {
                 return new NodeConnector(cfg, idMatcher);
             }
         }, "connector");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
+                return new LocalRegistry(sidFactory);
+            }
+        }, "localregistry");
     }
 
     @Override
@@ -164,6 +171,7 @@ public final class HydraImpl implements InternalHydra {
         if(id.getUSID().typeId != 0) {
             throw new IllegalArgumentException("Cannot stop system services. Try hydra.shutdown() instead.");
         }
+        ((InternalSID) id).getRef().validate();
         if(id instanceof LocalSID) {
             services.tell(new StopService((InternalSID) id), null);
         }

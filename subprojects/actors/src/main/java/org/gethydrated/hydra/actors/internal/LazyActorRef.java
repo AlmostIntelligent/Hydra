@@ -27,4 +27,9 @@ public class LazyActorRef extends AbstractActorRef {
         }
         return mb;
     }
+
+    @Override
+    public void validate() {
+        getMailbox();
+    }
 }

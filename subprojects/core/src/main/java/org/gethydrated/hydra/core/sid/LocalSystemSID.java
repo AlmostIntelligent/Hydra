@@ -9,33 +9,63 @@ import java.util.concurrent.Future;
 /**
  *
  */
-public class LocalSystemSID implements SID {
-
-    private final int systemId;
+public class LocalSystemSID implements InternalSID {
 
     private ActorRef ref;
 
-    public LocalSystemSID(int systemId, ActorRef ref) {
-        this.systemId = systemId;
+    private final USID usid;
+
+    public LocalSystemSID(USID usid, ActorRef ref) {
+        this.usid = usid;
         this.ref = ref;
     }
 
     @Override
     public USID getUSID() {
-        return null;
+        return usid;
+    }
+
+    @Override
+    public void tell(Object message) {
+        tell(message, this);
     }
 
     @Override
     public void tell(Object message, SID sender) {
-
+        if(sender == null) {
+            ref.tell(message, ref);
+        } else {
+            ref.tell(message, ((InternalSID)sender).getRef());
+        }
     }
 
     @Override
     public Future<?> ask(Object message) {
-        return null;
+        return ref.ask(message);
     }
 
     public String toString() {
-        return "<0:1:" + systemId + ">";
+        return "<0:1:" + usid.serviceId + ">";
+    }
+
+    @Override
+    public ActorRef getRef() {
+        return ref;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !(o instanceof InternalSID)) return false;
+
+        InternalSID localSID = (InternalSID) o;
+
+        return !(usid != null ? !usid.equals(localSID.getUSID()) : localSID.getUSID() != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return usid != null ? usid.hashCode() : 0;
     }
 }

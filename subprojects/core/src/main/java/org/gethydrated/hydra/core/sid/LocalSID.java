@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.core.sid;
 
 import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.actors.FutureImpl;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
 
@@ -25,6 +24,11 @@ public class LocalSID implements InternalSID {
     }
 
     @Override
+    public void tell(Object message) {
+        tell(message, this);
+    }
+
+    @Override
     public ActorRef getRef() {
         return ref;
     }
@@ -32,17 +36,15 @@ public class LocalSID implements InternalSID {
     @Override
     public void tell(Object message, SID sender) {
         if(sender == null) {
-            ref.tell(message, null);
+            ref.tell(message, ref);
         } else {
-            ref.tell(message, ((LocalSID)sender).ref);
+            ref.tell(message, ((InternalSID) sender).getRef());
         }
     }
 
     @Override
     public Future<?> ask(Object message) {
-        FutureImpl<Object> future = new FutureImpl<>();
-        ref.tell(message, future);
-        return future;
+        return ref.ask(message);
     }
 
     public String toString() {
@@ -52,13 +54,12 @@ public class LocalSID implements InternalSID {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof InternalSID)) return false;
 
-        LocalSID localSID = (LocalSID) o;
+        InternalSID localSID = (InternalSID) o;
 
-        if (usid != null ? !usid.equals(localSID.usid) : localSID.usid != null) return false;
+        return !(usid != null ? !usid.equals(localSID.getUSID()) : localSID.getUSID() != null);
 
-        return true;
     }
 
     @Override

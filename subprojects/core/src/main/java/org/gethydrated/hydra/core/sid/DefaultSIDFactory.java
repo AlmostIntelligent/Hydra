@@ -65,7 +65,7 @@ public class DefaultSIDFactory implements SIDFactory {
                     case "/app/cli":
                         usid = new USID(localNode, 1, 0);
                         break;
-                    case "/app/coordinator":
+                    case "/app/locking":
                         usid = new USID(localNode, 1, 1);
                         break;
                     case "/app/services":
@@ -82,6 +82,12 @@ public class DefaultSIDFactory implements SIDFactory {
                         break;
                     case "/sys/log":
                         usid = new USID(localNode, 1, 6);
+                        break;
+                    case "/app/localregistry":
+                        usid = new USID(localNode, 1, 7);
+                        break;
+                    case  "/app/globalregistry":
+                        usid = new USID(localNode, 1, 8);
                         break;
                 }
             }
@@ -114,7 +120,42 @@ public class DefaultSIDFactory implements SIDFactory {
     }
 
     private SID buildSystemSID(USID usid) {
-        return null;
+        String path = null;
+        switch ((int)usid.serviceId) {
+            case 0:
+                path = "/app/cli";
+                break;
+            case 1:
+                path = "/app/locking";
+                break;
+            case 2:
+                path = "/app/services";
+                break;
+            case 3:
+                path = "/app/nodes";
+                break;
+            case 4:
+                path = "/sys/in";
+                break;
+            case 5:
+                path = "/sys/out";
+                break;
+            case 6:
+                path = "/sys/log";
+                break;
+            case 7:
+                path = "/app/localregistry";
+                break;
+            case 8:
+                path = "/app/globalregistry";
+                break;
+        }
+        if(path != null) {
+            ActorRef ref = actorSystem.getActor(path);
+
+            return new LocalSystemSID(usid, ref);
+        }
+        throw new RuntimeException("Could not match usid:" + usid);
     }
 
     private SID buildForeignNodeSID(USID usid) {

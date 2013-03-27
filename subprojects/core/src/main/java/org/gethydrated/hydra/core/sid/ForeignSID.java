@@ -9,7 +9,7 @@ import java.util.concurrent.Future;
 /**
  *
  */
-public class ForeignSID implements SID {
+public class ForeignSID implements InternalSID {
 
     private final USID usid;
 
@@ -26,12 +26,22 @@ public class ForeignSID implements SID {
     }
 
     @Override
+    public void tell(Object message) {
+        tell(message, this);
+    }
+
+    @Override
     public void tell(Object message, SID sender) {
 
     }
 
     @Override
     public Future<?> ask(Object message) {
+        return null;
+    }
+
+    @Override
+    public ActorRef getRef() {
         return null;
     }
 }

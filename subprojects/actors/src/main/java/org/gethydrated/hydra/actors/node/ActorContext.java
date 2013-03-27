@@ -21,4 +21,6 @@ public interface ActorContext extends ActorSource {
     ActorRef getActor(ActorPath path);
 
     List<String> getChildren();
+
+    ActorRef getSelf();
 }

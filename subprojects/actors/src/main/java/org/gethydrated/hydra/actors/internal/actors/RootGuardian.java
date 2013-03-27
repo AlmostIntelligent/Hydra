@@ -113,6 +113,10 @@ public class RootGuardian implements NodeRef {
     @Override
     public Future<?> ask(Object o) { return null; }
 
+    @Override
+    public void validate() {
+    }
+
     public NodeRef getSystemGuardian() {
         return sysGuardian;
     }

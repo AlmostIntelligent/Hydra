@@ -154,6 +154,11 @@ public class ActorNode implements ActorSource, ActorContext {
     }
 
     @Override
+    public ActorRef getSelf() {
+        return getRef();
+    }
+
+    @Override
 	public String getName() {
 		return self.getName();
 	}
@@ -244,6 +249,7 @@ public class ActorNode implements ActorSource, ActorContext {
         parent.tellSystem(new Stopped(self.getPath()), self);
         status = ActorLifecyle.STOPPED;
         mailbox.setScheduled(false);
+        dispatchers.lookupDispatcher("").closeMailbox(this);
         logger.info("Actor '{}' stopped.", self);
     }
 
@@ -275,9 +281,8 @@ public class ActorNode implements ActorSource, ActorContext {
 
         ActorNode actorNode = (ActorNode) o;
 
-        if (!getPath().equals(actorNode.getPath())) return false;
+        return getPath().equals(actorNode.getPath());
 
-        return true;
     }
 
     @Override

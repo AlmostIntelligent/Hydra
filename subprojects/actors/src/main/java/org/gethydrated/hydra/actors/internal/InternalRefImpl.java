@@ -61,4 +61,8 @@ public class InternalRefImpl extends AbstractActorRef implements InternalRef {
     protected Mailbox getMailbox() {
         return mb;
     }
+
+    @Override
+    public void validate() {
+    }
 }

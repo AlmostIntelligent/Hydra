@@ -6,6 +6,9 @@ import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.Version;
 import org.gethydrated.hydra.core.cli.commands.*;
+import org.gethydrated.hydra.core.cli.commands.registry.Register;
+import org.gethydrated.hydra.core.cli.commands.registry.Unregister;
+import org.gethydrated.hydra.core.cli.commands.registry.WhereIs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +56,9 @@ public class CLIService extends Actor {
         commands.addSubCommand(new CLICommandLocal(hydra, commands));
         commands.addSubCommand(new CLICommandNode(hydra, commands));
         commands.addSubCommand(new CLICommandConnect(hydra, commands));
-        commands.addSubCommand(new CLICommandLock(hydra, commands));
-        commands.addSubCommand(new CLICommandUnLock(hydra, commands));
+        commands.addSubCommand(new Register(hydra, commands));
+        commands.addSubCommand(new Unregister(hydra, commands));
+        commands.addSubCommand(new WhereIs(hydra, commands));
         commands.addSubCommand(new CLICommandHelp(hydra, commands));
 
         variable_dict = new HashMap<>();
@@ -66,7 +70,7 @@ public class CLIService extends Actor {
      *            command String
      */
     public final CLIResponse handleInputString(final String str) {
-        String command = null;
+        String command;
         String var = null;
         if (str.trim().startsWith("$")){
             /* Got variable, handle it*/
