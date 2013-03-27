@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply from: "gradle/dist.gradle"
-apply from: "gradle/coverage.gradle"
+//apply from: "gradle/coverage.gradle"
 apply from: "gradle/codequality.gradle"
 apply from: "gradle/idea.gradle"
 
@@ -135,6 +135,6 @@ configure(rootProject) {
 
 	task wrapper(type: Wrapper) {
 		description = 'Generates gradlew[.bat] scripts'
-		gradleVersion = '1.3'
+		gradleVersion = '1.5'
 	}
 }
