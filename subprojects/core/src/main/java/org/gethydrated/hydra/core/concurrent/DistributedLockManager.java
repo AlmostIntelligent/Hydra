@@ -2,6 +2,7 @@ package org.gethydrated.hydra.core.concurrent;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.core.messages.NodeDown;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.NodeAddress;
 
@@ -61,6 +62,8 @@ public class DistributedLockManager extends Actor {
                     releaseLocal((Lock) message);
                     break;
             }
+        } else if(message instanceof NodeDown) {
+            release(new LockRelease(((NodeDown) message).getUuid()));
         }
     }
 
@@ -143,11 +146,11 @@ public class DistributedLockManager extends Actor {
 
     @Override
     public void onStart() {
-
+        getSystem().getEventStream().subscribe(getSelf(), NodeDown.class);
     }
 
     @Override
     public void onStop() {
-
+        getSystem().getEventStream().unsubscribe(getSelf());
     }
 }
