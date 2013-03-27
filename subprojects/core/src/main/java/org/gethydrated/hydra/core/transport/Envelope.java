@@ -21,6 +21,15 @@ public class Envelope {
     private Integer futureId;
     private boolean futureResult;
     private boolean hiddenNode;
+    private long timestamp;
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
 
     public Envelope(MessageType type) {
         this.type = type;

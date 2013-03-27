@@ -1,16 +1,10 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-import org.gethydrated.hydra.core.messages.LockRelease;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import org.gethydrated.hydra.core.concurrent.Lock;
+import org.gethydrated.hydra.core.concurrent.Lock.RequestType;
 
 /**
  * TEMPORARY TESTING ONLY
@@ -45,10 +39,8 @@ public class CLICommandUnLock extends CLICommand{
 
     @Override
     public CLIResponse execute(String[] args) {
-        SIDFactory factory = getHydra().getDefaultSIDFactory();
-        SID test = factory.fromString("<0:0:1>");
-        ActorRef ref = getHydra().getActorSystem().getActor("/app/coordinator");
-        Future f = ref.ask(new LockRelease(test));
+        ActorRef ref = getHydra().getActorSystem().getActor("/app/locking");
+        /*Future f = ref.ask(new LockRelease("test"));
         try {
             Object o = f.get(10, TimeUnit.SECONDS);
             return new CLIResponse(o.toString());
@@ -58,8 +50,8 @@ public class CLICommandUnLock extends CLICommand{
             e.printStackTrace();
         } catch (TimeoutException e) {
             e.printStackTrace();
-        }
-
+        }   */
+        ref.tell(new Lock("cli", RequestType.UNLOCK), null);
         return new CLIResponse("");
     }
 

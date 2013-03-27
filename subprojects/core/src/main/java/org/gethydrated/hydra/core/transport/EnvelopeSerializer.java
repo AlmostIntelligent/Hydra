@@ -38,6 +38,7 @@ public class EnvelopeSerializer extends JsonSerializer<Envelope> {
             case DISCONNECT:
                 break;
             case SYSTEM:
+                jGen.writeStringField("timestamp", String.valueOf(envelope.getTimestamp()));
                 jGen.writeFieldName("sobject");
                 jGen.writeObject(envelope.getSObject());
                 break;

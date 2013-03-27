@@ -1,11 +1,10 @@
 package org.gethydrated.hydra.core.cli.commands;
 
 import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-import org.gethydrated.hydra.core.messages.LockRequest;
+import org.gethydrated.hydra.core.concurrent.Lock;
+import org.gethydrated.hydra.core.concurrent.Lock.RequestType;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -45,12 +44,10 @@ public class CLICommandLock extends CLICommand{
 
     @Override
     public CLIResponse execute(String[] args) {
-        SIDFactory factory = getHydra().getDefaultSIDFactory();
-        SID test = factory.fromString("<0:0:1>");
-        ActorRef ref = getHydra().getActorSystem().getActor("/app/coordinator");
-        Future f = ref.ask(new LockRequest(test));
+        ActorRef ref = getHydra().getActorSystem().getActor("/app/locking");
+        Future f = ref.ask(new Lock("cli", RequestType.LOCK));
         try {
-            Object o = f.get(10, TimeUnit.SECONDS);
+            Object o = f.get(15, TimeUnit.SECONDS);
             return new CLIResponse(o.toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -59,7 +56,6 @@ public class CLICommandLock extends CLICommand{
         } catch (TimeoutException e) {
             e.printStackTrace();
         }
-
         return new CLIResponse("");
     }
 

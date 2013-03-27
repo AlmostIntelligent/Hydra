@@ -11,6 +11,7 @@ import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.event.LogEvent;
+import org.gethydrated.hydra.api.util.LogicalClock;
 import org.gethydrated.hydra.api.util.Util;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
@@ -75,6 +76,8 @@ public final class ActorSystem implements ActorSource {
     private final Dispatcher defaultDispatcher;
 
     private final FallbackLogger fallbackLogger= new FallbackLogger();
+
+    private final LogicalClock clock = new LamportsClock();
 
     /**
      * Private constructor.
@@ -144,6 +147,10 @@ public final class ActorSystem implements ActorSource {
 
     public Dispatcher getDefaultDispatcher() {
         return defaultDispatcher;
+    }
+
+    public LogicalClock getClock() {
+        return clock;
     }
 
     @Override

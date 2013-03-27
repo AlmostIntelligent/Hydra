@@ -61,7 +61,8 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 	
 	public synchronized void process(Message message) {
-		try {
+		getSystem().getClock().increment();
+        try {
             if(!handleInternal(message.getMessage())) {
                 sender = message.getSender();
 			    actor.onReceive(message.getMessage());

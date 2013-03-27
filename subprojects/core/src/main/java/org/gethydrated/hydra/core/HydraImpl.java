@@ -13,7 +13,7 @@ import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
-import org.gethydrated.hydra.core.coordinator.CoordinatorActor;
+import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
@@ -110,9 +110,9 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new CoordinatorActor(idMatcher);
+                return new DistributedLockManager(idMatcher);
             }
-        }, "coordinator");
+        }, "locking");
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {

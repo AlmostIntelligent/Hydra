@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.messages;
+package org.gethydrated.hydra.core.concurrent;
 
 import org.gethydrated.hydra.api.event.SystemEvent;
 
@@ -7,14 +7,15 @@ import java.util.UUID;
 /**
  *
  */
-public class GlobalLockRequest implements SystemEvent {
+public class LockRelease implements SystemEvent {
+
     private UUID nodeId;
 
-    public GlobalLockRequest(UUID nodeId) {
+    public LockRelease(UUID nodeId) {
         this.nodeId = nodeId;
     }
 
-    private GlobalLockRequest() {}
+    private LockRelease() {}
 
     public UUID getNodeId() {
         return nodeId;

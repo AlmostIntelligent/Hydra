@@ -5,7 +5,11 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-import org.gethydrated.hydra.core.messages.*;
+import org.gethydrated.hydra.core.concurrent.LockRelease;
+import org.gethydrated.hydra.core.concurrent.LockReply;
+import org.gethydrated.hydra.core.concurrent.LockRequest;
+import org.gethydrated.hydra.core.messages.NodeDown;
+import org.gethydrated.hydra.core.messages.NodeUp;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.Connection;
 import org.gethydrated.hydra.core.transport.Envelope;
@@ -87,6 +91,7 @@ public class Node extends Actor {
     }
 
     private void handleSystemEnvelope(Envelope envelope) throws ClassNotFoundException, IOException {
+        getSystem().getClock().sync(envelope.getTimestamp());
         SerializedObject so = envelope.getSObject();
         Class<?> clazz = getClass().getClassLoader().loadClass(so.getClassName());
         Object o = connection.getMapper().readValue(so.getData(), clazz);
@@ -128,9 +133,8 @@ public class Node extends Actor {
         if(o instanceof CLIResponse) {
             return getContext().getActor("/app/cli");
         }
-        if(o instanceof Election || o instanceof ElectionOK || o instanceof NewCoordinator ||
-                o instanceof GlobalLockRelease || o instanceof GlobalLockRequest || o instanceof GlobalLockGranted) {
-            return getContext().getActor("/app/coordinator");
+        if(o instanceof LockRelease || o instanceof LockRequest || o instanceof LockReply) {
+            return getContext().getActor("/app/locking");
         }
         return null;
     }
@@ -139,6 +143,7 @@ public class Node extends Actor {
         Envelope env = new Envelope(MessageType.SYSTEM);
         env.setTarget(connection.getUUID());
         env.setSender(idMatcher.getLocal());
+        env.setTimestamp(getSystem().getClock().getCurrentTime());
         SerializedObject so = new SerializedObject();
         so.setClassName(systemEvent.getClass().getName());
         so.setFormat("json");
