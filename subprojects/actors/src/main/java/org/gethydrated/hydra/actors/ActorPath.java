@@ -5,6 +5,8 @@ import org.gethydrated.hydra.actors.node.ActorNode;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Immutable path that can be used to describe actor addresses.
@@ -173,4 +175,7 @@ public class ActorPath implements Serializable {
         return name.matches("[a-zA-Z0-9_-]");
     }
 
+    public List<String> toList() {
+        return new LinkedList<>(Arrays.asList(pathStack));
+    }
 }

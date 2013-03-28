@@ -1,8 +1,6 @@
 package org.gethydrated.hydra.actors;
 
 
-import org.gethydrated.hydra.actors.internal.InternalRef;
-
 public class SystemMessages {
 
     private SystemMessages() {

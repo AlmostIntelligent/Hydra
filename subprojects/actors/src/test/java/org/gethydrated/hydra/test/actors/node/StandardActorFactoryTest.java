@@ -11,7 +11,7 @@ import mockit.integration.junit4.JMockit;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.internal.StandardActorFactory;
+import org.gethydrated.hydra.actors.StandardActorFactory;
 import org.gethydrated.hydra.actors.node.ActorNode;
 import org.junit.Before;
 import org.junit.Test;

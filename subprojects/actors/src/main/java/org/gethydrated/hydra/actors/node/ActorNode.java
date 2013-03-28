@@ -2,10 +2,6 @@ package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.SystemMessages.*;
-import org.gethydrated.hydra.actors.dispatch.Dispatchers;
-import org.gethydrated.hydra.actors.internal.InternalRef;
-import org.gethydrated.hydra.actors.internal.InternalRefImpl;
-import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
@@ -34,8 +30,6 @@ public class ActorNode implements ActorSource, ActorContext {
 	private final Children children;
 
     private final Watchers watchers;
-
-    private final Dispatchers dispatchers;
 	
 	private final Mailbox mailbox;
 
@@ -47,16 +41,15 @@ public class ActorNode implements ActorSource, ActorContext {
 	
 	private ActorLifecyle status = ActorLifecyle.CREATED;
 	
-	public ActorNode(InternalRef self, InternalRef parent, ActorFactory factory, ActorSystem system, Dispatchers dispatchers) {
+	public ActorNode(InternalRef self, InternalRef parent, ActorFactory factory, ActorSystem system) {
         logger = new LoggingAdapter(ActorNode.class, system);
 		this.factory = factory;
         this.self = self;
         this.parent = parent;
 		this.system = system;
-        this.dispatchers = dispatchers;
         this.watchers = new Watchers(self, system.getEventStream());
-        this.children = new Children(self, system, dispatchers);
-        this.mailbox = dispatchers.lookupDispatcher("").createMailbox(this); //TODO: get dispatchername from config
+        this.children = new Children(self, system);
+        this.mailbox = system.getDefaultDispatcher().createMailbox(this); //TODO: get dispatchername from config
 		logger.debug("ActorNode for actor: '" + self + "' created");
 	}
 	
@@ -149,6 +142,19 @@ public class ActorNode implements ActorSource, ActorContext {
 	}
 
     @Override
+    public ActorRef getActor(List<String> names) {
+        if(names.isEmpty()) {
+            return self;
+        }
+        String target = names.remove(0);
+        InternalRef ref = children.getChild(target);
+        if (ref != null) {
+            return ref.unwrap().getActor(names);
+        }
+        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + target);
+    }
+
+    @Override
     public List<String> getChildren() {
         return children.getAllChildren();
     }
@@ -169,17 +175,17 @@ public class ActorNode implements ActorSource, ActorContext {
 
     @Override
     public void watch(ActorRef target) {
-        watchers.addWatched(new InternalRefImpl(target.getPath(), dispatchers));
+        watchers.addWatched((InternalRef) target);
     }
 
     @Override
     public void unwatch(ActorRef target) {
-        watchers.removeWatched(new InternalRefImpl(target.getPath(), dispatchers));
+        watchers.removeWatched((InternalRef) target);
     }
 
     @Override
     public void stop(ActorRef target) {
-        new InternalRefImpl(target.getPath(), dispatchers).tellSystem(new Stop(), self);
+        ((InternalRef) target).tellSystem(new Stop(), self);
     }
 
     public ActorRef getRef() {
@@ -249,7 +255,7 @@ public class ActorNode implements ActorSource, ActorContext {
         parent.tellSystem(new Stopped(self.getPath()), self);
         status = ActorLifecyle.STOPPED;
         mailbox.setScheduled(false);
-        dispatchers.lookupDispatcher("").closeMailbox(this);
+        system.getDefaultDispatcher().closeMailbox(this);
         logger.info("Actor '{}' stopped.", self);
     }
 
@@ -294,4 +300,7 @@ public class ActorNode implements ActorSource, ActorContext {
 		return nodeRef.get();
 	}
 
+    public void attachChild(InternalRef actor) {
+        children.attachChild(actor);
+    }
 }

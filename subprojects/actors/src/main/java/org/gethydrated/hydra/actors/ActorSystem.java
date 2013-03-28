@@ -1,12 +1,11 @@
 package org.gethydrated.hydra.actors;
 
+import org.gethydrated.hydra.actors.actors.RootGuardian;
+import org.gethydrated.hydra.actors.clock.LamportsClock;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.event.ActorEventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
-import org.gethydrated.hydra.actors.internal.LazyActorRef;
-import org.gethydrated.hydra.actors.internal.NodeRef;
-import org.gethydrated.hydra.actors.internal.actors.RootGuardian;
 import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.api.configuration.Configuration;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
+import java.util.List;
 
 
 /**
@@ -45,12 +45,12 @@ public final class ActorSystem implements ActorSource {
     /**
      * Application guardian.
      */
-    private final NodeRef appGuardian;
+    private final InternalRef appGuardian;
 
     /**
      * System guardian.
      */
-    private final NodeRef sysGuardian;
+    private final InternalRef sysGuardian;
 
     /**
      * Lock object for threads awaiting system termination.
@@ -175,7 +175,11 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef getActor(final ActorPath path) {
-        return new LazyActorRef(path, dispatchers);
+        return getActor(path.toList());
+    }
+
+    public ActorRef getActor(final List<String> names) {
+        return rootGuardian.getActor(names);
     }
 
     /**

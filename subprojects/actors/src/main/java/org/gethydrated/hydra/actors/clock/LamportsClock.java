@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors;
+package org.gethydrated.hydra.actors.clock;
 
 import org.gethydrated.hydra.api.util.LogicalClock;
 

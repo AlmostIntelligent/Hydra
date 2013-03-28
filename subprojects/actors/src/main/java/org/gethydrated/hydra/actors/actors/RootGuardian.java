@@ -1,30 +1,26 @@
-package org.gethydrated.hydra.actors.internal.actors;
+package org.gethydrated.hydra.actors.actors;
 
-import org.gethydrated.hydra.actors.ActorPath;
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.actors.ActorSystem;
+import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.SystemMessages.Stopped;
 import org.gethydrated.hydra.actors.SystemMessages.Watch;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
-import org.gethydrated.hydra.actors.internal.NodeRef;
-import org.gethydrated.hydra.actors.internal.NodeRefImpl;
-import org.gethydrated.hydra.actors.internal.StandardActorFactory;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.actors.node.ActorNode;
+import org.gethydrated.hydra.actors.node.ActorNodeRef;
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-public class RootGuardian implements NodeRef {
+public class RootGuardian implements InternalRef {
 
     private final Logger logger;
 
-    private NodeRef appGuardian;
+    private InternalRef appGuardian;
 
-    private NodeRef sysGuardian;
+    private InternalRef sysGuardian;
 
     private final List<Runnable> terminationHooks = new LinkedList<>();
 
@@ -33,8 +29,9 @@ public class RootGuardian implements NodeRef {
     public RootGuardian(ActorSystem actorSystem, Dispatchers dispatchers) {
         logger = new LoggingAdapter(RootGuardian.class, actorSystem);
         logger.info("RootGuardian created.");
-        sysGuardian = new NodeRefImpl(new ActorPath().createChild("sys"), new StandardActorFactory(SysGuardian.class),this, actorSystem, dispatchers);
-        appGuardian = new NodeRefImpl(new ActorPath().createChild("app"), new StandardActorFactory(AppGuardian.class),this, actorSystem, dispatchers);
+        sysGuardian = new ActorNodeRef("sys", new StandardActorFactory(SysGuardian.class), this, actorSystem);
+        sysGuardian.unwrap().attachChild(new FutureActor(sysGuardian));
+        appGuardian = new ActorNodeRef("app", new StandardActorFactory(AppGuardian.class), this, actorSystem);
         initGuardians();
     }
 
@@ -117,11 +114,11 @@ public class RootGuardian implements NodeRef {
     public void validate() {
     }
 
-    public NodeRef getSystemGuardian() {
+    public InternalRef getSystemGuardian() {
         return sysGuardian;
     }
 
-    public NodeRef getAppGuardian() {
+    public InternalRef getAppGuardian() {
         return appGuardian;
     }
 
@@ -146,5 +143,18 @@ public class RootGuardian implements NodeRef {
         appGuardian.start();
         appGuardian.tellSystem(new Watch(sysGuardian), sysGuardian);
         sysGuardian.tellSystem(new Watch(appGuardian), appGuardian);
+    }
+
+    public ActorRef getActor(List<String> names) {
+        if(names.isEmpty()) {
+            return this;
+        }
+        String target = names.remove(0);
+        if(target.equals("sys")) {
+            return sysGuardian.unwrap().getActor(names);
+        } else if (target.equals("app")) {
+            return appGuardian.unwrap().getActor(names);
+        }
+        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + target);
     }
 }

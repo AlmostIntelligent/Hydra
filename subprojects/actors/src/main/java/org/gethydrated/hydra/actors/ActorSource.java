@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.actors;
 
+import java.util.List;
+
 /**
  * Actor source method definitions.
  */
@@ -25,7 +27,7 @@ public interface ActorSource {
     /**
      * Retrieves an actor reference to the given actor path. Will throw an
      * ActorNotFoundException otherwise.
-     * @param uri Actor uri.
+     * @param uri Actor path as string.
      * @return ActorRef pointing to the actor.
      */
     ActorRef getActor(String uri);
@@ -37,4 +39,12 @@ public interface ActorSource {
      * @return ActorRef pointing to the actor.
      */
     ActorRef getActor(ActorPath path);
+
+    /**
+     * Retrieves an actor reference to the given actor path. Will throw an
+     * ActorNotFoundException otherwise.
+     * @param names Actor path as list of names.
+     * @return ActorRef pointing to the actor.
+     */
+    ActorRef getActor(List<String> names);
 }
