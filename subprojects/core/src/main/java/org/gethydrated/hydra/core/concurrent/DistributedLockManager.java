@@ -43,7 +43,6 @@ public class DistributedLockManager extends Actor {
 
     @Override
     public void onReceive(Object message) throws Exception {
-
         if(message instanceof LockRequest) {
             enqueue((LockRequest) message);
         } else if(message instanceof LockRelease) {
@@ -121,13 +120,14 @@ public class DistributedLockManager extends Actor {
     }
 
     private void checkGranted() {
-        if(remainingGranted.isEmpty() && !queue.isEmpty() && queue.peek().getNodeId().equals(idMatcher.getLocal()) && holder == null) {
+        if(remainingGranted != null && remainingGranted.isEmpty() && !queue.isEmpty()
+                && queue.peek().getNodeId().equals(idMatcher.getLocal()) && holder == null) {
             enqueued = false;
             if(!localQueue.isEmpty()) {
                 Entry<Lock, ActorRef> e = localQueue.entrySet().iterator().next();
                 if(e.getValue() != null) {
                     holder = e.getKey();
-                    e.getValue().tell("granted", getSelf());
+                    e.getValue().tell(new Granted(), getSelf());
                     localQueue.remove(e.getKey());
                 } else {
                     release(new LockRelease(idMatcher.getLocal()));

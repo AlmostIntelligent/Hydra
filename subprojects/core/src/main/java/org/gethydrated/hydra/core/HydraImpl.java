@@ -15,17 +15,14 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
 import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
-import org.gethydrated.hydra.core.messages.StartService;
-import org.gethydrated.hydra.core.messages.StopService;
-import org.gethydrated.hydra.core.registry.LocalRegistry;
-import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.internal.NodeConnector;
 import org.gethydrated.hydra.core.internal.Nodes;
+import org.gethydrated.hydra.core.messages.StartService;
+import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.registry.GlobalRegistry;
+import org.gethydrated.hydra.core.registry.LocalRegistry;
 import org.gethydrated.hydra.core.service.Services;
-import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
-import org.gethydrated.hydra.core.sid.ForeignSID;
-import org.gethydrated.hydra.core.sid.InternalSID;
-import org.gethydrated.hydra.core.sid.LocalSID;
+import org.gethydrated.hydra.core.sid.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,6 +129,12 @@ public final class HydraImpl implements InternalHydra {
                 return new LocalRegistry(sidFactory);
             }
         }, "localregistry");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
+                return new GlobalRegistry(sidFactory, idMatcher);
+            }
+        }, "globalregistry");
     }
 
     @Override
@@ -168,7 +171,7 @@ public final class HydraImpl implements InternalHydra {
         if(actorSystem.isTerminated()) {
             throw new HydraException("Hydra already shut down.");
         }
-        if(id.getUSID().typeId != 0) {
+        if(id.getUSID().getTypeId() != 0) {
             throw new IllegalArgumentException("Cannot stop system services. Try hydra.shutdown() instead.");
         }
         ((InternalSID) id).getRef().validate();

@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.messages;
+package org.gethydrated.hydra.core.registry;
 
 /**
  *

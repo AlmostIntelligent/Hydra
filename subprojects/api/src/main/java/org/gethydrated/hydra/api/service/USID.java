@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.api.service;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -10,18 +12,33 @@ import java.util.UUID;
  * the type and its id.
  *
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class USID implements Serializable {
 
-    public final UUID nodeId;
+    private UUID nodeId;
 
-    public final int typeId;
+    private int typeId;
 
-    public final long serviceId;
+    private long serviceId;
 
     public USID(UUID nodeId, int typeId, long serviceId) {
         this.nodeId = nodeId;
         this.typeId = typeId;
         this.serviceId = serviceId;
+    }
+
+    private USID() {}
+
+    public UUID getNodeId() {
+        return nodeId;
+    }
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public long getServiceId() {
+        return serviceId;
     }
 
     public String toString(){

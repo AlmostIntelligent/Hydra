@@ -14,6 +14,7 @@ public class Unregister extends CLICommand {
     public Unregister(InternalHydra hydra, CLICommand root) {
         super(hydra, root);
         addSubCommand(new UnregisterLocal(hydra, root));
+        addSubCommand(new UnregisterGlobal(hydra, root));
     }
 
     @Override

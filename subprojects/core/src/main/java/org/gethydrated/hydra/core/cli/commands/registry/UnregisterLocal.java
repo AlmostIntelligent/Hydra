@@ -4,7 +4,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.cli.commands.CLICommand;
-import org.gethydrated.hydra.core.messages.UnregisterService;
+import org.gethydrated.hydra.core.registry.UnregisterService;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

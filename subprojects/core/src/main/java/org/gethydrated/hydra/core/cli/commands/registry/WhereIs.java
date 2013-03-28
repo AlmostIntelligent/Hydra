@@ -14,6 +14,7 @@ public class WhereIs extends CLICommand {
     public WhereIs(InternalHydra hydra, CLICommand root) {
         super(hydra, root);
         addSubCommand(new WhereIsLocal(hydra, root));
+        addSubCommand(new WhereIsGlobal(hydra, root));
     }
 
     @Override

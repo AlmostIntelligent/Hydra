@@ -15,9 +15,12 @@ public class ForeignSID implements InternalSID {
 
     private final ActorRef ref;
 
-    public ForeignSID(USID usid, ActorRef ref) {
+    private final int nodeId;
+
+    public ForeignSID(int nodeId, USID usid, ActorRef ref) {
         this.ref = ref;
         this.usid = usid;
+        this.nodeId = nodeId;
     }
 
     @Override
@@ -43,5 +46,10 @@ public class ForeignSID implements InternalSID {
     @Override
     public ActorRef getRef() {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "<"+ nodeId + ":" + usid.getTypeId()+ ":" + usid.getServiceId() + ">";
     }
 }

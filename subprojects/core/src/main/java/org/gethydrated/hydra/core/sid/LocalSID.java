@@ -48,7 +48,7 @@ public class LocalSID implements InternalSID {
     }
 
     public String toString() {
-        return "<0:" + usid.typeId + ":" + usid.serviceId + ">";
+        return "<0:" + usid.getTypeId() + ":" + usid.getServiceId() + ">";
     }
 
     @Override

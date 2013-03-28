@@ -40,10 +40,10 @@ public class DefaultSIDFactory implements SIDFactory {
 
     @Override
     public SID fromUSID(USID usid) {
-        if (!usid.nodeId.equals(idMatcher.getLocal())) {
+        if (!usid.getNodeId().equals(idMatcher.getLocal())) {
             return buildForeignNodeSID(usid);
         }
-        if (usid.typeId==1) {
+        if (usid.getTypeId()==1) {
             return buildSystemSID(usid);
         }
         return buildUserSID(usid);
@@ -111,7 +111,7 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private SID buildUserSID(USID usid) {
         try {
-            ActorPath path = ActorPath.apply("/app/services/"+usid.serviceId);
+            ActorPath path = ActorPath.apply("/app/services/"+usid.getServiceId());
             ActorRef ref = actorSystem.getActor(path);
             return new LocalSID(idMatcher.getLocal(),ref);
         } catch (MalformedURLException e) {
@@ -121,7 +121,7 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private SID buildSystemSID(USID usid) {
         String path = null;
-        switch ((int)usid.serviceId) {
+        switch ((int)usid.getServiceId()) {
             case 0:
                 path = "/app/cli";
                 break;
@@ -160,9 +160,9 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private SID buildForeignNodeSID(USID usid) {
         try {
-            ActorPath path = ActorPath.apply("/app/nodes/"+usid.nodeId);
+            ActorPath path = ActorPath.apply("/app/nodes/"+usid.getNodeId());
             ActorRef ref = actorSystem.getActor(path);
-            return new ForeignSID(usid, ref);
+            return new ForeignSID(idMatcher.getId(usid.getNodeId()),usid, ref);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

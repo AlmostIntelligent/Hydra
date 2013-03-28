@@ -14,6 +14,7 @@ public class Register extends CLICommand {
     public Register(InternalHydra hydra, CLICommand root) {
         super(hydra, root);
         addSubCommand(new RegisterLocal(hydra, root));
+        addSubCommand(new RegisterGlobal(hydra, root));
     }
 
     @Override

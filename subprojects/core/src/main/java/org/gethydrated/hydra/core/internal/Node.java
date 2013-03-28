@@ -10,6 +10,7 @@ import org.gethydrated.hydra.core.concurrent.LockReply;
 import org.gethydrated.hydra.core.concurrent.LockRequest;
 import org.gethydrated.hydra.core.messages.NodeDown;
 import org.gethydrated.hydra.core.messages.NodeUp;
+import org.gethydrated.hydra.core.registry.RegistryState;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.Connection;
 import org.gethydrated.hydra.core.transport.Envelope;
@@ -135,6 +136,9 @@ public class Node extends Actor {
         }
         if(o instanceof LockRelease || o instanceof LockRequest || o instanceof LockReply) {
             return getContext().getActor("/app/locking");
+        }
+        if(o instanceof RegistryState) {
+            return getContext().getActor("/app/globalregistry");
         }
         return null;
     }

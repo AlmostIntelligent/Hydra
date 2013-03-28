@@ -15,22 +15,22 @@ import java.util.concurrent.TimeoutException;
 /**
  *
  */
-public class RegisterLocal extends CLICommand {
+public class RegisterGlobal extends CLICommand {
     /**
      * @param hydra Service hydra.
      */
-    public RegisterLocal(InternalHydra hydra, CLICommand root) {
+    public RegisterGlobal(InternalHydra hydra, CLICommand root) {
         super(hydra, root);
     }
 
     @Override
     public String getCommandWord() {
-        return "local";
+        return "global";
     }
 
     @Override
     public String getCommandShort() {
-        return "lo";
+        return "gl";
     }
 
     @Override
@@ -47,7 +47,7 @@ public class RegisterLocal extends CLICommand {
     public CLIResponse execute(String[] args) {
         if(args.length == 2) {
             SID sid = getHydra().getDefaultSIDFactory().fromString(args[0]);
-            ActorRef ref = getHydra().getActorSystem().getActor("/app/localregistry");
+            ActorRef ref = getHydra().getActorSystem().getActor("/app/globalregistry");
             Future f = ref.ask(new RegisterService(sid, args[1]));
             try {
                 String s = (String) f.get(15, TimeUnit.SECONDS);
@@ -56,7 +56,7 @@ public class RegisterLocal extends CLICommand {
                 return new CLIResponse("An error occurred: " + e.getMessage() + "\n");
             }
         } else {
-            return new CLIResponse("Wrong parameter count. Usage: register local [sid] [name]\n");
+            return new CLIResponse("Wrong parameter count. Usage: register global [sid] [name]\n");
         }
     }
 

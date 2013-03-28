@@ -2,11 +2,12 @@ package org.gethydrated.hydra.core.registry;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.core.messages.*;
+import org.gethydrated.hydra.core.messages.Monitor;
+import org.gethydrated.hydra.core.messages.ServiceDown;
+import org.gethydrated.hydra.core.messages.UnMonitor;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.InternalSID;
 
-import javax.naming.NameNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,14 +50,20 @@ public class LocalRegistry  extends Actor {
 
     private void register(SID sid, String name) {
         if(registry.containsKey(name)) {
-            getSender().tell("nameinuse", getSelf());
+            getSender().tell(new RegistryException("Name is already in use."), getSelf());
         } else {
-            ((InternalSID) sid).getRef().validate();
-            registry.put(name, sid);
-            SID self = sidFactory.fromActorRef(getSelf());
-            sid.tell(new Monitor(self.getUSID()), self);
-            if(getSender() != null)
-            getSender().tell("ok", getSelf());
+            try {
+                ((InternalSID) sid).getRef().validate();
+                registry.put(name, sid);
+                SID self = sidFactory.fromActorRef(getSelf());
+                sid.tell(new Monitor(self.getUSID()), self);
+                if(getSender() != null) {
+                    getSender().tell("ok", getSelf());
+                }
+            }catch (RuntimeException e) {
+                getSender().tell(new RegistryException(e), getSelf());
+            }
+
         }
     }
 
@@ -67,7 +74,7 @@ public class LocalRegistry  extends Actor {
             ref.tell(new UnMonitor(self.getUSID()), self);
             getSender().tell("ok", getSelf());
         } else {
-            getSender().tell("namenotinuse", getSelf());
+            getSender().tell(new RegistryException("Name is not in use."), getSelf());
         }
     }
 
@@ -76,7 +83,7 @@ public class LocalRegistry  extends Actor {
         if(sid != null) {
             getSender().tell(sid, getSelf());
         } else {
-            getSender().tell(new NameNotFoundException(), getSelf());
+            getSender().tell(new RegistryException("Name is not in use."), getSelf());
         }
     }
 }
