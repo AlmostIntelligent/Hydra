@@ -234,6 +234,7 @@ public class ActorNode implements ActorSource, ActorContext {
 
     private void handleError(Throwable t) {
         logger.error("Error processing message at '{}': {}", self, t );
+        t.printStackTrace();
     }
 
     private void create() throws Exception {

@@ -160,7 +160,7 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private SID buildForeignNodeSID(USID usid) {
         try {
-            ActorPath path = ActorPath.apply("/app/nodes/"+usid.getNodeId());
+            ActorPath path = ActorPath.apply("/app/nodes/"+idMatcher.getId(usid.getNodeId()));
             ActorRef ref = actorSystem.getActor(path);
             return new ForeignSID(idMatcher.getId(usid.getNodeId()),usid, ref);
         } catch (MalformedURLException e) {

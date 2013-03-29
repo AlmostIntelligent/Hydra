@@ -30,18 +30,10 @@ public class Children {
         if(children.containsKey(name)) {
             throw new RuntimeException("Actorname already in use: '" + name + "' at '" + self + "'");
         }
-        ActorPath childPath = self.getPath().createChild(name);
         ActorNodeRef child = new ActorNodeRef(name, actorFactory, self, actorCreator);
         children.put(name, child);
         child.start();
         return child;
-    }
-
-    public synchronized void attachChild(InternalRef child) {
-        if(children.containsKey(child.getName())) {
-            throw new RuntimeException("Actorname already in use: '" + child.getName() + "' at '" + self + "'");
-        }
-        children.put(child.getName(), child);
     }
 
     public synchronized boolean removeChild(ActorPath path) {
