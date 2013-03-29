@@ -9,7 +9,7 @@ public interface ActorSource {
 
     /**
      * Spawns an actor using the given class. The actor instance creation
-     * is done by a StandardActorFactory.
+     * is done by a DefaultActorFactory.
      * @param actorClass Actor class. Must have a public no parameter constructor.
      * @param name name of the actor.
      * @return ActorRef pointing to the new actor.
@@ -47,4 +47,6 @@ public interface ActorSource {
      * @return ActorRef pointing to the actor.
      */
     ActorRef getActor(List<String> names);
+
+    void stopActor(ActorRef ref);
 }

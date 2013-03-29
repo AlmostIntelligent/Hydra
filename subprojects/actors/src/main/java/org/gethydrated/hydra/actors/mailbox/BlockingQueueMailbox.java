@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.actors.mailbox;
 
+import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
+import org.gethydrated.hydra.actors.node.ActorNode;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -22,44 +24,31 @@ public class BlockingQueueMailbox implements Mailbox {
 
     private final Dispatcher dispatcher;
 
+    private final ActorNode actorNode;
+
     private volatile boolean closed = false;
 
     private volatile boolean scheduled = false;
 
-    private volatile boolean suspended = true;
+    private volatile boolean suspended = false;
 
-    public BlockingQueueMailbox(final Dispatcher dispatcher) {
+    public BlockingQueueMailbox(final Dispatcher dispatcher, final  ActorNode actorNode) {
         this.dispatcher = dispatcher;
+        this.actorNode = actorNode;
     }
 
     @Override
-    public final Message poll() {
-        return messages.poll();
-    }
-
-    @Override
-    public Message pollSystem() {
-        return systemMessages.poll();
-    }
-
-    @Override
-    public final void offer(Message m) {
+    public void enqueue(ActorRef self, Message m) {
         messages.offer(m);
-        if(!scheduled) {
-            dispatcher.registerForExecution(this);
-        }
     }
 
     @Override
-    public void offerSystem(Message m) {
+    public void enqueueSystem(ActorRef self, Message m) {
         systemMessages.offer(m);
-        if(!scheduled) {
-            dispatcher.registerForExecution(this);
-        }
     }
 
     public final boolean hasMessages() {
-        return !messages.isEmpty() && !suspended;
+        return !messages.isEmpty();
     }
 
     @Override
@@ -68,33 +57,70 @@ public class BlockingQueueMailbox implements Mailbox {
     }
 
     @Override
-    public boolean isScheduled() {
-        return scheduled;
+    public void setIdle() {
+        scheduled = false;
     }
 
     @Override
-    public void setScheduled(boolean state) {
-        scheduled = state;
+    public boolean setScheduled() {
+        if(closed || scheduled) {
+            return false;
+        }
+        scheduled = true;
+        return true;
     }
 
     @Override
-    public void setSuspended(boolean state) {
-        suspended = state;
+    public boolean isSchedulable(boolean hasMessages, boolean hasSystemMessages) {
+        if (closed) {
+            return false;
+        }
+        if (!suspended) {
+            return hasMessages || hasSystemMessages || hasMessages() || hasSystemMessages();
+        }
+        return hasSystemMessages || hasSystemMessages();
     }
 
     @Override
-    public boolean isSuspended() {
-        return suspended;
-    }
-
-    @Override
-    public void close() {
+    public void setClosed() {
         closed = true;
     }
 
     @Override
-    public boolean isClosed() {
-        return closed;
+    public void run() {
+        try {
+            if (!closed) {
+                processSystemMessages();
+                processMessages();
+            }
+        } finally {
+            setIdle();
+            dispatcher.executeMailbox(this, false, false);
+        }
     }
 
+    private void processSystemMessages() {
+        InterruptedException interrupted = null;
+        while (!systemMessages.isEmpty() && !closed) {
+            Message m = systemMessages.remove();
+            actorNode.handleSystemMessage(m);
+            if (Thread.interrupted()) {
+                interrupted = new InterruptedException("Interrupted while processing system messages.");
+            }
+        }
+        if (interrupted != null) {
+            Thread.interrupted();
+            throw new RuntimeException(interrupted);
+        }
+    }
+
+    private void processMessages() {
+        while (!messages.isEmpty() && !closed) {
+            Message m = messages.remove();
+            actorNode.handleMessage(m);
+            if (Thread.interrupted()) {
+                throw new RuntimeException(new InterruptedException("Interrupted while processing messages."));
+            }
+        }
+    }
 }

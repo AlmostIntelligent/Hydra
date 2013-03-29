@@ -1,14 +1,8 @@
 package org.gethydrated.hydra.actors.node;
 
-import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.ActorPath;
-import org.gethydrated.hydra.actors.ActorSystem;
-import org.gethydrated.hydra.actors.InternalRef;
+import org.gethydrated.hydra.actors.*;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -38,6 +32,7 @@ public class Children {
         ActorNodeRef child = new ActorNodeRef(name, actorFactory, self, actorSystem);
         children.put(name, child);
         child.start();
+        //child.tellSystem(new Create(), self);
         return child;
     }
 
@@ -66,7 +61,11 @@ public class Children {
      * Returns a list of all names.
      * @return list of all names.
      */
-    public List<String> getAllChildren() {
-        return new LinkedList<>(children.keySet());
+    public List<ActorRef> getAllChildren() {
+        LinkedList<ActorRef> res = new LinkedList<>();
+        for(ActorRef r : children.values()) {
+            res.add(r);
+        }
+        return res;
     }
 }

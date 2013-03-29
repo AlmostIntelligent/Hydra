@@ -174,7 +174,9 @@ public final class HydraImpl implements InternalHydra {
         if(id.getUSID().getTypeId() != 0) {
             throw new IllegalArgumentException("Cannot stop system services. Try hydra.shutdown() instead.");
         }
-        ((InternalSID) id).getRef().validate();
+        if (((InternalSID) id).getRef().isTerminated()) {
+            return;
+        }
         if(id instanceof LocalSID) {
             services.tell(new StopService((InternalSID) id), null);
         }

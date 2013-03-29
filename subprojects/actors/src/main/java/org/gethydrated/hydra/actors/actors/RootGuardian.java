@@ -29,9 +29,9 @@ public class RootGuardian implements InternalRef {
     public RootGuardian(ActorSystem actorSystem, Dispatchers dispatchers) {
         logger = new LoggingAdapter(RootGuardian.class, actorSystem);
         logger.info("RootGuardian created.");
-        sysGuardian = new ActorNodeRef("sys", new StandardActorFactory(SysGuardian.class), this, actorSystem);
+        sysGuardian = new ActorNodeRef("sys", new DefaultActorFactory(SysGuardian.class), this, actorSystem);
         sysGuardian.unwrap().attachChild(new FutureActor(sysGuardian));
-        appGuardian = new ActorNodeRef("app", new StandardActorFactory(AppGuardian.class), this, actorSystem);
+        appGuardian = new ActorNodeRef("app", new DefaultActorFactory(AppGuardian.class), this, actorSystem);
         initGuardians();
     }
 
@@ -46,28 +46,18 @@ public class RootGuardian implements InternalRef {
     }
 
     @Override
-    public void restart() {
+    public void suspend() {
+        logger.debug("Ignored rootGuardian call for 'suspend'.");
+    }
+
+    @Override
+    public void restart(Throwable cause) {
         logger.debug("Ignored rootGuardian call for 'restart'.");
     }
 
     @Override
-    public void pause() {
-        logger.debug("Ignored rootGuardian call for 'pause'.");
-    }
-
-    @Override
-    public void resume() {
+    public void resume(Throwable cause) {
         logger.debug("Ignored rootGuardian call for 'resume'");
-    }
-
-    @Override
-    public void watch(ActorRef target) {
-        logger.debug("Ignored rootGuardian call for 'watch'");
-    }
-
-    @Override
-    public void unwatch(ActorRef target) {
-        logger.debug("Ignored rootGuardian call for 'unwatch'");
     }
 
     @Override
@@ -109,10 +99,6 @@ public class RootGuardian implements InternalRef {
 
     @Override
     public Future<?> ask(Object o) { return null; }
-
-    @Override
-    public void validate() {
-    }
 
     public InternalRef getSystemGuardian() {
         return sysGuardian;

@@ -131,7 +131,7 @@ public class ActorPath implements Serializable {
             return false;
         }
         if (o instanceof ActorNode) {
-            return this.equals(((ActorNode) o).getPath());
+            return this.equals(((ActorNode) o).getSelf().getPath());
         }
         if (getClass() != o.getClass()) {
             return false;

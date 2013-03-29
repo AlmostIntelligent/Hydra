@@ -2,22 +2,20 @@ package org.gethydrated.hydra.actors.dispatch;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
+import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.actors.node.ActorNode;
+import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  *
  */
 public class SharedDispatcher implements Dispatcher {
 
-    final ExecutorService executor;
+    final ForkJoinPool executor;
 
     final BiMap<ActorNode, Mailbox> mailboxes = HashBiMap.create();
 
@@ -27,43 +25,46 @@ public class SharedDispatcher implements Dispatcher {
 
     @Override
     public Mailbox createMailbox(ActorNode actorNode) {
-        synchronized(mailboxes) {
-            if(mailboxes.containsValue(actorNode)) {
-                return mailboxes.get(actorNode);
-            } else {
-                Mailbox mb = new BlockingQueueMailbox(this);
-                mailboxes.put(actorNode, mb);
-                return mb;
-            }
-        }
+        return new BlockingQueueMailbox(this, actorNode);
     }
 
     @Override
-    public boolean closeMailbox(ActorNode actorNode) {
-        Mailbox mb;
-        synchronized (mailboxes) {
-            mb = mailboxes.remove(actorNode);
-        }
-        if(mb != null) {
-            mb.close();
-            return true;
+    public void attach(ActorNode node) {
+        executeMailbox(node.getMailbox(), false, true);
+    }
+
+    @Override
+    public void detach(ActorNode node) {
+        node.getMailbox().setClosed();
+    }
+
+    @Override
+    public void dispatch(ActorNode node, Message message) {
+        Mailbox mb = node.getMailbox();
+        mb.enqueue(node.getSelf(), message);
+        executeMailbox(mb, true, false);
+    }
+
+    @Override
+    public void dispatchSystem(ActorNode node, Message message) {
+        Mailbox mb = node.getMailbox();
+        mb.enqueueSystem(node.getSelf(), message);
+        executeMailbox(mb, false, true);
+    }
+
+    public boolean executeMailbox(Mailbox mailbox, boolean hasMessages, boolean hasSystemMessages) {
+        if (mailbox.isSchedulable(hasMessages, hasSystemMessages)) {
+            if (mailbox.setScheduled()) {
+                try {
+                    executor.execute(new MailboxTask(mailbox));
+                    return true;
+                } catch (RejectedExecutionException e) {
+                    mailbox.setIdle();
+                    LoggerFactory.getLogger(SharedDispatcher.class).error("Executor rejected mailbox execution.", e);
+                }
+            }
         }
         return false;
-    }
-
-    public Mailbox lookupMailbox(ActorPath path) {
-        return mailboxes.get(path);
-    }
-
-    @Override
-    public void registerForExecution(Mailbox mb) {
-        if(mb.hasMessages() || mb.hasSystemMessages()) {
-            ActorNode an;
-            synchronized (mailboxes) {
-                an = mailboxes.inverse().get(mb);
-            }
-            executor.execute(new MessageRunner(this, mb, an));
-        }
     }
 
     @Override
@@ -87,10 +88,10 @@ public class SharedDispatcher implements Dispatcher {
 
     private final class MailboxTask extends ForkJoinTask<Object> {
 
-        private MessageRunner runner;
+        private Mailbox mailbox;
 
-        public MailboxTask(MessageRunner runner) {
-            this.runner = runner;
+        public MailboxTask(Mailbox mailbox) {
+            this.mailbox = mailbox;
         }
 
         @Override
@@ -104,7 +105,7 @@ public class SharedDispatcher implements Dispatcher {
         @Override
         protected boolean exec() {
             try {
-                runner.run();
+                mailbox.run();
                 return true;
             } catch (Throwable t) {
                 Thread th = Thread.currentThread();

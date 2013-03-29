@@ -1,29 +1,23 @@
 package org.gethydrated.hydra.actors.mailbox;
 
 
-public interface Mailbox {
+import org.gethydrated.hydra.actors.ActorRef;
 
-    Message poll();
+public interface Mailbox extends Runnable {
 
-    Message pollSystem();
+    void enqueue(ActorRef self, Message m);
 
-    void offer(Message m);
-
-    void offerSystem(Message m);
+    void enqueueSystem(ActorRef self, Message m);
 
     boolean hasMessages();
 
     boolean hasSystemMessages();
 
-    boolean isScheduled();
+    void setIdle();
 
-    void setScheduled(boolean state);
+    boolean setScheduled();
 
-    void setSuspended(boolean state);
+    boolean isSchedulable(boolean hasMessages, boolean hasSystemMessages);
 
-    boolean isSuspended();
-
-    void close();
-
-    boolean isClosed();
+    void setClosed();
 }

@@ -24,48 +24,37 @@ public class FutureActor implements InternalRef {
 
     @Override
     public void start() {
-
+        throw new RuntimeException("[Start] Don't call me.");
     }
 
     @Override
     public void stop() {
-        System.out.println("future stopped");
         parent.tellSystem(new Stopped(getPath()), this);
     }
 
     @Override
-    public void restart() {
+    public void suspend() {
 
     }
 
     @Override
-    public void pause() {
+    public void restart(Throwable cause) {
 
     }
 
     @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void watch(ActorRef target) {
-
-    }
-
-    @Override
-    public void unwatch(ActorRef target) {
+    public void resume(Throwable cause) {
 
     }
 
     @Override
     public void tellSystem(Object o, ActorRef sender) {
-
+        System.out.println(o);
     }
 
     @Override
     public ActorNode unwrap() {
-        return null;
+        throw new RuntimeException("[Unwrap] Don't call me.");
     }
 
     @Override
@@ -80,21 +69,21 @@ public class FutureActor implements InternalRef {
 
     @Override
     public void tell(Object o, ActorRef sender) {
-
+        throw new RuntimeException("[Tell] Don't call me.");
     }
 
     @Override
     public void forward(Message m) {
-
+        throw new RuntimeException("[Forward] Don't call me.");
     }
 
     @Override
     public Future<?> ask(Object o) {
-        return null;
+        throw new RuntimeException("[Ask] Don't call me.");
     }
 
     @Override
-    public void validate() {
-
+    public boolean isTerminated() {
+        return false;
     }
 }

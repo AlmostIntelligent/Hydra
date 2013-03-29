@@ -109,7 +109,6 @@ public final class ActorSystem implements ActorSource {
     public void shutdown() {
         logger.info("Stopping actor system.");
         appGuardian.stop();
-
     }
 
     /**
@@ -180,6 +179,11 @@ public final class ActorSystem implements ActorSource {
 
     public ActorRef getActor(final List<String> names) {
         return rootGuardian.getActor(names);
+    }
+
+    @Override
+    public void stopActor(ActorRef ref) {
+
     }
 
     /**

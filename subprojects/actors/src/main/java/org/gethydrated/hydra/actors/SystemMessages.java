@@ -6,7 +6,7 @@ public class SystemMessages {
     private SystemMessages() {
     }
 
-    public static class Start {
+    public static class Create {
 
     }
 

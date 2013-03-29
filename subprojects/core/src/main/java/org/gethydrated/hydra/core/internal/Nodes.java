@@ -2,13 +2,15 @@ package org.gethydrated.hydra.core.internal;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.Connection;
 import org.gethydrated.hydra.core.transport.NodeAddress;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -39,15 +41,12 @@ public class Nodes extends Actor {
 
     private void nodeMap() throws InterruptedException, ExecutionException, TimeoutException {
         Map<UUID, NodeAddress> result = new HashMap<>();
-        List<String> nodeList = getContext().getChildren();
-        for(String n : nodeList) {
-            UUID uuid = idMatcher.getUUID(Integer.parseInt(n));
-            ActorPath p = getSelf().getPath().createChild(n);
-            ActorRef r = getContext().getActor(p);
-            Future f = r.ask("connector");
+        List<ActorRef> nodeList = getContext().getChildren();
+        for(ActorRef ref : nodeList) {
+            Future f = ref.ask("connector");
             NodeAddress addr = (NodeAddress) f.get(1, TimeUnit.SECONDS);
             if(addr != null) {
-                result.put(uuid, addr);
+                result.put(idMatcher.getUUID(Integer.parseInt(ref.getName())), addr);
             }
         }
         getSender().tell(result, getSelf());

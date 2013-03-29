@@ -62,7 +62,7 @@ public class Services extends Actor {
     }
 
     private void stopService(InternalSID sid) {
-        getContext().stop(sid.getRef());
+        getContext().stopActor(sid.getRef());
     }
 
     private void startService(String serviceName) {

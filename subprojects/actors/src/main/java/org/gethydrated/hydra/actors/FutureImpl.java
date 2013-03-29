@@ -112,7 +112,7 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
     }
 
     @Override
-    public void validate() {
-
+    public boolean isTerminated() {
+        return false;
     }
 }

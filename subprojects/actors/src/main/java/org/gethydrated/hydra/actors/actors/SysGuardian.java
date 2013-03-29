@@ -13,7 +13,7 @@ public class SysGuardian extends Actor {
 	public void onReceive(Object message) throws Exception {
         if(message instanceof SystemMessages.WatcheeStopped) {
             logger.info("WatcheeStopped received.");
-            getContext().stop(getSelf());
+            getContext().getSelf();
         }
 	}
 

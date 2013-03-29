@@ -54,7 +54,7 @@ public class Node extends Actor {
                 case "disconnected":
                     logger.info("Node disconnected: ", getSelf().toString());
                     idMatcher.remove(connection.getUUID());
-                    getContext().stop(getSelf());
+                    getContext().stopActor(getSelf());
                     break;
             }
         } else if (message instanceof SystemEvent) {

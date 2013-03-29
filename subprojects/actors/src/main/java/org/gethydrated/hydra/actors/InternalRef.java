@@ -1,17 +1,14 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.node.ActorNode;
 
 public interface InternalRef extends ActorRef {
 
     void start();
     void stop();
-    void restart();
-    void pause();
-    void resume();
-    void watch(ActorRef target);
-    void unwatch(ActorRef target);
+    void suspend();
+    void restart(Throwable cause);
+    void resume(Throwable cause);
 
     void tellSystem(Object o, ActorRef sender);
 

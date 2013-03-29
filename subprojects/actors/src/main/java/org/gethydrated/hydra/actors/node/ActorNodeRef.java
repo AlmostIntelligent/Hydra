@@ -1,8 +1,6 @@
 package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.*;
-import org.gethydrated.hydra.actors.SystemMessages.Start;
-import org.gethydrated.hydra.actors.SystemMessages.Stop;
 import org.gethydrated.hydra.actors.mailbox.Message;
 
 import java.util.concurrent.Future;
@@ -24,42 +22,32 @@ public class ActorNodeRef implements InternalRef {
 
     @Override
     public void start() {
-        tellSystem(new Start(), null);
+        actorNode.start();
     }
 
     @Override
     public void stop() {
-        tellSystem(new Stop(), null);
+        actorNode.stop();
     }
 
     @Override
-    public void restart() {
-
+    public void restart(Throwable cause) {
+        actorNode.restart(cause);
     }
 
     @Override
-    public void pause() {
-
+    public void suspend() {
+        actorNode.suspend();
     }
 
     @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void watch(ActorRef target) {
-        System.out.println("watch "+target);
-    }
-
-    @Override
-    public void unwatch(ActorRef target) {
-        System.out.println("unwatch "+target);
+    public void resume(Throwable cause) {
+        actorNode.resume(cause);
     }
 
     @Override
     public void tellSystem(Object o, ActorRef sender) {
-        actorNode.getMailbox().offerSystem(new Message(o, sender));
+        actorNode.sendSystem(o, sender);
     }
 
     @Override
@@ -79,7 +67,7 @@ public class ActorNodeRef implements InternalRef {
 
     @Override
     public void tell(Object o, ActorRef sender) {
-        actorNode.getMailbox().offer(new Message(o, sender));
+        actorNode.sendMessage(o,sender);
     }
 
     @Override
@@ -89,14 +77,16 @@ public class ActorNodeRef implements InternalRef {
 
     @Override
     public Future<?> ask(Object o) {
+        InternalRef ref = (InternalRef)actorNode.getActor("/sys/future");
+        ref.tellSystem(actorPath, this);
         FutureImpl<Object> f = new FutureImpl<>();
         tell(o, f);
         return f;
     }
 
     @Override
-    public void validate() {
-
+    public boolean isTerminated() {
+        return actorNode.isTerminated();
     }
 
     @Override

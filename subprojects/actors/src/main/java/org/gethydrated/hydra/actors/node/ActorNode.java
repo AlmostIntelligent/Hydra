@@ -1,7 +1,9 @@
 package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.*;
+import org.gethydrated.hydra.actors.ActorContext;
 import org.gethydrated.hydra.actors.SystemMessages.*;
+import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
@@ -16,82 +18,141 @@ import java.util.List;
  *
  */
 public class ActorNode implements ActorSource, ActorContext {
-    
-	private final ActorSystem system;
 
     private final InternalRef self;
 
     private final InternalRef parent;
-	
-	private final ActorFactory factory;
-	
-	private final Logger logger;
-	
-	private final Children children;
+
+    private final ActorFactory factory;
+
+    private final ActorSystem actorSystem;
+
+    private final Dispatcher dispatcher;
+
+    private final Mailbox mailbox;
+
+    private final Children children;
 
     private final Watchers watchers;
-	
-	private final Mailbox mailbox;
+
+    private final Logger logger;
 
     private Actor actor;
 
-    private ActorRef sender = null;
-	
-	private static final ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
-	
-	private ActorLifecyle status = ActorLifecyle.CREATED;
-	
-	public ActorNode(InternalRef self, InternalRef parent, ActorFactory factory, ActorSystem system) {
-        logger = new LoggingAdapter(ActorNode.class, system);
-		this.factory = factory;
+    private ActorRef sender;
+
+    private static ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
+    private ActorLifecyle status = ActorLifecyle.CREATED;
+
+    public ActorNode(InternalRef self, InternalRef parent, ActorFactory actorFactory, ActorSystem actorSystem) {
         this.self = self;
         this.parent = parent;
-		this.system = system;
-        this.watchers = new Watchers(self, system.getEventStream());
-        this.children = new Children(self, system);
-        this.mailbox = system.getDefaultDispatcher().createMailbox(this); //TODO: get dispatchername from config
-		logger.debug("ActorNode for actor: '" + self + "' created");
-	}
-	
-	public synchronized void process(Message message) {
-		getSystem().getClock().increment();
+        this.factory = actorFactory;
+        this.actorSystem = actorSystem;
+        logger = new LoggingAdapter(ActorNode.class, actorSystem);
+        dispatcher = actorSystem.getDefaultDispatcher();
+        mailbox = dispatcher.createMailbox(this);
+        mailbox.enqueueSystem(self, new Message(new Create(), self));
+        children = new Children(self, actorSystem);
+        watchers = new Watchers(self, actorSystem.getEventStream());
+    }
+
+    public ActorRef getSelf() {
+        return self;
+    }
+
+    public ActorRef getSender() {
+        return sender;
+    }
+
+    public boolean isTerminated() {
+        return (status == ActorLifecyle.STOPPED);
+    }
+
+    public ActorSystem getSystem() {
+        return actorSystem;
+    }
+
+    @Override
+    public void watch(ActorRef actor) {
+        watchers.addWatched((InternalRef)actor);
+    }
+
+    @Override
+    public void unwatch(ActorRef actor) {
+        watchers.removeWatched((InternalRef)actor);
+    }
+
+    public Mailbox getMailbox() {
+        return mailbox;
+}
+
+    public void start() {
+        dispatcher.attach(this);
+    }
+
+    public void stop() {
+        sendSystem(new Stop(), self);
+    }
+
+    public void restart(Throwable cause) {
+    }
+
+    public void suspend() {
+    }
+
+    public void resume(Throwable cause) {
+    }
+
+    public void sendSystem(Object o, ActorRef sender) {
+        try {
+            dispatcher.dispatchSystem(this, new Message(o, sender));
+        } catch (Exception e) {
+            logger.error("Cough exception while sending message.", e);
+        }
+    }
+
+    public void sendMessage(Object o, ActorRef sender) {
+        try {
+            dispatcher.dispatch(this, new Message(o, sender));
+        } catch (Exception e) {
+            logger.error("Cough exception while sending message.", e);
+        }
+    }
+
+    public void handleMessage(Message message) {
+        getSystem().getClock().increment();
         try {
             if(!handleInternal(message.getMessage())) {
                 sender = message.getSender();
-			    actor.onReceive(message.getMessage());
+                actor.onReceive(message.getMessage());
                 sender = null;
             }
         } catch (Exception e) {
             handleError(e);
-		} catch (Throwable t) {
-		    if(!Util.isNonFatal(t))
+        } catch (Throwable t) {
+            if(!Util.isNonFatal(t))
                 throw t;
             handleError(t);
-		}
-	}
-
-    public synchronized void processSystem(Message message) {
-        if(status == ActorLifecyle.STOPPED) {
-            return;
         }
+    }
+
+    public void handleSystemMessage(Message m) {
+        getSystem().getClock().increment();
+        Object message = m.getMessage();
         try {
-            Object o = message.getMessage();
-            if(o instanceof Start) {
-                start();
-            } else if(o instanceof Stop) {
-                stop();
-            } else if (o instanceof Pause) {
-                pause();
-            } else if (o instanceof Resume) {
-                resume();
-            } else if (o instanceof Stopped) {
-                childStopped(((Stopped)o).getPath());
-            } else if(o instanceof Watch) {
-                watchers.addWatcher(((Watch) o).getTarget());
-            } else if (o instanceof UnWatch) {
-                watchers.removeWatcher(((UnWatch) o).getTarget());
-            } else if (o instanceof WatcheeStopped) {
-                watchers.removeWatcher(((WatcheeStopped) o).getTarget());
+            if (message instanceof Create) {
+                create();
+            } else if (message instanceof Stop) {
+                terminate();
+            } else if (message instanceof Stopped) {
+                childStopped(((Stopped)message).getPath());
+            } else if(message instanceof Watch) {
+                watchers.addWatcher(((Watch) message).getTarget());
+            } else if (message instanceof UnWatch) {
+                watchers.removeWatcher(((UnWatch) message).getTarget());
+            } else if (message instanceof WatcheeStopped) {
+                watchers.removeWatcher(((WatcheeStopped) message).getTarget());
                 stop();
             }
         } catch (Exception e) {
@@ -107,27 +168,18 @@ public class ActorNode implements ActorSource, ActorContext {
         return false;
     }
 
-    private void handleError(Throwable t) {
-        logger.error("Error processing message at '{}': {}", self, t );
+    @Override
+    public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
+        return spawnActor(new DefaultActorFactory(actorClass), name);
     }
 
     @Override
-    public ActorRef getSender() {
-        return sender;
+    public ActorRef spawnActor(ActorFactory actorFactory, String name) {
+        return children.addChild(name, actorFactory);
     }
 
-	@Override
-	public ActorRef spawnActor(Class<? extends Actor> actorClass, String name) {
-		return spawnActor(new StandardActorFactory(actorClass), name);
-	}
-
-	@Override
-	public ActorRef spawnActor(ActorFactory actorFactory, String name) {
-		return children.addChild(name, actorFactory);
-	}
-
-	@Override
-	public ActorRef getActor(String uri) {
+    @Override
+    public ActorRef getActor(String uri) {
         try {
             ActorPath ap = ActorPath.apply(self.getPath(), uri);
             return getActor(ap);
@@ -136,10 +188,10 @@ public class ActorNode implements ActorSource, ActorContext {
         }
     }
 
-	@Override
-	public ActorRef getActor(ActorPath path) {
-		return system.getActor(path);
-	}
+    @Override
+    public ActorRef getActor(ActorPath path) {
+        return actorSystem.getActor(path);
+    }
 
     @Override
     public ActorRef getActor(List<String> names) {
@@ -151,156 +203,68 @@ public class ActorNode implements ActorSource, ActorContext {
         if (ref != null) {
             return ref.unwrap().getActor(names);
         }
-        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + target);
+        throw new RuntimeException("Actor not found:" + self.getPath().toString() + "/" + target);
     }
 
     @Override
-    public List<String> getChildren() {
+    public void stopActor(ActorRef ref) {
+        ((InternalRef)ref).stop();
+    }
+
+    @Override
+    public List<ActorRef> getChildren() {
         return children.getAllChildren();
     }
 
-    @Override
-    public ActorRef getSelf() {
-        return getRef();
+    public void attachChild(InternalRef actor) {
+        children.attachChild(actor);
     }
 
-    @Override
-	public String getName() {
-		return self.getName();
-	}
-
-    public ActorPath getPath() {
-        return self.getPath();
+    private void handleError(Throwable t) {
+        logger.error("Error processing message at '{}': {}", self, t );
     }
 
-    @Override
-    public void watch(ActorRef target) {
-        watchers.addWatched((InternalRef) target);
-    }
+    private void create() throws Exception {
+        nodeRef.set(this);
+        actor = factory.create();
+        actor.onStart();
 
-    @Override
-    public void unwatch(ActorRef target) {
-        watchers.removeWatched((InternalRef) target);
-    }
-
-    @Override
-    public void stop(ActorRef target) {
-        ((InternalRef) target).tellSystem(new Stop(), self);
-    }
-
-    public ActorRef getRef() {
-		return self;
-	}
-
-	public ActorContext getContext() {
-		return this;
-	}
-	
-	public ActorSystem getSystem() {
-		return system;
-	}
-	
-	public Mailbox getMailbox() {
-		return mailbox;
-	}
-	
-	public InternalRef getChildByName(String name) {
-		return children.getChild(name);
-	}
-	
-	private void start() {
-        status = ActorLifecyle.STARTING;
-		createActor();
-        mailbox.setSuspended(false);
-        status = ActorLifecyle.RUNNING;
-	}
-	
-	private void stop() {
-        logger.debug("Stopping actor '{}'", self);
-        status = ActorLifecyle.STOPPING;
-        mailbox.setSuspended(true);
-		children.stopChildren();
-        if(children.isEmpty()) {
-
-            terminate();
-        }
-	}
-
-    private void pause() {
-        status = ActorLifecyle.SUSPENDED;
-        mailbox.setSuspended(true);
-    }
-
-    private void resume() {
-        status = ActorLifecyle.RUNNING;
-        mailbox.setSuspended(false);
+        nodeRef.remove();
     }
 
     private void childStopped(ActorPath path) {
         children.removeChild(path);
         if(status == ActorLifecyle.RESTARTING || status == ActorLifecyle.STOPPING) {
             if(children.isEmpty()) {
-                terminate();
+                finishTerminate();
             }
         }
     }
-
+    
     private void terminate() {
-        watchers.close();
+        logger.debug("Stopping actor '{}'", self);
+        status = ActorLifecyle.STOPPING;
+        children.stopChildren();
+        if(children.isEmpty()) {
+            finishTerminate();
+        }
+    }
+
+    private void finishTerminate() {
         try {
             actor.onStop();
         } catch (Exception e) {
             logger.error("Error shutting down actor '{}':", self, e);
         }
-        parent.tellSystem(new Stopped(self.getPath()), self);
+        dispatcher.detach(this);
+        watchers.close();
         status = ActorLifecyle.STOPPED;
-        mailbox.setScheduled(false);
-        system.getDefaultDispatcher().closeMailbox(this);
+        actor = null;
         logger.info("Actor '{}' stopped.", self);
+        parent.tellSystem(new Stopped(self.getPath()), self);
     }
 
-	public boolean isTerminated() {
-		return status == ActorLifecyle.STOPPED;
-	}
-	
-	private void createActor() {
-		nodeRef.set(this);
-		try {
-			actor = factory.create();
-			actor.onStart();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-		nodeRef.remove();
-	}
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-
-        if (o instanceof ActorPath) {
-            System.out.println(self.getPath() + " - " + o.toString());
-        }
-
-        if (getClass() != o.getClass()) return false;
-
-        ActorNode actorNode = (ActorNode) o;
-
-        return getPath().equals(actorNode.getPath());
-
-    }
-
-    @Override
-    public int hashCode() {
-        return self.getPath().hashCode();
-    }
-
-	public static ActorNode getLocalActorNode() {
-		return nodeRef.get();
-	}
-
-    public void attachChild(InternalRef actor) {
-        children.attachChild(actor);
+    public static ActorNode getLocalActorNode() {
+        return nodeRef.get();
     }
 }

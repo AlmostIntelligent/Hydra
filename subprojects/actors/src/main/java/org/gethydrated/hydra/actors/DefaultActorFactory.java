@@ -12,7 +12,7 @@ import org.gethydrated.hydra.actors.ActorFactory;
  * @author Christian Kulpa
  *
  */
-public class StandardActorFactory implements ActorFactory {
+public class DefaultActorFactory implements ActorFactory {
 
     /**
      * class.
@@ -23,7 +23,7 @@ public class StandardActorFactory implements ActorFactory {
      * Constructor.
      * @param actorClass The actor class.
      */
-    public StandardActorFactory(Class<? extends Actor> actorClass) {
+    public DefaultActorFactory(Class<? extends Actor> actorClass) {
         this.actorClass = actorClass;
     }
     

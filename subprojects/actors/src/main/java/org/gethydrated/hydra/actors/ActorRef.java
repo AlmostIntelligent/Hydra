@@ -42,10 +42,8 @@ public interface ActorRef {
     Future<?> ask(Object o);
 
     /**
-     * Tries to validate the current state of
-     * the referenced actor.
-     * @throws Exception on validation error.
+     *
      */
-    void validate();
+    boolean isTerminated();
 
 }

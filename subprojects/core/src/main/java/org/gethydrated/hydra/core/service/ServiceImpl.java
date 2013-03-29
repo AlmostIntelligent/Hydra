@@ -110,7 +110,7 @@ public class ServiceImpl extends Actor implements Service {
         } else if (message instanceof ServiceExit) {
             if(monitor.isLinked(((ServiceExit) message).getUsid())) {
                 monitor.close(((ServiceExit) message).getReason());
-                getContext().stop(getSelf());
+                getContext().stopActor(getSelf());
             }
         }
     }

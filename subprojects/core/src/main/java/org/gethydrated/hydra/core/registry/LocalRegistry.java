@@ -52,18 +52,15 @@ public class LocalRegistry  extends Actor {
         if(registry.containsKey(name)) {
             getSender().tell(new RegistryException("Name is already in use."), getSelf());
         } else {
-            try {
-                ((InternalSID) sid).getRef().validate();
-                registry.put(name, sid);
-                SID self = sidFactory.fromActorRef(getSelf());
-                sid.tell(new Monitor(self.getUSID()), self);
-                if(getSender() != null) {
-                    getSender().tell("ok", getSelf());
-                }
-            }catch (RuntimeException e) {
-                getSender().tell(new RegistryException(e), getSelf());
+            if (((InternalSID) sid).getRef().isTerminated()) {
+                getSender().tell(new RegistryException("Actor is already stopped"), getSelf());
             }
-
+            registry.put(name, sid);
+            SID self = sidFactory.fromActorRef(getSelf());
+            sid.tell(new Monitor(self.getUSID()), self);
+            if(getSender() != null) {
+                getSender().tell("ok", getSelf());
+            }
         }
     }
 

@@ -122,7 +122,9 @@ public class GlobalRegistry extends Actor {
             sender.tell(new RegistryException("Name is already in use."), getSelf());
         } else {
             try {
-                ((InternalSID) sid).getRef().validate();
+                if (((InternalSID) sid).getRef().isTerminated()) {
+                    sender.tell(new RegistryException("Actor is already stopped."), getSelf());
+                }
                 registry.put(name, sid.getUSID());
                 SID self = sidFactory.fromActorRef(getSelf());
                 sid.tell(new Monitor(self.getUSID()), self);

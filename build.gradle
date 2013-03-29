@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply from: "gradle/dist.gradle"
-//apply from: "gradle/coverage.gradle"
+apply from: "gradle/coverage.gradle"
 apply from: "gradle/codequality.gradle"
 apply from: "gradle/idea.gradle"
 
@@ -49,7 +49,6 @@ configure(subprojects) { subproject ->
 
 	test {
 		ignoreFailures=true
-
         // show standard out and standard error of the test JVM(s) on the console
         //testLogging.showStandardStreams = true
 
