@@ -7,6 +7,7 @@ import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
+import org.gethydrated.hydra.actors.refs.InternalRef;
 import org.gethydrated.hydra.api.util.Util;
 import org.slf4j.Logger;
 
@@ -24,6 +25,8 @@ public class ActorNode implements ActorSource, ActorContext {
     private final InternalRef parent;
 
     private final ActorFactory factory;
+
+    private final ActorCreator creator;
 
     private final ActorSystem actorSystem;
 
@@ -44,21 +47,26 @@ public class ActorNode implements ActorSource, ActorContext {
     private static ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
     private ActorLifecyle status = ActorLifecyle.CREATED;
 
-    public ActorNode(InternalRef self, InternalRef parent, ActorFactory actorFactory, ActorSystem actorSystem) {
+    public ActorNode(InternalRef self, InternalRef parent, ActorFactory actorFactory, ActorCreator creator) {
         this.self = self;
         this.parent = parent;
         this.factory = actorFactory;
-        this.actorSystem = actorSystem;
+        this.creator = creator;
+        this.actorSystem = creator.getActorSystem();
         logger = new LoggingAdapter(ActorNode.class, actorSystem);
         dispatcher = actorSystem.getDefaultDispatcher();
         mailbox = dispatcher.createMailbox(this);
         mailbox.enqueueSystem(self, new Message(new Create(), self));
-        children = new Children(self, actorSystem);
+        children = new Children(self, creator);
         watchers = new Watchers(self, actorSystem.getEventStream());
     }
 
-    public ActorRef getSelf() {
+    public InternalRef getSelf() {
         return self;
+    }
+
+    public InternalRef getParent() {
+        return parent;
     }
 
     public ActorRef getSender() {
@@ -67,6 +75,10 @@ public class ActorNode implements ActorSource, ActorContext {
 
     public boolean isTerminated() {
         return (status == ActorLifecyle.STOPPED);
+    }
+
+    public ActorCreator getCreator() {
+        return creator;
     }
 
     public ActorSystem getSystem() {
@@ -216,8 +228,8 @@ public class ActorNode implements ActorSource, ActorContext {
         return children.getAllChildren();
     }
 
-    public void attachChild(InternalRef actor) {
-        children.attachChild(actor);
+    public InternalRef getChild(String name) {
+        return children.getChild(name);
     }
 
     private void handleError(Throwable t) {

@@ -1,8 +1,9 @@
-package org.gethydrated.hydra.actors.node;
+package org.gethydrated.hydra.actors.refs;
 
 import org.gethydrated.hydra.actors.*;
-import org.gethydrated.hydra.actors.mailbox.Message;
+import org.gethydrated.hydra.actors.node.ActorNode;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 /**
@@ -15,9 +16,9 @@ public class ActorNodeRef implements InternalRef {
 
     private final ActorPath actorPath;
 
-    public ActorNodeRef(String name, ActorFactory actorFactory, InternalRef parent, ActorSystem actorSystem) {
+    public ActorNodeRef(String name, ActorFactory actorFactory, InternalRef parent, ActorCreator creator) {
         this.actorPath = parent.getPath().createChild(name);
-        this.actorNode = new ActorNode(this, parent, actorFactory, actorSystem);
+        this.actorNode = new ActorNode(this, parent, actorFactory, creator);
     }
 
     @Override
@@ -51,6 +52,30 @@ public class ActorNodeRef implements InternalRef {
     }
 
     @Override
+    public InternalRef getChild(String name) {
+        InternalRef child = actorNode.getChild(name);
+        if(child != null) {
+        return child;
+        }
+        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + name);
+    }
+
+    @Override
+    public InternalRef findActor(List<String> names) {
+        return null;
+    }
+
+    @Override
+    public InternalRef getParent() {
+        return actorNode.getParent();
+    }
+
+    @Override
+    public ActorCreator getCreator() {
+        return actorNode.getCreator();
+    }
+
+    @Override
     public ActorNode unwrap() {
         return actorNode;
     }
@@ -71,16 +96,10 @@ public class ActorNodeRef implements InternalRef {
     }
 
     @Override
-    public void forward(Message m) {
-        throw new RuntimeException("Not implemented: forward"); //TODO:
-    }
-
-    @Override
     public Future<?> ask(Object o) {
-        InternalRef ref = (InternalRef)actorNode.getActor("/sys/future");
-        ref.tellSystem(actorPath, this);
-        FutureImpl<Object> f = new FutureImpl<>();
-        tell(o, f);
+        SyncVar<?> f = new SyncVar<>();
+        FutureRef<?> ref = new FutureRef<>(f, actorNode.getCreator());
+        tell(o, ref);
         return f;
     }
 

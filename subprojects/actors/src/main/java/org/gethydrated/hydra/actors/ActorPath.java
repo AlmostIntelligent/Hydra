@@ -39,7 +39,7 @@ public class ActorPath implements Serializable {
      *
      * @param path name hierarchy represented by a string array.
      */
-    private ActorPath(final String[] path) {
+    public ActorPath(final String[] path) {
         pathStack = new String[path.length];
         System.arraycopy(path, 0, pathStack, 0, path.length);
     }

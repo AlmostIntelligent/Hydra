@@ -1,6 +1,8 @@
 package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.*;
+import org.gethydrated.hydra.actors.refs.ActorNodeRef;
+import org.gethydrated.hydra.actors.refs.InternalRef;
 
 import java.util.*;
 
@@ -11,13 +13,13 @@ public class Children {
 
     private final InternalRef self;
 
-    private final ActorSystem actorSystem;
+    private final ActorCreator actorCreator;
 
     private final  Map<String, InternalRef> children = new HashMap<>();
 
-    public Children(InternalRef self, ActorSystem actorSystem) {
+    public Children(InternalRef self, ActorCreator actorCreator) {
         this.self = self;
-        this.actorSystem = actorSystem;
+        this.actorCreator = actorCreator;
     }
 
     public synchronized InternalRef getChild(String name) {
@@ -29,10 +31,9 @@ public class Children {
             throw new RuntimeException("Actorname already in use: '" + name + "' at '" + self + "'");
         }
         ActorPath childPath = self.getPath().createChild(name);
-        ActorNodeRef child = new ActorNodeRef(name, actorFactory, self, actorSystem);
+        ActorNodeRef child = new ActorNodeRef(name, actorFactory, self, actorCreator);
         children.put(name, child);
         child.start();
-        //child.tellSystem(new Create(), self);
         return child;
     }
 

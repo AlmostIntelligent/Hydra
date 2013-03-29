@@ -1,20 +1,20 @@
 package org.gethydrated.hydra.actors.actors;
 
-import org.gethydrated.hydra.actors.*;
+import org.gethydrated.hydra.actors.ActorCreator;
+import org.gethydrated.hydra.actors.ActorPath;
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.SystemMessages.Stopped;
-import org.gethydrated.hydra.actors.SystemMessages.Watch;
-import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
-import org.gethydrated.hydra.actors.mailbox.Message;
-import org.gethydrated.hydra.actors.node.ActorNode;
-import org.gethydrated.hydra.actors.node.ActorNodeRef;
+import org.gethydrated.hydra.actors.refs.AbstractMinimalRef;
+import org.gethydrated.hydra.actors.refs.InternalRef;
+import org.gethydrated.hydra.actors.refs.NullRef;
 import org.slf4j.Logger;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Future;
 
-public class RootGuardian implements InternalRef {
+public class RootGuardian extends AbstractMinimalRef {
 
     private final Logger logger;
 
@@ -26,38 +26,14 @@ public class RootGuardian implements InternalRef {
 
     private volatile boolean running = true;
 
-    public RootGuardian(ActorSystem actorSystem, Dispatchers dispatchers) {
-        logger = new LoggingAdapter(RootGuardian.class, actorSystem);
+    public RootGuardian(ActorSystem system) {
+        logger = new LoggingAdapter(RootGuardian.class, system);
         logger.info("RootGuardian created.");
-        sysGuardian = new ActorNodeRef("sys", new DefaultActorFactory(SysGuardian.class), this, actorSystem);
-        sysGuardian.unwrap().attachChild(new FutureActor(sysGuardian));
-        appGuardian = new ActorNodeRef("app", new DefaultActorFactory(AppGuardian.class), this, actorSystem);
-        initGuardians();
-    }
-
-    @Override
-    public void start() {
-        logger.debug("Ignored rootGuardian call for 'start'.");
     }
 
     @Override
     public void stop() {
         appGuardian.stop();
-    }
-
-    @Override
-    public void suspend() {
-        logger.debug("Ignored rootGuardian call for 'suspend'.");
-    }
-
-    @Override
-    public void restart(Throwable cause) {
-        logger.debug("Ignored rootGuardian call for 'restart'.");
-    }
-
-    @Override
-    public void resume(Throwable cause) {
-        logger.debug("Ignored rootGuardian call for 'resume'");
     }
 
     @Override
@@ -72,18 +48,35 @@ public class RootGuardian implements InternalRef {
         }
     }
 
+    public void setAppGuardian(InternalRef appGuardian) {
+        this.appGuardian = appGuardian;
+    }
+
+    public void setSysGuardian(InternalRef sysGuardian) {
+        this.sysGuardian = sysGuardian;
+    }
+
     @Override
-    public ActorNode unwrap() {
-        throw new RuntimeException("Cannot unwrap rootGuardian.");
+    public InternalRef getChild(String name) {
+        if(name.equals("sys")) {
+            return sysGuardian;
+        } else if (name.equals("app")) {
+            return appGuardian;
+        }
+        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + name);
+    }
+
+    @Override
+    public InternalRef findActor(List<String> names) {
+        if(names.isEmpty()) {
+            return this;
+        }
+        InternalRef ref = getChild(names.remove(0));
+        return ref.findActor(names);
     }
 
     public boolean isTerminated() {
         return !running;
-    }
-
-    @Override
-    public String getName() {
-        return "rootGuardian";
     }
 
     @Override
@@ -92,20 +85,13 @@ public class RootGuardian implements InternalRef {
     }
 
     @Override
-    public synchronized void tell(Object o, ActorRef sender) { }
-
-    @Override
-    public void forward(Message m) { }
-
-    @Override
-    public Future<?> ask(Object o) { return null; }
-
-    public InternalRef getSystemGuardian() {
-        return sysGuardian;
+    public InternalRef getParent() {
+        return new NullRef();
     }
 
-    public InternalRef getAppGuardian() {
-        return appGuardian;
+    @Override
+    public ActorCreator getCreator() {
+        return null;
     }
 
     public void addTerminationHook(Runnable hook) {
@@ -125,22 +111,6 @@ public class RootGuardian implements InternalRef {
     }
 
     private void initGuardians() {
-        sysGuardian.start();
-        appGuardian.start();
-        appGuardian.tellSystem(new Watch(sysGuardian), sysGuardian);
-        sysGuardian.tellSystem(new Watch(appGuardian), appGuardian);
-    }
 
-    public ActorRef getActor(List<String> names) {
-        if(names.isEmpty()) {
-            return this;
-        }
-        String target = names.remove(0);
-        if(target.equals("sys")) {
-            return sysGuardian.unwrap().getActor(names);
-        } else if (target.equals("app")) {
-            return appGuardian.unwrap().getActor(names);
-        }
-        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + target);
     }
 }

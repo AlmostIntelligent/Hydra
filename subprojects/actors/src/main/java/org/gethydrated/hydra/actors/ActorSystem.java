@@ -1,6 +1,5 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.actors.RootGuardian;
 import org.gethydrated.hydra.actors.clock.LamportsClock;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
@@ -37,20 +36,7 @@ public final class ActorSystem implements ActorSource {
 
     private final Configuration config;
 
-    /**
-     * Root guardian.
-     */
-    private final RootGuardian rootGuardian;
-
-    /**
-     * Application guardian.
-     */
-    private final InternalRef appGuardian;
-
-    /**
-     * System guardian.
-     */
-    private final InternalRef sysGuardian;
+    private final ActorCreator creator;
 
     /**
      * Lock object for threads awaiting system termination.
@@ -89,10 +75,8 @@ public final class ActorSystem implements ActorSource {
         config = cfg;
         dispatchers = new Dispatchers(config, exceptionHandler);
         defaultDispatcher = dispatchers.lookupDispatcher("default-dispatcher");
-        rootGuardian = new RootGuardian(this, dispatchers);
-        sysGuardian = rootGuardian.getSystemGuardian();
-        appGuardian = rootGuardian.getAppGuardian();
-        rootGuardian.addTerminationHook(new Runnable() {
+        creator = new DefaultActorCreator(this);
+        creator.getRootGuardian().addTerminationHook(new Runnable() {
             @Override
             public void run() {
             synchronized (awaitLock) {
@@ -108,7 +92,7 @@ public final class ActorSystem implements ActorSource {
      */
     public void shutdown() {
         logger.info("Stopping actor system.");
-        appGuardian.stop();
+        creator.getAppGuardian().stop();
     }
 
     /**
@@ -129,7 +113,7 @@ public final class ActorSystem implements ActorSource {
      * @return true when actor system is shut down, false otherwise.
      */
     public boolean isTerminated() {
-        return rootGuardian.isTerminated();
+        return creator.getRootGuardian().isTerminated();
     }
 
     /**
@@ -154,12 +138,12 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef spawnActor(final Class<? extends Actor> actorClass, final String name) {
-        return appGuardian.unwrap().spawnActor(actorClass, name);
+        return creator.getAppGuardian().unwrap().spawnActor(actorClass, name);
     }
 
     @Override
     public ActorRef spawnActor(final ActorFactory actorFactory, final String name) {
-        return appGuardian.unwrap().spawnActor(actorFactory, name);
+        return creator.getAppGuardian().unwrap().spawnActor(actorFactory, name);
     }
 
     @Override
@@ -178,7 +162,10 @@ public final class ActorSystem implements ActorSource {
     }
 
     public ActorRef getActor(final List<String> names) {
-        return rootGuardian.getActor(names);
+        if(names.get(0).equals("tmp")) {
+            return creator.getTempActor(names);
+        }
+        return creator.getRootGuardian().findActor(names);
     }
 
     @Override

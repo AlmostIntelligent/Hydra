@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.mailbox.Message;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -9,7 +7,7 @@ import java.util.concurrent.TimeoutException;
 /**
  *
  */
-public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
+public class SyncVar<V> implements java.util.concurrent.Future<V> {
 
     private V value = null;
     private Throwable error = null;
@@ -72,47 +70,23 @@ public class FutureImpl<V> implements java.util.concurrent.Future<V>, ActorRef {
         }
     }
 
-    @Override
-    public String getName() {
-        return "future";
-    }
-
-    @Override
-    public ActorPath getPath() {
-        return null;  //TODO;
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void tell(Object o, ActorRef sender) {
+    public void put(V value) {
         synchronized (lock) {
-            try {
-                if(o instanceof Throwable) {
-                    error = (Throwable)o;
-                } else {
-                    //noinspection unchecked
-                    value = (V)o;
-                }
-            } catch (ClassCastException e) {
-                error = e;
+            if(!done) {
+                this.value = value;
+                done = true;
+                lock.notifyAll();
             }
-            done = true;
-            lock.notifyAll();
         }
     }
 
-    @Override
-    public void forward(Message m) {
-        //TODO:
-    }
-
-    @Override
-    public java.util.concurrent.Future<?> ask(Object o) {
-        throw new RuntimeException("Cannot create future on future reference. Deadlock possible."); //TODO: actorexception
-    }
-
-    @Override
-    public boolean isTerminated() {
-        return false;
+    public void fail(Throwable t) {
+        synchronized (lock) {
+            if(!done) {
+                error = t;
+                done = true;
+                lock.notifyAll();
+            }
+        }
     }
 }
