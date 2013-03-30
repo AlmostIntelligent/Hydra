@@ -5,16 +5,16 @@ import org.gethydrated.hydra.api.service.USID;
 /**
  *
  */
-public class Message {
+public class Renamed {
     private USID usid;
     private String name;
 
-    public Message(USID usid, String name) {
+    public Renamed(USID usid, String name) {
         this.usid = usid;
         this.name = name;
     }
 
-    private Message() {}
+    private Renamed() {}
 
     public USID getUsid() {
         return usid;
@@ -22,5 +22,13 @@ public class Message {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Renamed{" +
+                "usid=" + usid +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

@@ -2,7 +2,7 @@ package org.gethydrated.hydra.core.concurrent;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.core.messages.NodeDown;
+import org.gethydrated.hydra.api.event.NodeDown;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.NodeAddress;
 

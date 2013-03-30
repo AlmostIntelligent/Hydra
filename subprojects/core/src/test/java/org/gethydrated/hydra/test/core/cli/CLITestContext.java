@@ -2,10 +2,7 @@ package org.gethydrated.hydra.test.core.cli;
 
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.Configuration;
-import org.gethydrated.hydra.api.service.MessageHandler;
-import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.api.service.SIDFactory;
-import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.sid.LocalSID;
 
@@ -40,7 +37,7 @@ public class CLITestContext implements ServiceContext {
      * @return OutputStream.
      */
     public final SID getOutput() {
-        return new LocalSID(null,null) {
+        return new LocalSID(null,null, null) {
 
             @Override
             public void tell(Object message, SID sender) {
@@ -106,27 +103,37 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public void link(SID sid) {
+    public void link(SID sid1, SID sid2) {
 
     }
 
     @Override
-    public void unlink(SID sid) {
+    public void unlink(SID sid1, SID sid2) {
 
     }
 
     @Override
-    public void monitor(SID sid) {
+    public void monitor(SID sid1, SID sid2) {
 
     }
 
     @Override
-    public void unmonitor(SID sid) {
+    public void unmonitor(SID sid1, SID sid2) {
 
     }
 
     @Override
     public final SID startService(final String name) throws HydraException {
+        return null;
+    }
+
+    @Override
+    public SID getService(String name) {
+        return null;
+    }
+
+    @Override
+    public SID getService(USID usid) {
         return null;
     }
 

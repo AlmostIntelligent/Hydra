@@ -1,8 +1,12 @@
 package org.gethydrated.hydra.core.sid;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.core.transport.SerializedObject;
 
 import java.util.UUID;
 import java.util.concurrent.Future;
@@ -13,8 +17,11 @@ public class LocalSID implements InternalSID {
 
     private final USID usid;
 
-    public LocalSID(UUID nodeId, ActorRef ref) {
+    private ObjectWriter writer;
+
+    public LocalSID(UUID nodeId, ActorRef ref, ObjectWriter writer) {
        this.ref = ref;
+       this.writer = writer;
        usid = new USID(nodeId, 0, Long.parseLong(ref.getName()));
     }
 
@@ -35,6 +42,18 @@ public class LocalSID implements InternalSID {
 
     @Override
     public void tell(Object message, SID sender) {
+        if (!(message instanceof SystemEvent)) {
+            SerializedObject so = new SerializedObject();
+            so.setSender(sender.getUSID());
+            so.setTarget(usid);
+            so.setClassName(message.getClass().getName());
+            try {
+                so.setData(writer.writeValueAsBytes(message));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            message = so;
+        }
         if(sender == null) {
             ref.tell(message, ref);
         } else {

@@ -1,11 +1,14 @@
 package org.gethydrated.hydra.core.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.api.event.*;
 import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
-import org.gethydrated.hydra.core.messages.*;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
+import org.gethydrated.hydra.core.transport.SerializedObject;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,12 +46,17 @@ public class ServiceImpl extends Actor implements Service {
     private final Map<String, Boolean> serviceFlags = new HashMap<>();
 
     private final ServiceMonitor monitor;
+
+    private final ObjectMapper mapper = new ObjectMapper();
+
+    private final Logger logger;
     /**
      * Constructor.
      *
      * @throws ServiceException on failure.
      */
     public ServiceImpl(String activator, ClassLoader cl, InternalHydra hydra) throws ServiceException {
+        this.logger = getLogger(ServiceImpl.class);
         this.cl = cl;
         this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
         ctx = new ServiceContextImpl(this, hydra);
@@ -85,14 +93,20 @@ public class ServiceImpl extends Actor implements Service {
         }
         try {
             processMonitor(message);
-        } catch (Throwable t) {
-                t.printStackTrace();
+
+            if(message instanceof SerializedObject) {
+                SerializedObject so = (SerializedObject)message;
+                message = mapper.readValue(so.getData(), cl.loadClass(so.getClassName()));
             }
-        for (Class<?> c : handlers.keySet()) {
-            if(c.isInstance(message)) {
-                //noinspection unchecked
-                handlers.get(c).handle(c.cast(message), sender);
+            for (Class<?> c : handlers.keySet()) {
+                if(c.isInstance(message)) {
+                    //noinspection unchecked
+                    handlers.get(c).handle(c.cast(message), sender);
+                }
             }
+
+        } catch (Exception t) {
+            logger.warn("Could not deserialized message: {}", t.getMessage(), t);
         }
     }
 

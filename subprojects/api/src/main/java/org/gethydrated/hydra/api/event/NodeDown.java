@@ -1,14 +1,14 @@
-package org.gethydrated.hydra.core.messages;
+package org.gethydrated.hydra.api.event;
 
 import java.util.UUID;
 
 /**
  *
  */
-public class NodeUp {
+public class NodeDown {
     private final UUID uuid;
 
-    public NodeUp(UUID uuid) {
+    public NodeDown(UUID uuid) {
         this.uuid = uuid;
     }
 

@@ -1,5 +1,8 @@
 package org.gethydrated.hydra.core.sid;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
@@ -19,9 +22,13 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private final IdMatcher idMatcher;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+
     public DefaultSIDFactory(ActorSystem actorSystem, IdMatcher idMatcher) {
         this.actorSystem = actorSystem;
         this.idMatcher = idMatcher;
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JaxbAnnotationModule());
     }
 
     @Override
@@ -79,7 +86,10 @@ public class DefaultSIDFactory implements SIDFactory {
         try {
             ActorPath path = ActorPath.apply("/app/services/"+usid.getServiceId());
             ActorRef ref = actorSystem.getActor(path);
-            return new LocalSID(idMatcher.getLocal(),ref);
+            if(ref.isTerminated()) {
+                return new DeadSID(usid);
+            }
+            return new LocalSID(idMatcher.getLocal(),ref, mapper.writer());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

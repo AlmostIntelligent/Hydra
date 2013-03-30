@@ -5,8 +5,11 @@
 package org.gethydrated.hydra.chat;
 
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.ServiceContext;
-import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.chat.messages.Message;
+import org.gethydrated.hydra.chat.messages.NewClient;
+import org.gethydrated.hydra.chat.messages.Renamed;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -28,9 +31,8 @@ public class ChatGUI extends javax.swing.JFrame {
      */
     public ChatGUI(final ServiceContext context) {
         this.context = context;
-        this.username = context.getSelf().getUSID().toString();
         this.users = new HashMap<>();
-        this.users.put(context.getSelf().getUSID(), username);
+        this.users.put(context.getSelf(), context.getSelf().getUSID().toString());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -150,29 +152,45 @@ public class ChatGUI extends javax.swing.JFrame {
 
     private ServiceContext context;
 
-    private String username;
-
-    private HashMap<USID, String> users;
+    private HashMap<SID, String> users;
 
     private void handleInput() {
-        String s = input.getText();
+        String s = input.getText().trim();
         input.setText("");
-
-
-        handleInput(username, s);
-    }
-
-    public void handleInput(String from, String input) {
-        chat.append("["+from+"] " + input + "\n");
-    }
-
-    public void setCloseCallback(final Runnable runnable) {
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                runnable.run();
+        if(!s.isEmpty()) {
+            if(!handleCommands(s)) {
+                handleInput(context.getSelf(), s);
+                for (SID sid : users.keySet()) {
+                    if (!sid.equals(context.getSelf())) {
+                        sid.tell(new Message(context.getSelf().getUSID(), s));
+                    }
+                }
             }
-        });
+        }
+    }
+
+    private boolean handleCommands(String in) {
+        if(in.startsWith("/name ") && in.length() > 6) {
+            renameUser(context.getSelf(), in.substring(6, in.length()));
+            for(SID s : users.keySet()) {
+                if(!s.equals(context.getSelf())) {
+                    s.tell(new Renamed(context.getSelf().getUSID(), in.substring(6, in.length())));
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void renameUser(SID sid, String name) {
+        if(users.containsKey(sid)) {
+            users.put(sid, name);
+        }
+        updateUsers();
+    }
+
+    public void handleInput(SID from, String input) {
+        chat.append("["+users.get(from)+"] " + input + "\n");
     }
 
     private void updateUsers() {
@@ -181,7 +199,21 @@ public class ChatGUI extends javax.swing.JFrame {
         userList.setListData(names.toArray());
     }
 
-    public String getUsername() {
-        return username;
+    public void addClient(SID sid) {
+        if(!users.containsKey(sid)) {
+            users.put(sid, sid.getUSID().toString());
+            sid.tell(new NewClient(context.getSelf().getUSID()));
+            context.monitor(context.getSelf(), sid);
+            sid.tell(new Renamed(context.getSelf().getUSID(), users.get(context.getSelf())));
+            updateUsers();
+        }
+    }
+
+    public void removeClient(SID sid) {
+        if(users.containsKey(sid)) {
+            users.remove(sid);
+            context.unmonitor(context.getSelf(), sid);
+            updateUsers();
+        }
     }
 }

@@ -54,11 +54,11 @@ public interface ServiceApi extends HydraApi {
 
     SIDFactory getSIDFactory();
 
-    void link(SID sid);
+    void link(SID sid1, SID sid2);
 
-    void unlink(SID sid);
+    void unlink(SID sid1, SID sid2);
 
-    void monitor(SID sid);
+    void monitor(SID sid1, SID sid2);
 
-    void unmonitor(SID sid);
+    void unmonitor(SID sid1, SID sid2);
 }

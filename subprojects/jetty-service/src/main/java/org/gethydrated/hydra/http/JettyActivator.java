@@ -77,7 +77,7 @@ public class JettyActivator implements ServiceActivator {
             broker = context.startService("http::broker");
         }
         broker.tell("http", context.getSelf());
-        context.monitor(broker);
+        //context.monitor(broker);
     }
 
     private void handleRoot(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException {
