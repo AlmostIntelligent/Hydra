@@ -42,7 +42,7 @@ public abstract class AbstractMinimalRef implements InternalRef {
 
     @Override
     public InternalRef getChild(String name) {
-        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + name);
+        return new NullRef();
     }
 
     @Override
@@ -50,7 +50,7 @@ public abstract class AbstractMinimalRef implements InternalRef {
         if(names.isEmpty()) {
             return this;
         }
-        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + names.get(0));
+        return new NullRef();
     }
 
     @Override

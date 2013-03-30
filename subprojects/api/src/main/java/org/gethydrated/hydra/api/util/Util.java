@@ -21,4 +21,13 @@ public class Util {
         if(t instanceof LinkageError) return false;
         return true;
     }
+
+    public static void throwUnchecked( final Throwable checkedException ) {
+        Util.<RuntimeException>thrownInsteadOf( checkedException );
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Throwable> void thrownInsteadOf(Throwable t) throws T {
+        throw (T) t;
+    }
 }

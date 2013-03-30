@@ -10,7 +10,6 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
 import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
@@ -93,10 +92,11 @@ public final class HydraImpl implements InternalHydra {
     }
 
     private void initSystemActors() {
+        final InternalHydra hydra = this;
         services = actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Services(cfg, archives, sidFactory);
+                return new Services(cfg, archives, hydra);
             }
         }, "services");
         actorSystem.spawnActor(new ActorFactory() {
@@ -196,7 +196,7 @@ public final class HydraImpl implements InternalHydra {
     }
 
     @Override
-    public SIDFactory getDefaultSIDFactory() {
+    public DefaultSIDFactory getDefaultSIDFactory() {
         return sidFactory;
     }
 

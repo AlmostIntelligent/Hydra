@@ -57,7 +57,7 @@ public class ActorNodeRef implements InternalRef {
         if(child != null) {
             return child;
         }
-        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + name);
+        return new NullRef();
     }
 
     @Override

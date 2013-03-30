@@ -63,7 +63,7 @@ public class RootGuardian extends AbstractMinimalRef {
         } else if (name.equals("app")) {
             return appGuardian;
         }
-        throw new RuntimeException("Actor not found:" + getPath().toString() + "/" + name);
+        return new NullRef();
     }
 
     @Override

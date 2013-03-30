@@ -13,11 +13,17 @@ public interface Mailbox extends Runnable {
 
     boolean hasSystemMessages();
 
+    void setClosed();
+
     void setIdle();
 
     boolean setScheduled();
 
+    void suspend();
+
+    void resume();
+
     boolean isSchedulable(boolean hasMessages, boolean hasSystemMessages);
 
-    void setClosed();
+
 }

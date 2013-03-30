@@ -71,6 +71,17 @@ public class BlockingQueueMailbox implements Mailbox {
     }
 
     @Override
+    public void suspend() {
+        suspended = true;
+    }
+
+    @Override
+    public void resume() {
+        suspended = false;
+        dispatcher.executeMailbox(this, false, false);
+    }
+
+    @Override
     public boolean isSchedulable(boolean hasMessages, boolean hasSystemMessages) {
         if (closed) {
             return false;

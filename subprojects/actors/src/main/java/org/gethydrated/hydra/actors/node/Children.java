@@ -54,11 +54,23 @@ public class Children {
      * Returns a list of all names.
      * @return list of all names.
      */
-    public List<ActorRef> getAllChildren() {
+    public synchronized List<ActorRef> getAllChildren() {
         LinkedList<ActorRef> res = new LinkedList<>();
         for(ActorRef r : children.values()) {
             res.add(r);
         }
         return res;
+    }
+
+    public synchronized void suspendChildren() {
+        for (InternalRef i : children.values()) {
+            i.suspend();
+        }
+    }
+
+    public synchronized void resumeChildren(Throwable cause) {
+        for (InternalRef i : children.values()) {
+            i.resume(cause);
+        }
     }
 }

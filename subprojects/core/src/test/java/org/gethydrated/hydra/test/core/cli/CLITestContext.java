@@ -71,30 +71,58 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public final void registerLocal(final String name, final Long id) {
+    public void registerLocal(String name, SID id) throws HydraException {
 
     }
 
     @Override
-    public final void registerGlobal(final String name, final Long id) {
+    public void registerGlobal(String name, SID id) throws HydraException {
 
     }
 
     @Override
-    public final Long getLocalService(final String name) {
+    public void unregisterLocal(String name) throws HydraException {
+
+    }
+
+    @Override
+    public void unregisterGlobal(String name) throws HydraException {
+
+    }
+
+    @Override
+    public SID getLocalService(String name) throws HydraException {
         return null;
-
     }
 
     @Override
-    public final Long getGlobalService(final String name) {
+    public SID getGlobalService(String name) throws HydraException {
         return null;
-
     }
 
     @Override
     public SIDFactory getSIDFactory() {
         return null;
+    }
+
+    @Override
+    public void link(SID sid) {
+
+    }
+
+    @Override
+    public void unlink(SID sid) {
+
+    }
+
+    @Override
+    public void monitor(SID sid) {
+
+    }
+
+    @Override
+    public void unmonitor(SID sid) {
+
     }
 
     @Override

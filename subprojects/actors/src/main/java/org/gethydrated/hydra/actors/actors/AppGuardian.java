@@ -12,7 +12,7 @@ public class AppGuardian extends Actor {
 	}
 
 	@Override
-	public void onStart() throws Exception {
+	public void onStart() {
 		logger.info("Application guardian startet.");
 	}
 

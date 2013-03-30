@@ -1,8 +1,8 @@
 package org.gethydrated.hydra.core.service;
 
 import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.*;
+import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
 import org.gethydrated.hydra.core.messages.*;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
@@ -46,14 +46,12 @@ public class ServiceImpl extends Actor implements Service {
     /**
      * Constructor.
      *
-     * @param cfg Configuration.
-     * @param sidFactory
      * @throws ServiceException on failure.
      */
-    public ServiceImpl(String activator, ClassLoader cl, Configuration cfg, DefaultSIDFactory sidFactory) throws ServiceException {
+    public ServiceImpl(String activator, ClassLoader cl, InternalHydra hydra) throws ServiceException {
         this.cl = cl;
-        this.sidFactory = sidFactory;
-        ctx = new ServiceContextImpl(this, cfg, sidFactory);
+        this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
+        ctx = new ServiceContextImpl(this, hydra);
         monitor = new ServiceMonitor(sidFactory.fromActorRef(getSelf()), sidFactory);
         try {
             Class<?> clazz = cl.loadClass(activator);

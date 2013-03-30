@@ -17,9 +17,6 @@ public class Envelope {
     private String reason;
     private NodeAddress connector;
     private SerializedObject sobject;
-    private boolean future;
-    private Integer futureId;
-    private boolean futureResult;
     private boolean hiddenNode;
     private long timestamp;
 
@@ -109,22 +106,6 @@ public class Envelope {
         this.sobject = sobject;
     }
 
-    public boolean isFuture() {
-        return future;
-    }
-
-    public void setFuture(boolean future) {
-        this.future = future;
-    }
-
-    public void setFutureId(Integer futureId) {
-        this.futureId = futureId;
-    }
-
-    public Integer getFutureId() {
-        return futureId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -155,14 +136,6 @@ public class Envelope {
         result = 31 * result + (connector != null ? connector.hashCode() : 0);
         result = 31 * result + (sobject != null ? sobject.hashCode() : 0);
         return result;
-    }
-
-    public void setFutureResult(boolean futureResult) {
-        this.futureResult = futureResult;
-    }
-
-    public boolean isFutureResult() {
-        return futureResult;
     }
 
     public boolean isHiddenNode() {

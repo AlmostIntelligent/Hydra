@@ -18,7 +18,7 @@ public class SysGuardian extends Actor {
 	}
 
 	@Override
-	public void onStart() throws Exception {
+	public void onStart() {
 		logger.info("System guardian started.");
 		getContext().spawnActor(LogActor.class, "log").getName();
         getContext().spawnActor(StdOutActor.class, "out");

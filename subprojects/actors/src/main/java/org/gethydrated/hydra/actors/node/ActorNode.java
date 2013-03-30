@@ -4,6 +4,7 @@ import org.gethydrated.hydra.actors.*;
 import org.gethydrated.hydra.actors.ActorContext;
 import org.gethydrated.hydra.actors.SystemMessages.*;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
+import org.gethydrated.hydra.actors.error.ActorInitialisationException;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
@@ -38,6 +39,8 @@ public class ActorNode implements ActorSource, ActorContext {
 
     private final Watchers watchers;
 
+    private final Supervisor supervisor;
+
     private final Logger logger;
 
     private Actor actor;
@@ -46,6 +49,7 @@ public class ActorNode implements ActorSource, ActorContext {
 
     private static ThreadLocal<ActorNode> nodeRef = new ThreadLocal<>();
     private ActorLifecyle status = ActorLifecyle.CREATED;
+    private boolean failed = false;
 
     public ActorNode(InternalRef self, InternalRef parent, ActorFactory actorFactory, ActorCreator creator) {
         this.self = self;
@@ -53,6 +57,7 @@ public class ActorNode implements ActorSource, ActorContext {
         this.factory = actorFactory;
         this.creator = creator;
         this.actorSystem = creator.getActorSystem();
+        this.supervisor = new DefaultSupervisor(actorSystem);
         logger = new LoggingAdapter(ActorNode.class, actorSystem);
         dispatcher = actorSystem.getDefaultDispatcher();
         mailbox = dispatcher.createMailbox(this);
@@ -108,12 +113,15 @@ public class ActorNode implements ActorSource, ActorContext {
     }
 
     public void restart(Throwable cause) {
+        sendSystem(new Restart(cause), self);
     }
 
     public void suspend() {
+        sendSystem(new Suspend(), self);
     }
 
     public void resume(Throwable cause) {
+        sendSystem(new Restart(cause), self);
     }
 
     public void sendSystem(Object o, ActorRef sender) {
@@ -166,12 +174,14 @@ public class ActorNode implements ActorSource, ActorContext {
             } else if (message instanceof WatcheeStopped) {
                 watchers.removeWatcher(((WatcheeStopped) message).getTarget());
                 stop();
+            } else if (message instanceof Failed) {
+                handleFailedChild((Failed)message);
             }
         } catch (Exception e) {
             handleError(e);
         } catch (Throwable t) {
             if(!Util.isNonFatal(t))
-                throw t;
+                Util.throwUnchecked(t);
             handleError(t);
         }
     }
@@ -233,16 +243,40 @@ public class ActorNode implements ActorSource, ActorContext {
     }
 
     private void handleError(Throwable t) {
-        logger.error("Error processing message at '{}': {}", self, t );
-        t.printStackTrace();
+        if (!failed) {
+            try {
+                mailbox.suspend();
+                children.suspendChildren();
+                parent.tellSystem(new Failed(self, t), self);
+                failed = true;
+            } catch (Throwable th) {
+                if (Util.isNonFatal(t)) {
+                    logger.error("Exception in error handling: {}", th.getMessage(), th);
+                    terminate();
+                } else {
+                    throw th;
+                }
+            }
+        }
+    }
+
+    private void handleFailedChild(Failed failed) throws Throwable {
+        supervisor.handleFailedChildren(failed.getCause(), failed.getChild());
     }
 
     private void create() throws Exception {
-        nodeRef.set(this);
-        actor = factory.create();
-        actor.onStart();
+        try {
+            nodeRef.set(this);
+            actor = factory.create();
+            actor.onStart();
 
-        nodeRef.remove();
+            nodeRef.remove();
+        } catch (Throwable e) {
+            if(Util.isNonFatal(e)) {
+                throw new ActorInitialisationException(e);
+            }
+            throw e;
+        }
     }
 
     private void childStopped(ActorPath path) {
@@ -265,7 +299,10 @@ public class ActorNode implements ActorSource, ActorContext {
 
     private void finishTerminate() {
         try {
-            actor.onStop();
+            if (actor != null) {
+                actor.onStop();
+                actor = null;
+            }
         } catch (Exception e) {
             logger.error("Error shutting down actor '{}':", self, e);
         }

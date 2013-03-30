@@ -32,14 +32,30 @@ public class SystemMessages {
 
     public static class Restart {
 
+        private final Throwable cause;
+
+        public Restart(Throwable cause) {
+            this.cause = cause;
+        }
+
+        public Throwable getCause() {
+            return cause;
+        }
     }
 
-    public static class Pause {
-
+    public static class Suspend {
     }
 
     public static class Resume {
+        private final Throwable cause;
 
+        public Resume(Throwable cause) {
+            this.cause = cause;
+        }
+
+        public Throwable getCause() {
+            return cause;
+        }
     }
 
     public static class Watch {
@@ -76,6 +92,25 @@ public class SystemMessages {
 
         public InternalRef getTarget() {
             return target;
+        }
+    }
+
+    public static class Failed {
+        private final InternalRef child;
+
+        private final Throwable cause;
+
+        public Failed(InternalRef child, Throwable cause) {
+            this.child = child;
+            this.cause = cause;
+        }
+
+        public InternalRef getChild() {
+            return child;
+        }
+
+        public Throwable getCause() {
+            return cause;
         }
     }
 }
