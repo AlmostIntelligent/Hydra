@@ -20,7 +20,7 @@ public class LogActor extends Actor {
         getSystem().getEventStream().unsubscribe(new FallbackLogger());
 	}
 	
-	public void onStop() throws Exception {
+	public void onStop() {
 	    getSystem().getEventStream().subscribe(new FallbackLogger(), LogEvent.class);
         getSystem().getEventStream().unsubscribe(getSelf());
 	}

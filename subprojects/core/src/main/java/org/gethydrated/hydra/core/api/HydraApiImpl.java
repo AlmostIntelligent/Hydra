@@ -1,5 +1,6 @@
 package org.gethydrated.hydra.core.api;
 
+import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
@@ -12,20 +13,25 @@ import org.gethydrated.hydra.api.service.SID;
  *
  */
 public class HydraApiImpl implements HydraApi {
-    
+
+    private final Hydra hydra;
+
     /**
      * Constructor.
+     * @param hydra
      */
-    public HydraApiImpl() {
+    public HydraApiImpl(Hydra hydra) {
+        this.hydra = hydra;
     }
     
     @Override
     public final SID startService(final String name) throws HydraException {
-        return null;
+        return hydra.startService(name);
     }
 
     @Override
     public final void stopService(final SID id) throws HydraException {
+        hydra.stopService(id);
     }
 
 }

@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.api.service;
 
 import org.gethydrated.hydra.api.HydraApi;
+import org.gethydrated.hydra.api.HydraException;
 
 /**
  * Service related api.
@@ -16,28 +17,48 @@ public interface ServiceApi extends HydraApi {
      * @param name service name.
      * @param id service id.
      */
-    void registerLocal(String name, Long id);
+    void registerLocal(String name, SID id) throws HydraException;
 
     /**
      * Registers a service to global name resolution.
      * @param name service name.
      * @param id service id.
      */
-    void registerGlobal(String name, Long id);
+    void registerGlobal(String name, SID id) throws HydraException;
+
+    /**
+     * Unregisters a service to local name resolution.
+     * @param name service name.
+     */
+    void unregisterLocal(String name) throws HydraException;
+
+    /**
+     * Unregisters a service to global name resolution.
+     * @param name service name.
+     */
+    void unregisterGlobal(String name) throws HydraException;
 
     /**
      * Requests a local service.
      * @param name service name.
      * @return TODO
      */
-    Long getLocalService(String name);
+    SID getLocalService(String name) throws HydraException;
 
     /**
      * Requests a global service.
      * @param name service name.
      * @return TODO
      */
-    Long getGlobalService(String name);
+    SID getGlobalService(String name) throws HydraException;
 
     SIDFactory getSIDFactory();
+
+    void link(SID sid);
+
+    void unlink(SID sid);
+
+    void monitor(SID sid);
+
+    void unmonitor(SID sid);
 }

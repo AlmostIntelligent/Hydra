@@ -1,8 +1,5 @@
 package org.gethydrated.hydra.actors.dispatch;
 
-import org.gethydrated.hydra.actors.ActorPath;
-import org.gethydrated.hydra.actors.mailbox.Mailbox;
-import org.gethydrated.hydra.actors.mailbox.MailboxLookup;
 import org.gethydrated.hydra.api.configuration.Configuration;
 
 import java.util.HashMap;
@@ -11,7 +8,7 @@ import java.util.Map;
 /**
  *
  */
-public class Dispatchers implements MailboxLookup{
+public class Dispatchers {
 
     private final Thread.UncaughtExceptionHandler handler;
 
@@ -29,20 +26,6 @@ public class Dispatchers implements MailboxLookup{
 
     public Dispatcher lookupDispatcher(String name) {
         return dispatchers.get("todo");
-    }
-
-    @Override
-    public Mailbox lookupMailbox(ActorPath path) {
-        if(path.isRoot()) {
-            throw new IllegalArgumentException("Cannot resolve Mailbox for root.");
-        }
-        for(Dispatcher d : dispatchers.values()) {
-            Mailbox m = d.lookupMailbox(path);
-            if(m != null) {
-                return m;
-            }
-        }
-        return null;
     }
 
     public void join() {

@@ -104,12 +104,16 @@ public class CLIService extends Actor {
         getSystem().getEventStream().unsubscribe(getSelf());
     }
 
+    @Override
     public final void onStart() {
+        try {
         output = getContext().getActor("/sys/out");
         getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
         output.tell("Hydra <" + Version.getVersionString() + ">  (Use shutdown or :sd to quit)\n", null);
         log.info("CLI Service initialised.");
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

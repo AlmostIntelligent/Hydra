@@ -1,7 +1,9 @@
 package org.gethydrated.hydra.core.internal;
 
 import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.core.cli.CLIResponse;
@@ -11,16 +13,13 @@ import org.gethydrated.hydra.core.concurrent.LockRequest;
 import org.gethydrated.hydra.core.messages.NodeDown;
 import org.gethydrated.hydra.core.messages.NodeUp;
 import org.gethydrated.hydra.core.registry.RegistryState;
+import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.IdMatcher;
-import org.gethydrated.hydra.core.transport.Connection;
-import org.gethydrated.hydra.core.transport.Envelope;
-import org.gethydrated.hydra.core.transport.MessageType;
-import org.gethydrated.hydra.core.transport.SerializedObject;
+import org.gethydrated.hydra.core.transport.*;
+import org.gethydrated.hydra.core.transport.RelayRef.RelayedMessage;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Random;
-import java.util.concurrent.*;
 
 /**
  *
@@ -31,9 +30,6 @@ public class Node extends Actor {
 
     private final Logger logger = getLogger(Node.class);
     private final IdMatcher idMatcher;
-
-    private final ConcurrentMap<Integer, ActorRef> futureMap = new ConcurrentHashMap<>();
-    private final Random random = new Random();
 
     public Node(Connection connection, IdMatcher idMatcher) {
         this.connection = connection;
@@ -54,12 +50,14 @@ public class Node extends Actor {
                 case "disconnected":
                     logger.info("Node disconnected: ", getSelf().toString());
                     idMatcher.remove(connection.getUUID());
-                    getContext().stop(getSelf());
+                    getContext().stopActor(getSelf());
                     break;
             }
         } else if (message instanceof SystemEvent) {
             Envelope env = makeSystemEnvelope(message);
             connection.sendEnvelope(env);
+        } else if (message instanceof RelayedMessage) {
+            handleRelayed((RelayedMessage)message);
         } else if (message instanceof IOException) {
             logger.warn("Error while reading socket input", (IOException)message);
         } else if (message instanceof Envelope) {
@@ -69,6 +67,20 @@ public class Node extends Actor {
         } else {
             logger.debug("discarded message: {}", message.getClass().getName());
         }
+    }
+
+    private void handleRelayed(RelayedMessage message) {
+        System.out.println(message);
+        if(message.isSystemRelay()) {
+            try {
+                Envelope env = makeSystemEnvelope(message.getMessage());
+                env.getSObject().setTarget(message.getRelay());
+                connection.sendEnvelope(env);
+            } catch (IOException e) {
+                logger.warn("{}", e.getMessage(), e);
+            }
+        }
+
     }
 
     @Override
@@ -96,32 +108,28 @@ public class Node extends Actor {
         SerializedObject so = envelope.getSObject();
         Class<?> clazz = getClass().getClassLoader().loadClass(so.getClassName());
         Object o = connection.getMapper().readValue(so.getData(), clazz);
+        System.out.println(so.getTarget() + " from " + so.getSender());
         if(o instanceof InputEvent) {
             InputEvent i = (InputEvent)o;
             i.setSource(getSelf().toString());
             getSystem().getEventStream().publish(i);
         } else {
-            ActorRef ref = getRecipient(o);
-            if(ref != null) {
-                if(envelope.isFuture()) {
-                    Future f = ref.ask(o);
-                    Object res;
-                    try {
-                        res = f.get(10, TimeUnit.SECONDS);
-                    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                        res = e;
-                    }
-                    Envelope env = makeSystemEnvelope(res);
-                    env.setFutureResult(true);
-                    env.setFutureId(envelope.getFutureId());
-                    connection.sendEnvelope(env);
-                } else if (envelope.isFutureResult()) {
-                    ref = futureMap.remove(envelope.getFutureId());
-                    if(ref != null) {
+            System.out.println("sender  " + so.getSender());
+            ActorPath target = DefaultSIDFactory.usidToActorPath(so.getTarget());
+            if(target != null) {
+                try {
+                    ActorRef ref = getContext().getActor(target);
+                    if(so.getSender() == null || so.getSender().getTypeId() != 2) {
                         ref.tell(o, getSelf());
+                    } else {
+                        //The sender usid tells us, that the source of this request is a temp actor.
+                        //Install a relay temp actor that will notify us, if an answer has been send.
+                        //This is part of the ask functionality between nodes.
+                        ActorRef relay = new RelayRef(getSelf(), so.getSender(), true);
+                        ref.tell(o, relay);
                     }
-                } else {
-                    ref.tell(o, getSelf());
+                } catch (Exception e ) {
+                    logger.warn("An error occurred while processing received system message: {}", e.getMessage(), e);
                 }
             } else {
                 logger.debug("discarded received message: {}", o.getClass().getName());
@@ -140,7 +148,7 @@ public class Node extends Actor {
         if(o instanceof RegistryState) {
             return getContext().getActor("/app/globalregistry");
         }
-        return null;
+        return new NullRef();
     }
 
     private Envelope makeSystemEnvelope(Object systemEvent) throws IOException {
@@ -152,16 +160,9 @@ public class Node extends Actor {
         so.setClassName(systemEvent.getClass().getName());
         so.setFormat("json");
         so.setData(connection.getMapper().writeValueAsBytes(systemEvent));
-        env.setSObject(so);
-        if(getSender() != null &&getSender().getName().equals("future")) {
-            Integer id = random.nextInt();
-            while (futureMap.containsKey(id)) {
-                id = random.nextInt();
-            }
-            futureMap.put(id, getSender());
-            env.setFuture(true);
-            env.setFutureId(id);
-        }
+        so.setSender(DefaultSIDFactory.actorPathToUSID(getSender().getPath(), connection.getUUID()));
+        so.setTarget(DefaultSIDFactory.actorPathToUSID(getRecipient(systemEvent).getPath(), connection.getUUID()));
+                env.setSObject(so);
         return env;
     }
 }

@@ -5,6 +5,8 @@ import org.gethydrated.hydra.actors.node.ActorNode;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Immutable path that can be used to describe actor addresses.
@@ -37,7 +39,7 @@ public class ActorPath implements Serializable {
      *
      * @param path name hierarchy represented by a string array.
      */
-    private ActorPath(final String[] path) {
+    public ActorPath(final String[] path) {
         pathStack = new String[path.length];
         System.arraycopy(path, 0, pathStack, 0, path.length);
     }
@@ -129,7 +131,7 @@ public class ActorPath implements Serializable {
             return false;
         }
         if (o instanceof ActorNode) {
-            return this.equals(((ActorNode) o).getPath());
+            return this.equals(((ActorNode) o).getSelf().getPath());
         }
         if (getClass() != o.getClass()) {
             return false;
@@ -173,4 +175,7 @@ public class ActorPath implements Serializable {
         return name.matches("[a-zA-Z0-9_-]");
     }
 
+    public List<String> toList() {
+        return new LinkedList<>(Arrays.asList(pathStack));
+    }
 }

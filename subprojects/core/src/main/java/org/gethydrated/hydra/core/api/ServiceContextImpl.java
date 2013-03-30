@@ -4,6 +4,7 @@ import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.configuration.ConfigurationSecurityWrapper;
 import org.gethydrated.hydra.core.service.ServiceImpl;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
@@ -27,12 +28,12 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     private final DefaultSIDFactory sidFactory;
     /**
      * Constructor.
-     * @param cfg Configuration.
-     * @param sidFactory
+     * @param hydra
      */
-    public ServiceContextImpl(final ServiceImpl service, final Configuration cfg, DefaultSIDFactory sidFactory) {
-        this.sidFactory = sidFactory;
-        this.cfg = new ConfigurationSecurityWrapper(cfg);
+    public ServiceContextImpl(final ServiceImpl service, InternalHydra hydra) {
+        super(hydra);
+        this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
+        this.cfg = new ConfigurationSecurityWrapper(hydra.getConfiguration());
         this.service = service;
     }
 
@@ -61,5 +62,24 @@ public class ServiceContextImpl extends ServiceApiImpl implements
         service.getSystem().getEventStream().subscribe(service.getSelf(), classifier);
     }
 
+    @Override
+    public void link(SID sid) {
+
+    }
+
+    @Override
+    public void unlink(SID sid) {
+
+    }
+
+    @Override
+    public void monitor(SID sid) {
+
+    }
+
+    @Override
+    public void unmonitor(SID sid) {
+
+    }
 }
 

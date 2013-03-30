@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.SystemMessages.*;
-import org.gethydrated.hydra.actors.internal.InternalRef;
+import org.gethydrated.hydra.actors.refs.InternalRef;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.api.event.EventStream;
 import org.slf4j.Logger;

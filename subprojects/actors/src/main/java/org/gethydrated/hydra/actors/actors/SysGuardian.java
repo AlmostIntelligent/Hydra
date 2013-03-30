@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.internal.actors;
+package org.gethydrated.hydra.actors.actors;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.SystemMessages;
@@ -13,12 +13,12 @@ public class SysGuardian extends Actor {
 	public void onReceive(Object message) throws Exception {
         if(message instanceof SystemMessages.WatcheeStopped) {
             logger.info("WatcheeStopped received.");
-            getContext().stop(getSelf());
+            getContext().getSelf();
         }
 	}
 
 	@Override
-	public void onStart() throws Exception {
+	public void onStart() {
 		logger.info("System guardian started.");
 		getContext().spawnActor(LogActor.class, "log").getName();
         getContext().spawnActor(StdOutActor.class, "out");

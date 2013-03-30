@@ -22,7 +22,7 @@ public class InputOutputTest {
         @Override
         public void onReceive(Object message) throws Exception {
             if(message instanceof InputEvent) {
-                out.tell("Hello, "+message.toString(), getSelf());
+                out.tell("Hello, "+((InputEvent) message).getInput(), getSelf());
             }
         }
         
@@ -38,7 +38,7 @@ public class InputOutputTest {
         @Override
         public void onReceive(Object message) throws Exception {
             if(message instanceof InputEvent) {
-                if(message.toString().equals("Stop")) {
+                if(((InputEvent) message).getInput().equals("Stop")) {
                     getSystem().shutdown();
                 }
             }

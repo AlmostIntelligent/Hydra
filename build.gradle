@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply from: "gradle/dist.gradle"
-//apply from: "gradle/coverage.gradle"
+apply from: "gradle/coverage.gradle"
 apply from: "gradle/codequality.gradle"
 apply from: "gradle/idea.gradle"
 
@@ -49,11 +49,14 @@ configure(subprojects) { subproject ->
 
 	test {
 		ignoreFailures=true
-		testLogging {
-			exceptionFormat "full"
-			events "started", "passed", "skipped", "failed", "standardOut", "standardError"
-			minGranularity 0
-		}
+        // show standard out and standard error of the test JVM(s) on the console
+        //testLogging.showStandardStreams = true
+
+        // listen to events in the test execution lifecycle
+        beforeTest { descriptor ->
+            logger.lifecycle("Running test: " + descriptor)
+        }
+
 	}
 	archivesBaseName = 'hydra-' + subproject.name
 }

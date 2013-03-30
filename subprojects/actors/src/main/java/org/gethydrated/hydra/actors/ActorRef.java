@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.mailbox.Message;
-
 import java.util.concurrent.Future;
 
 /**
@@ -30,22 +28,14 @@ public interface ActorRef {
 
     /**
      *
-     * @param m Actual messages.
-     */
-    void forward(Message m);
-
-    /**
-     *
      * @param o Message object.
-     * @return FutureImpl object.
+     * @return SyncVar object.
      */
     Future<?> ask(Object o);
 
     /**
-     * Tries to validate the current state of
-     * the referenced actor.
-     * @throws Exception on validation error.
+     *
      */
-    void validate();
+    boolean isTerminated();
 
 }

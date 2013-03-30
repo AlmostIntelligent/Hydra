@@ -18,8 +18,6 @@ import java.util.concurrent.TimeoutException;
  */
 public class DistributedLockManager extends Actor {
 
-    private final ActorRef nodesRef = getContext().getActor("/app/nodes");
-
     private final IdMatcher idMatcher;
 
     private Set<UUID> remainingGranted;
@@ -43,6 +41,8 @@ public class DistributedLockManager extends Actor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        try {
+
         if(message instanceof LockRequest) {
             enqueue((LockRequest) message);
         } else if(message instanceof LockRelease) {
@@ -63,6 +63,9 @@ public class DistributedLockManager extends Actor {
             }
         } else if(message instanceof NodeDown) {
             release(new LockRelease(((NodeDown) message).getUuid()));
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -139,6 +142,7 @@ public class DistributedLockManager extends Actor {
     }
 
     private Set<UUID> getNodes() throws InterruptedException, ExecutionException, TimeoutException {
+        ActorRef nodesRef = getContext().getActor("/app/nodes");
         Future f = nodesRef.ask("nodes");
         Map<UUID, NodeAddress> nodes = (Map<UUID, NodeAddress>) f.get(10, TimeUnit.SECONDS);
         return nodes.keySet();

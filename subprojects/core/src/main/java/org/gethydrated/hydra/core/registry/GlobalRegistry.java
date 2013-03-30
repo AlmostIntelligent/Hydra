@@ -61,7 +61,7 @@ public class GlobalRegistry extends Actor {
 
     private void acceptUpdate(Map<String, USID> registry) {
         if(hasLock) {
-            getSender().tell(new IllegalStateException("Got registry state while having lock on registry."), getSelf());
+            getSender().tell(new RegistryException("Got registry state while having lock on registry."), getSelf());
         }
         this.registry = new HashMap<>(registry);
         getSender().tell("accepted", getSelf());
@@ -84,9 +84,13 @@ public class GlobalRegistry extends Actor {
 
     private void update() throws InterruptedException, ExecutionException, TimeoutException {
         Set<UUID> nodes = getNodes();
+        Set<Future<?>> results = new HashSet<>();
         for(UUID u : nodes) {
             ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(u));
-            r.tell(new RegistryState(registry), getSelf());
+            results.add(r.ask(new RegistryState(registry)));
+        }
+        for (Future<?> f : results) {
+            f.get(10, TimeUnit.SECONDS);
         }
     }
 
@@ -122,7 +126,9 @@ public class GlobalRegistry extends Actor {
             sender.tell(new RegistryException("Name is already in use."), getSelf());
         } else {
             try {
-                ((InternalSID) sid).getRef().validate();
+                if (((InternalSID) sid).getRef().isTerminated()) {
+                    sender.tell(new RegistryException("Actor is already stopped."), getSelf());
+                }
                 registry.put(name, sid.getUSID());
                 SID self = sidFactory.fromActorRef(getSelf());
                 sid.tell(new Monitor(self.getUSID()), self);

@@ -5,6 +5,7 @@ import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.util.IDGenerator;
+import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.Service;
 import org.gethydrated.hydra.core.messages.StartService;
@@ -36,17 +37,19 @@ public class Services extends Actor {
     private final Archives archives;
 
     private final DefaultSIDFactory sidFactory;
-    
+    private InternalHydra hydra;
+
     /**
      * Constructor.
      *
      * @param cfg
      *            Configuration.
-     * @param sidFactory
+     * @param hydra
      */
-    public Services(final Configuration cfg, final Archives archives, DefaultSIDFactory sidFactory) {
+    public Services(final Configuration cfg, final Archives archives, InternalHydra hydra) {
         this.archives = archives;
-        this.sidFactory = sidFactory;
+        this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
+        this.hydra = hydra;
         idGen = new IDGenerator();
         this.cfg = cfg;
     }
@@ -62,7 +65,7 @@ public class Services extends Actor {
     }
 
     private void stopService(InternalSID sid) {
-        getContext().stop(sid.getRef());
+        getContext().stopActor(sid.getRef());
     }
 
     private void startService(String serviceName) {
@@ -73,7 +76,7 @@ public class Services extends Actor {
                 ActorRef ref = getContext().spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
-                        return new ServiceImpl(service.getActivator(), service.getClassLoader(), cfg, sidFactory);
+                        return new ServiceImpl(service.getActivator(), service.getClassLoader(), hydra);
                     }
                 }, id.toString());
                 getSender().tell(sidFactory.fromActorRef(ref), getSelf());

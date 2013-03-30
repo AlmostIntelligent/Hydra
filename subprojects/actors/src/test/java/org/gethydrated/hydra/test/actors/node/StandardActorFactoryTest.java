@@ -11,7 +11,7 @@ import mockit.integration.junit4.JMockit;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
-import org.gethydrated.hydra.actors.internal.StandardActorFactory;
+import org.gethydrated.hydra.actors.DefaultActorFactory;
 import org.gethydrated.hydra.actors.node.ActorNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class StandardActorFactoryTest {
      */
     @Test
     public void testStaticClassCreation() throws Exception {
-        ActorFactory af = new StandardActorFactory(StaticActor.class);
+        ActorFactory af = new DefaultActorFactory(StaticActor.class);
         Actor ac = af.create();
 
         assertNotNull(ac);
@@ -63,7 +63,7 @@ public class StandardActorFactoryTest {
      */
     @Test(expected = NoSuchMethodException.class)
     public void testNonStaticClassCreation() throws Exception {
-        ActorFactory af = new StandardActorFactory(NonStaticActor.class);
+        ActorFactory af = new DefaultActorFactory(NonStaticActor.class);
 
         Actor ac = af.create();
 
@@ -79,7 +79,7 @@ public class StandardActorFactoryTest {
      */
     @Test(expected = NoSuchMethodException.class)
     public void testPrivateClassCreation() throws Exception {
-        ActorFactory af = new StandardActorFactory(PrivateActor.class);
+        ActorFactory af = new DefaultActorFactory(PrivateActor.class);
 
         Actor ac = af.create();
 
@@ -95,7 +95,7 @@ public class StandardActorFactoryTest {
      */
     @Test
     public void testInstanceNotEqual() throws Exception {
-        ActorFactory af = new StandardActorFactory(StaticActor.class);
+        ActorFactory af = new DefaultActorFactory(StaticActor.class);
 
         Actor ac1 = af.create();
         Actor ac2 = af.create();
