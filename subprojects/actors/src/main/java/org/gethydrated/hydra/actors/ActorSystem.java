@@ -1,12 +1,10 @@
 package org.gethydrated.hydra.actors;
 
+import org.gethydrated.hydra.actors.clock.LamportsClock;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
 import org.gethydrated.hydra.actors.event.ActorEventStream;
 import org.gethydrated.hydra.actors.event.SystemEventStream;
-import org.gethydrated.hydra.actors.internal.LazyActorRef;
-import org.gethydrated.hydra.actors.internal.NodeRef;
-import org.gethydrated.hydra.actors.internal.actors.RootGuardian;
 import org.gethydrated.hydra.actors.logging.FallbackLogger;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.gethydrated.hydra.api.configuration.Configuration;
@@ -18,6 +16,7 @@ import org.slf4j.Logger;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.MalformedURLException;
+import java.util.List;
 
 
 /**
@@ -37,20 +36,7 @@ public final class ActorSystem implements ActorSource {
 
     private final Configuration config;
 
-    /**
-     * Root guardian.
-     */
-    private final RootGuardian rootGuardian;
-
-    /**
-     * Application guardian.
-     */
-    private final NodeRef appGuardian;
-
-    /**
-     * System guardian.
-     */
-    private final NodeRef sysGuardian;
+    private final ActorCreator creator;
 
     /**
      * Lock object for threads awaiting system termination.
@@ -89,10 +75,8 @@ public final class ActorSystem implements ActorSource {
         config = cfg;
         dispatchers = new Dispatchers(config, exceptionHandler);
         defaultDispatcher = dispatchers.lookupDispatcher("default-dispatcher");
-        rootGuardian = new RootGuardian(this, dispatchers);
-        sysGuardian = rootGuardian.getSystemGuardian();
-        appGuardian = rootGuardian.getAppGuardian();
-        rootGuardian.addTerminationHook(new Runnable() {
+        creator = new DefaultActorCreator(this);
+        creator.getRootGuardian().addTerminationHook(new Runnable() {
             @Override
             public void run() {
             synchronized (awaitLock) {
@@ -108,8 +92,7 @@ public final class ActorSystem implements ActorSource {
      */
     public void shutdown() {
         logger.info("Stopping actor system.");
-        appGuardian.stop();
-
+        creator.getAppGuardian().stop();
     }
 
     /**
@@ -130,7 +113,7 @@ public final class ActorSystem implements ActorSource {
      * @return true when actor system is shut down, false otherwise.
      */
     public boolean isTerminated() {
-        return rootGuardian.isTerminated();
+        return creator.getRootGuardian().isTerminated();
     }
 
     /**
@@ -155,12 +138,12 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef spawnActor(final Class<? extends Actor> actorClass, final String name) {
-        return appGuardian.unwrap().spawnActor(actorClass, name);
+        return creator.getAppGuardian().unwrap().spawnActor(actorClass, name);
     }
 
     @Override
     public ActorRef spawnActor(final ActorFactory actorFactory, final String name) {
-        return appGuardian.unwrap().spawnActor(actorFactory, name);
+        return creator.getAppGuardian().unwrap().spawnActor(actorFactory, name);
     }
 
     @Override
@@ -175,7 +158,19 @@ public final class ActorSystem implements ActorSource {
 
     @Override
     public ActorRef getActor(final ActorPath path) {
-        return new LazyActorRef(path, dispatchers);
+        return getActor(path.toList());
+    }
+
+    public ActorRef getActor(final List<String> names) {
+        if(names.get(0).equals("tmp")) {
+            return creator.getTempActor(names);
+        }
+        return creator.getRootGuardian().findActor(names);
+    }
+
+    @Override
+    public void stopActor(ActorRef ref) {
+
     }
 
     /**

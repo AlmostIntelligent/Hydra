@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.internal.actors;
+package org.gethydrated.hydra.actors.actors;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.event.OutputEvent;

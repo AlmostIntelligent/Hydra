@@ -5,6 +5,7 @@ import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.messages.Monitor;
 import org.gethydrated.hydra.core.messages.ServiceDown;
 import org.gethydrated.hydra.core.messages.UnMonitor;
+import org.gethydrated.hydra.core.sid.DeadSID;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.InternalSID;
 
@@ -42,7 +43,7 @@ public class LocalRegistry  extends Actor {
     }
 
     private void checkServiceDown(ServiceDown serviceDown) {
-        SID sid = sidFactory.fromUSID(serviceDown.getUsid());
+        SID sid = new DeadSID(serviceDown.getUsid());
         while (registry.containsValue(sid)) {
             registry.values().remove(sid);
         }
@@ -52,18 +53,15 @@ public class LocalRegistry  extends Actor {
         if(registry.containsKey(name)) {
             getSender().tell(new RegistryException("Name is already in use."), getSelf());
         } else {
-            try {
-                ((InternalSID) sid).getRef().validate();
-                registry.put(name, sid);
-                SID self = sidFactory.fromActorRef(getSelf());
-                sid.tell(new Monitor(self.getUSID()), self);
-                if(getSender() != null) {
-                    getSender().tell("ok", getSelf());
-                }
-            }catch (RuntimeException e) {
-                getSender().tell(new RegistryException(e), getSelf());
+            if (((InternalSID) sid).getRef().isTerminated()) {
+                getSender().tell(new RegistryException("Actor is already stopped"), getSelf());
             }
-
+            registry.put(name, sid);
+            SID self = sidFactory.fromActorRef(getSelf());
+            sid.tell(new Monitor(self.getUSID()), self);
+            if(getSender() != null) {
+                getSender().tell("ok", getSelf());
+            }
         }
     }
 

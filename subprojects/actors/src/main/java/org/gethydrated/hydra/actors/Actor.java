@@ -1,9 +1,7 @@
 package org.gethydrated.hydra.actors;
 
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
-import org.gethydrated.hydra.actors.node.ActorContext;
 import org.gethydrated.hydra.actors.node.ActorNode;
-import org.gethydrated.hydra.api.service.MessageHandler;
 import org.slf4j.Logger;
 
 /**
@@ -17,6 +15,8 @@ public abstract class Actor {
      * Surrounding actor node.
      */
     private ActorNode node;
+
+    private ActorContext context;
 
     /**
      * Constructor. Will fail if not called within an actor node.
@@ -54,14 +54,6 @@ public abstract class Actor {
     }
 
     /**
-     * Returns the actor context.
-     * @return actor context.
-     */
-    public final ActorContext getContext() {
-        return node.getContext();
-    }
-
-    /**
      * Returns the actor system this actor lives in.
      * @return actor system.
      */
@@ -74,13 +66,16 @@ public abstract class Actor {
      * @return new ActorRef.
      */
     public final ActorRef getSelf() {
-        return node.getRef();
+        return node.getSelf();
     }
 
     public final ActorRef getSender() {
         return node.getSender();
     }
 
+    public  final ActorContext getContext() {
+        return node;
+    }
     /**
      * Creates an logger that will push its log messages
      * through the actor system.

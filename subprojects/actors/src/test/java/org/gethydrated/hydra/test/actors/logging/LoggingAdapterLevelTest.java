@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.test.actors.logging;
 
-import static org.junit.Assert.assertTrue;
-
+import ch.qos.logback.classic.Level;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.actors.logging.LoggingAdapter;
 import org.junit.After;
@@ -10,7 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Level;
+import static org.junit.Assert.assertTrue;
 
 public class LoggingAdapterLevelTest {
     
@@ -23,8 +22,9 @@ public class LoggingAdapterLevelTest {
     }
     
     @After
-    public void teardown() {
+    public void teardown() throws InterruptedException {
     	testSystem.shutdown();
+        testSystem.await();
     }
     
     @Test

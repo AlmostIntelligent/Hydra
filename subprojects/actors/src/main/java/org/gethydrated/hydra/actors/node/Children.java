@@ -1,16 +1,10 @@
 package org.gethydrated.hydra.actors.node;
 
 import org.gethydrated.hydra.actors.*;
-import org.gethydrated.hydra.actors.dispatch.Dispatchers;
-import org.gethydrated.hydra.actors.internal.InternalRef;
-import org.gethydrated.hydra.actors.internal.LazyActorRef;
-import org.gethydrated.hydra.actors.internal.NodeRef;
-import org.gethydrated.hydra.actors.internal.NodeRefImpl;
+import org.gethydrated.hydra.actors.refs.ActorNodeRef;
+import org.gethydrated.hydra.actors.refs.InternalRef;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -19,31 +13,27 @@ public class Children {
 
     private final InternalRef self;
 
-    private final ActorSystem actorSystem;
+    private final ActorCreator actorCreator;
 
-    private final  Map<String, NodeRef> children = new HashMap<>();
+    private final  Map<String, InternalRef> children = new HashMap<>();
 
-    private final Dispatchers dispatchers;
-
-    public Children(InternalRef self, ActorSystem actorSystem, Dispatchers dispatchers) {
+    public Children(InternalRef self, ActorCreator actorCreator) {
         this.self = self;
-        this.actorSystem = actorSystem;
-        this.dispatchers = dispatchers;
+        this.actorCreator = actorCreator;
     }
 
     public synchronized InternalRef getChild(String name) {
-        return null;
+        return children.get(name);
     }
 
-    public synchronized ActorRef addChild(String name, ActorFactory actorFactory) {
+    public synchronized InternalRef addChild(String name, ActorFactory actorFactory) {
         if(children.containsKey(name)) {
             throw new RuntimeException("Actorname already in use: '" + name + "' at '" + self + "'");
         }
-        ActorPath childPath = self.getPath().createChild(name);
-        NodeRef child = new NodeRefImpl(childPath, actorFactory, self, actorSystem, dispatchers);
+        ActorNodeRef child = new ActorNodeRef(name, actorFactory, self, actorCreator);
         children.put(name, child);
         child.start();
-        return new LazyActorRef(childPath, dispatchers);
+        return child;
     }
 
     public synchronized boolean removeChild(ActorPath path) {
@@ -64,7 +54,23 @@ public class Children {
      * Returns a list of all names.
      * @return list of all names.
      */
-    public List<String> getAllChildren() {
-        return new LinkedList<>(children.keySet());
+    public synchronized List<ActorRef> getAllChildren() {
+        LinkedList<ActorRef> res = new LinkedList<>();
+        for(ActorRef r : children.values()) {
+            res.add(r);
+        }
+        return res;
+    }
+
+    public synchronized void suspendChildren() {
+        for (InternalRef i : children.values()) {
+            i.suspend();
+        }
+    }
+
+    public synchronized void resumeChildren(Throwable cause) {
+        for (InternalRef i : children.values()) {
+            i.resume(cause);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.actors.internal.actors;
+package org.gethydrated.hydra.actors.actors;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.event.InputEvent;
@@ -22,7 +22,7 @@ public class StdInActor extends Actor {
 	}
 
 	@Override
-	public void onStart() throws Exception {
+	public void onStart() {
 		Runnable r = new Runnable() {
 
 			@Override
@@ -53,7 +53,7 @@ public class StdInActor extends Actor {
 	}
 	
 	@Override
-	public void onStop() throws Exception {
+	public void onStop() {
 		running = false;
 	}
 }

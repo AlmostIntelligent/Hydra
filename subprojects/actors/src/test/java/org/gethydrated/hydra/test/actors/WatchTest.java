@@ -41,7 +41,7 @@ public class WatchTest {
         public void onReceive(Object message) throws Exception {
             if(message.toString().equals("StopYourself")) {
                 System.out.println("Stopping watchee.");
-                getContext().stop(getSelf());
+                getContext().stopActor(getSelf());
             }
         }
     }

@@ -50,7 +50,7 @@ public class CLICommandServiceStop extends CLICommand {
         try {
             SID sid = sidFactory.fromString(args[0]);
             getHydra().stopService(sid);
-            return new CLIResponse(String.format("Service %s stopped.", sid));
+            return new CLIResponse(String.format("Service %s stopped.", args[0]));
         } catch (HydraException e) {
             return new CLIResponse("Exception while stopping service");
         }
