@@ -127,6 +127,14 @@ project("jetty-service") {
     }
 }
 
+project("sample-chat-service") {
+    description = 'Sample Distributed Chat'
+
+    dependencies {
+        compile project(':api')
+    }
+}
+
 project("util") {
     description = 'Hydra support classes'
 }

@@ -243,6 +243,7 @@ public class ActorNode implements ActorSource, ActorContext {
     }
 
     private void handleError(Throwable t) {
+        logger.error("Exception in error handling: {}", t.getMessage(), t);
         if (!failed) {
             try {
                 mailbox.suspend();

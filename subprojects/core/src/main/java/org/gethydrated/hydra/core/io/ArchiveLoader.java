@@ -59,7 +59,7 @@ public final class ArchiveLoader {
                         }
 
                     }
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         logger.error("Error while parsing archive data: {}", e);
                     }
                     return FileVisitResult.CONTINUE;

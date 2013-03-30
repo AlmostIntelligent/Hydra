@@ -8,6 +8,8 @@ import org.gethydrated.hydra.core.concurrent.Granted;
 import org.gethydrated.hydra.core.concurrent.Lock;
 import org.gethydrated.hydra.core.concurrent.Lock.RequestType;
 import org.gethydrated.hydra.core.messages.Monitor;
+import org.gethydrated.hydra.core.messages.NodeDown;
+import org.gethydrated.hydra.core.messages.NodeUp;
 import org.gethydrated.hydra.core.messages.UnMonitor;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.IdMatcher;
@@ -37,6 +39,8 @@ public class GlobalRegistry extends Actor {
 
     private boolean waitingForLock = false;
 
+    private boolean syncing = false;
+
     public GlobalRegistry(DefaultSIDFactory sidFactory, IdMatcher idMatcher) {
         this.sidFactory = sidFactory;
         this.idMatcher = idMatcher;
@@ -52,11 +56,40 @@ public class GlobalRegistry extends Actor {
         } else if (message instanceof Granted) {
             hasLock = true;
             waitingForLock = false;
-            processQueue();
-            releaseLock();
+            if(syncing) {
+                sync();
+            }
+            try {
+                processQueue();
+            } finally {
+                releaseLock();
+            }
+
         } else if (message instanceof RegistryState) {
             acceptUpdate(((RegistryState) message).getRegistry());
+        } else if (message instanceof NodeUp) {
+            acquireLock();
+            syncing = true;
+            System.out.println("nodeup:" + ((NodeUp) message).getUuid());
+        } else {
+            System.out.println(message.toString());
         }
+    }
+
+    private void sync() {
+        System.out.println("syncing");
+
+    }
+
+    @Override
+    public void onStart() {
+        getSystem().getEventStream().subscribe(getSelf(), NodeUp.class);
+        getSystem().getEventStream().subscribe(getSelf(), NodeDown.class);
+    }
+
+    @Override
+    public void onStop() {
+        getSystem().getEventStream().unsubscribe(getSelf());
     }
 
     private void acceptUpdate(Map<String, USID> registry) {

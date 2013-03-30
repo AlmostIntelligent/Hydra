@@ -31,6 +31,9 @@ public class DistributedLockManager extends Actor {
     private PriorityQueue<LockRequest> queue = new PriorityQueue<>(10, new Comparator<LockRequest>() {
         @Override
         public int compare(LockRequest o1, LockRequest o2) {
+            if(o1.getTimestamp() == o2.getTimestamp()) {
+                return o1.getNodeId().compareTo(o2.getNodeId());
+            }
             return ((Long)o1.getTimestamp()).compareTo(o2.getTimestamp());
         }
     });
@@ -42,28 +45,28 @@ public class DistributedLockManager extends Actor {
     @Override
     public void onReceive(Object message) throws Exception {
         try {
+            if(message instanceof LockRequest) {
+                enqueue((LockRequest) message);
+            } else if(message instanceof LockRelease) {
+                release((LockRelease) message);
+            } else if (message instanceof LockReply) {
+                if(remainingGranted != null) {
+                    remainingGranted.remove(((LockReply) message).getNodeId());
+                    checkGranted();
+                }
+            } else if(message instanceof Lock) {
+                switch (((Lock) message).getType()) {
+                    case LOCK:
+                        enqueueLocal((Lock) message);
+                        break;
+                    case UNLOCK:
+                        releaseLocal((Lock) message);
 
-        if(message instanceof LockRequest) {
-            enqueue((LockRequest) message);
-        } else if(message instanceof LockRelease) {
-            release((LockRelease) message);
-        } else if (message instanceof LockReply) {
-            if(enqueued) {
-                remainingGranted.remove(((LockReply) message).getNodeId());
-                checkGranted();
+                        break;
+                }
+            } else if(message instanceof NodeDown) {
+                release(new LockRelease(((NodeDown) message).getUuid()));
             }
-        } else if(message instanceof Lock) {
-            switch (((Lock) message).getType()) {
-                case LOCK:
-                    enqueueLocal((Lock) message);
-                    break;
-                case UNLOCK:
-                    releaseLocal((Lock) message);
-                    break;
-            }
-        } else if(message instanceof NodeDown) {
-            release(new LockRelease(((NodeDown) message).getUuid()));
-        }
         } catch (Exception e) {
             e.printStackTrace();
         }

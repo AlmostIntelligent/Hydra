@@ -39,12 +39,16 @@ public class BlockingQueueMailbox implements Mailbox {
 
     @Override
     public void enqueue(ActorRef self, Message m) {
-        messages.offer(m);
+        synchronized (messages) {
+            messages.offer(m);
+        }
     }
 
     @Override
     public void enqueueSystem(ActorRef self, Message m) {
-        systemMessages.offer(m);
+        synchronized (systemMessages) {
+            systemMessages.offer(m);
+        }
     }
 
     public final boolean hasMessages() {
@@ -113,7 +117,10 @@ public class BlockingQueueMailbox implements Mailbox {
     private void processSystemMessages() {
         InterruptedException interrupted = null;
         while (!systemMessages.isEmpty() && !closed) {
-            Message m = systemMessages.remove();
+            Message m;
+            synchronized (systemMessages) {
+                m = systemMessages.remove();
+            }
             actorNode.handleSystemMessage(m);
             if (Thread.interrupted()) {
                 interrupted = new InterruptedException("Interrupted while processing system messages.");
@@ -127,7 +134,10 @@ public class BlockingQueueMailbox implements Mailbox {
 
     private void processMessages() {
         while (!messages.isEmpty() && !closed) {
-            Message m = messages.remove();
+            Message m;
+            synchronized (messages) {
+                m = messages.remove();
+            }
             actorNode.handleMessage(m);
             if (Thread.interrupted()) {
                 throw new RuntimeException(new InterruptedException("Interrupted while processing messages."));

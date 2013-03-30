@@ -69,22 +69,27 @@ public class Services extends Actor {
     }
 
     private void startService(String serviceName) {
+        System.out.println(serviceName);
         try {
             final Service service = archives.getService(serviceName);
+            System.out.println(service);
             if(service != null) {
                 Long id = idGen.getId();
+                System.out.println(id);
                 ActorRef ref = getContext().spawnActor(new ActorFactory() {
                     @Override
                     public Actor create() throws Exception {
                         return new ServiceImpl(service.getActivator(), service.getClassLoader(), hydra);
                     }
                 }, id.toString());
+                System.out.println(ref);
                 getSender().tell(sidFactory.fromActorRef(ref), getSelf());
             } else {
                 throw new RuntimeException("Service not found:"+serviceName);
             }
         } catch (Throwable e) {
             getSender().tell(e, getSelf());
+            e.printStackTrace();
         }
     }
 

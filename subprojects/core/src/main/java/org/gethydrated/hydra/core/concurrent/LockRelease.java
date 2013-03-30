@@ -20,4 +20,11 @@ public class LockRelease implements SystemEvent {
     public UUID getNodeId() {
         return nodeId;
     }
+
+    @Override
+    public String toString() {
+        return "LockRelease{" +
+                "nodeId=" + nodeId +
+                '}';
+    }
 }

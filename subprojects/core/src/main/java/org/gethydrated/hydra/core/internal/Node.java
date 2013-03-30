@@ -13,6 +13,7 @@ import org.gethydrated.hydra.core.concurrent.LockRequest;
 import org.gethydrated.hydra.core.messages.NodeDown;
 import org.gethydrated.hydra.core.messages.NodeUp;
 import org.gethydrated.hydra.core.registry.RegistryState;
+import org.gethydrated.hydra.core.registry.Sync;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.*;
@@ -38,6 +39,7 @@ public class Node extends Actor {
 
     @Override
     public void onReceive(Object message) throws Exception {
+        try {
         if(message instanceof String) {
             switch ((String) message) {
                 case "connector":
@@ -67,10 +69,13 @@ public class Node extends Actor {
         } else {
             logger.debug("discarded message: {}", message.getClass().getName());
         }
+        }
+        catch (Exception t) {
+            logger.error("Error in node actor: {}", getSelf().getName(), t);
+        }
     }
 
     private void handleRelayed(RelayedMessage message) {
-        System.out.println(message);
         if(message.isSystemRelay()) {
             try {
                 Envelope env = makeSystemEnvelope(message.getMessage());
@@ -108,13 +113,11 @@ public class Node extends Actor {
         SerializedObject so = envelope.getSObject();
         Class<?> clazz = getClass().getClassLoader().loadClass(so.getClassName());
         Object o = connection.getMapper().readValue(so.getData(), clazz);
-        System.out.println(so.getTarget() + " from " + so.getSender());
         if(o instanceof InputEvent) {
             InputEvent i = (InputEvent)o;
             i.setSource(getSelf().toString());
             getSystem().getEventStream().publish(i);
         } else {
-            System.out.println("sender  " + so.getSender());
             ActorPath target = DefaultSIDFactory.usidToActorPath(so.getTarget());
             if(target != null) {
                 try {
@@ -145,7 +148,7 @@ public class Node extends Actor {
         if(o instanceof LockRelease || o instanceof LockRequest || o instanceof LockReply) {
             return getContext().getActor("/app/locking");
         }
-        if(o instanceof RegistryState) {
+        if(o instanceof RegistryState || o instanceof Sync) {
             return getContext().getActor("/app/globalregistry");
         }
         return new NullRef();

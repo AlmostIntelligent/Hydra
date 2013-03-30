@@ -44,4 +44,12 @@ public class LockRequest implements SystemEvent {
     public int hashCode() {
         return nodeId != null ? nodeId.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "LockRequest{" +
+                "timestamp=" + timestamp +
+                ", nodeId=" + nodeId +
+                '}';
+    }
 }

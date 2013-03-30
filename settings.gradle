@@ -6,6 +6,7 @@ include 'core'
 include 'config'
 include 'launcher'
 include 'jetty-service'
+include 'sample-chat-service'
 include 'util'
 
 rootProject.name = 'hydra'

@@ -188,15 +188,17 @@ public class TCPConnection implements Connection {
         @Override
         public void run() {
             thread = Thread.currentThread();
-            while (!stopped) {
-                try {
+            try {
+                JsonParser parser = objectMapper.getFactory().createJsonParser(socket.getInputStream());
+                while (!stopped) {
                     if(isClosed()) {
                         if(!stopped) {
                             stopped = true;
                             callback.tell("disconnected", null);
                         }
                     } else {
-                        Envelope env = objectMapper.readValue(socket.getInputStream(), Envelope.class);
+                        Envelope env = parser.readValueAs(Envelope.class);
+                        //Envelope env = objectMapper.readValue(socket.getInputStream(), Envelope.class);
                         if(env.getType() == MessageType.DISCONNECT) {
                             callback.tell("disconnected", null);
                             closed = true;
@@ -204,10 +206,10 @@ public class TCPConnection implements Connection {
                             callback.tell(env, null);
                         }
                     }
-                } catch (IOException  e) {
-                    stopped = true;
-                    callback.tell(e, null);
                 }
+            } catch (IOException  e) {
+                stopped = true;
+                callback.tell(e, null);
             }
         }
 

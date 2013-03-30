@@ -27,4 +27,12 @@ public class LockReply implements SystemEvent {
     public UUID getNodeId() {
         return nodeId;
     }
+
+    @Override
+    public String toString() {
+        return "LockReply{" +
+                "timestamp=" + timestamp +
+                ", nodeId=" + nodeId +
+                '}';
+    }
 }
