@@ -92,39 +92,47 @@ public class ServiceImpl extends Actor implements Service {
             sender = sidFactory.fromActorRef(getSender());
         }
         try {
-            processMonitor(message);
-
+            message = processMonitor(message);
             if(message instanceof SerializedObject) {
                 SerializedObject so = (SerializedObject)message;
                 message = mapper.readValue(so.getData(), cl.loadClass(so.getClassName()));
+                sender = sidFactory.fromUSID(so.getSender());
             }
+        } catch (Exception e) {
+            logger.warn("Could not deserialize message: {}", e.getMessage(), e);
+            message = null;
+        }
+        if (message == null) {
             for (Class<?> c : handlers.keySet()) {
                 if(c.isInstance(message)) {
                     //noinspection unchecked
                     handlers.get(c).handle(c.cast(message), sender);
                 }
             }
-
-        } catch (Exception t) {
-            logger.warn("Could not deserialized message: {}", t.getMessage(), t);
         }
+
     }
 
-    private void processMonitor(Object message) {
+    private Object processMonitor(Object message) {
         if(message instanceof Link) {
             monitor.addLink((Link) message);
+            return null;
         } else if (message instanceof Unlink) {
             monitor.removeLink(new Link(((Unlink)message).getUsid()));
+            return null;
         } else if (message instanceof Monitor) {
             monitor.addMonitor((Monitor) message);
+            return null;
         } else if (message instanceof UnMonitor) {
             monitor.removeMonitor(new Monitor(((UnMonitor) message).getUsid()));
+            return null;
         } else if (message instanceof ServiceExit) {
             if(monitor.isLinked(((ServiceExit) message).getUsid())) {
                 monitor.close(((ServiceExit) message).getReason());
                 getContext().stopActor(getSelf());
             }
         }
+        return message;
     }
 
     @Override

@@ -17,4 +17,11 @@ public class NewClient {
     public USID getUSID() {
         return usid;
     }
+
+    @Override
+    public String toString() {
+        return "NewClient{" +
+                "usid=" + usid +
+                '}';
+    }
 }

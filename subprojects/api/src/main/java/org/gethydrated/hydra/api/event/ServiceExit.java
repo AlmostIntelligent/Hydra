@@ -5,7 +5,7 @@ import org.gethydrated.hydra.api.service.USID;
 /**
  *
  */
-public class ServiceExit {
+public class ServiceExit implements SystemEvent {
     private USID sid;
 
     private String reason;
@@ -14,6 +14,8 @@ public class ServiceExit {
         this.sid = sid;
         this.reason = reason;
     }
+
+    private ServiceExit() {}
 
     public USID getUsid() {
         return sid;

@@ -11,8 +11,6 @@ public interface SID {
 
     USID getUSID();
 
-    void tell(Object message);
-
     void tell(Object message, SID sender);
 
     Future<?> ask(Object message);

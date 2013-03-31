@@ -108,8 +108,8 @@ public class SortListQueueTest {
 
         assertNotNull(timeout);
 
-        Thread.sleep(2000);
-        assertTrue(result.get() == 5);
+        Thread.sleep(2050);
+        assertTrue(result.get() == 6);
         timeout.cancel();
         Thread.sleep(200);
 

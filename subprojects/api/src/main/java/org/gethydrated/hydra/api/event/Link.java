@@ -5,12 +5,14 @@ import org.gethydrated.hydra.api.service.USID;
 /**
  *
  */
-public class Link {
-    private final USID usid;
+public class Link implements SystemEvent {
+    private USID usid;
 
     public Link(USID usid) {
         this.usid = usid;
     }
+
+    private Link() {}
 
     public USID getUsid() {
         return usid;

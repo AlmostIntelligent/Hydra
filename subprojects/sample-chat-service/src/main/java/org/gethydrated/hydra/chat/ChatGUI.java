@@ -7,6 +7,7 @@ package org.gethydrated.hydra.chat;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.chat.messages.Message;
 import org.gethydrated.hydra.chat.messages.NewClient;
 import org.gethydrated.hydra.chat.messages.Renamed;
@@ -32,7 +33,7 @@ public class ChatGUI extends javax.swing.JFrame {
     public ChatGUI(final ServiceContext context) {
         this.context = context;
         this.users = new HashMap<>();
-        this.users.put(context.getSelf(), context.getSelf().getUSID().toString());
+        this.users.put(context.getSelf().getUSID(), context.getSelf().getUSID().toString());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -152,7 +153,7 @@ public class ChatGUI extends javax.swing.JFrame {
 
     private ServiceContext context;
 
-    private HashMap<SID, String> users;
+    private HashMap<USID, String> users;
 
     private void handleInput() {
         String s = input.getText().trim();
@@ -160,9 +161,10 @@ public class ChatGUI extends javax.swing.JFrame {
         if(!s.isEmpty()) {
             if(!handleCommands(s)) {
                 handleInput(context.getSelf(), s);
-                for (SID sid : users.keySet()) {
-                    if (!sid.equals(context.getSelf())) {
-                        sid.tell(new Message(context.getSelf().getUSID(), s));
+                for (USID usid : users.keySet()) {
+                    if (!usid.equals(context.getSelf().getUSID())) {
+                        SID sid = context.getService(usid);
+                        sid.tell(new Message(context.getSelf().getUSID(), s), context.getSelf());
                     }
                 }
             }
@@ -172,9 +174,10 @@ public class ChatGUI extends javax.swing.JFrame {
     private boolean handleCommands(String in) {
         if(in.startsWith("/name ") && in.length() > 6) {
             renameUser(context.getSelf(), in.substring(6, in.length()));
-            for(SID s : users.keySet()) {
-                if(!s.equals(context.getSelf())) {
-                    s.tell(new Renamed(context.getSelf().getUSID(), in.substring(6, in.length())));
+            for(USID usid : users.keySet()) {
+                if(!usid.equals(context.getSelf().getUSID())) {
+                    SID sid = context.getService(usid);
+                    sid.tell(new Renamed(context.getSelf().getUSID(), in.substring(6, in.length())), context.getSelf());
                 }
             }
             return true;
@@ -183,14 +186,16 @@ public class ChatGUI extends javax.swing.JFrame {
     }
 
     public void renameUser(SID sid, String name) {
-        if(users.containsKey(sid)) {
-            users.put(sid, name);
+        if (name != null) {
+            if(users.containsKey(sid.getUSID())) {
+                users.put(sid.getUSID(), name);
+            }
+            updateUsers();
         }
-        updateUsers();
     }
 
     public void handleInput(SID from, String input) {
-        chat.append("["+users.get(from)+"] " + input + "\n");
+        chat.append("["+users.get(from.getUSID())+"] " + input + "\n");
     }
 
     private void updateUsers() {
@@ -200,17 +205,17 @@ public class ChatGUI extends javax.swing.JFrame {
     }
 
     public void addClient(SID sid) {
-        if(!users.containsKey(sid)) {
-            users.put(sid, sid.getUSID().toString());
-            sid.tell(new NewClient(context.getSelf().getUSID()));
-            context.monitor(context.getSelf(), sid);
-            sid.tell(new Renamed(context.getSelf().getUSID(), users.get(context.getSelf())));
+        if(!users.containsKey(sid.getUSID())) {
+            users.put(sid.getUSID(), sid.getUSID().toString());
             updateUsers();
+            context.monitor(context.getSelf(), sid);
+            sid.tell(new NewClient(context.getSelf().getUSID()), context.getSelf());
+            sid.tell(new Renamed(context.getSelf().getUSID(), users.get(context.getSelf().getUSID())), context.getSelf());
         }
     }
 
     public void removeClient(SID sid) {
-        if(users.containsKey(sid)) {
+        if(users.containsKey(sid.getUSID())) {
             users.remove(sid);
             context.unmonitor(context.getSelf(), sid);
             updateUsers();

@@ -67,13 +67,13 @@ public class EnvelopeDeserializer extends JsonDeserializer<Envelope> {
                     break;
                 case "sobject":
                     jsonParser.nextToken();
-                    if(type == MessageType.SYSTEM) {
+                    if(type == MessageType.SYSTEM || type == MessageType.USER) {
                         envelope.setSObject(jsonParser.readValueAs(SerializedObject.class));
                     }
                     break;
                 case "timestamp":
                     jsonParser.nextToken();
-                    if(type == MessageType.SYSTEM) {
+                    if(type == MessageType.SYSTEM || type == MessageType.USER) {
                         envelope.setTimestamp(jsonParser.getValueAsLong());
                     }
                     break;

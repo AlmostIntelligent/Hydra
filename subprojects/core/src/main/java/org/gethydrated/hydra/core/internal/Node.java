@@ -6,6 +6,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.event.InputEvent;
 import org.gethydrated.hydra.api.event.SystemEvent;
+import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.concurrent.LockRelease;
 import org.gethydrated.hydra.core.concurrent.LockReply;
@@ -16,6 +17,7 @@ import org.gethydrated.hydra.core.registry.RegistryState;
 import org.gethydrated.hydra.core.registry.Sync;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.IdMatcher;
+import org.gethydrated.hydra.core.sid.InternalSID;
 import org.gethydrated.hydra.core.transport.*;
 import org.gethydrated.hydra.core.transport.RelayRef.RelayedMessage;
 import org.slf4j.Logger;
@@ -31,10 +33,12 @@ public class Node extends Actor {
 
     private final Logger logger = getLogger(Node.class);
     private final IdMatcher idMatcher;
+    private final DefaultSIDFactory sidFactory;
 
-    public Node(Connection connection, IdMatcher idMatcher) {
+    public Node(Connection connection, IdMatcher idMatcher, DefaultSIDFactory sidFactory) {
         this.connection = connection;
         this.idMatcher = idMatcher;
+        this.sidFactory = sidFactory;
     }
 
     @Override
@@ -58,6 +62,9 @@ public class Node extends Actor {
         } else if (message instanceof SystemEvent) {
             Envelope env = makeSystemEnvelope(message);
             connection.sendEnvelope(env);
+        } else if (message instanceof SerializedObject) {
+            Envelope env = makeEnvelope((SerializedObject) message);
+            connection.sendEnvelope(env);
         } else if (message instanceof RelayedMessage) {
             handleRelayed((RelayedMessage)message);
         } else if (message instanceof IOException) {
@@ -65,6 +72,17 @@ public class Node extends Actor {
         } else if (message instanceof Envelope) {
             if(((Envelope) message).getType() == MessageType.SYSTEM) {
                 handleSystemEnvelope((Envelope) message);
+            } else if (((Envelope) message).getType() == MessageType.USER) {
+                try {
+                    SerializedObject so = ((Envelope) message).getSObject();
+                    SID sid = sidFactory.fromUSID(so.getTarget());
+                    if (((InternalSID) sid).getRef().equals(getSelf())) {
+                        throw new RuntimeException("send to self");
+                    }
+                    sid.tell(so, sidFactory.fromUSID(so.getSender()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             logger.debug("discarded message: {}", message.getClass().getName());
@@ -163,9 +181,20 @@ public class Node extends Actor {
         so.setClassName(systemEvent.getClass().getName());
         so.setFormat("json");
         so.setData(connection.getMapper().writeValueAsBytes(systemEvent));
-        so.setSender(DefaultSIDFactory.actorPathToUSID(getSender().getPath(), connection.getUUID()));
+        if (getSender() != null) {
+            so.setSender(DefaultSIDFactory.actorPathToUSID(getSender().getPath(), connection.getUUID()));
+        }
         so.setTarget(DefaultSIDFactory.actorPathToUSID(getRecipient(systemEvent).getPath(), connection.getUUID()));
-                env.setSObject(so);
+        env.setSObject(so);
+        return env;
+    }
+
+    private Envelope makeEnvelope(SerializedObject so) {
+        Envelope env = new Envelope(MessageType.USER);
+        env.setTarget(connection.getUUID());
+        env.setSender(idMatcher.getLocal());
+        env.setTimestamp(getSystem().getClock().getCurrentTime());
+        env.setSObject(so);
         return env;
     }
 }

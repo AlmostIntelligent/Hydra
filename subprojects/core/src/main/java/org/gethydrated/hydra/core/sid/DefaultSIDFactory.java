@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
+import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.USID;
@@ -114,7 +115,7 @@ public class DefaultSIDFactory implements SIDFactory {
         try {
             ActorPath path = ActorPath.apply("/app/nodes/"+idMatcher.getId(usid.getNodeId()));
             ActorRef ref = actorSystem.getActor(path);
-            return new ForeignSID(idMatcher.getId(usid.getNodeId()),usid, ref);
+            return new ForeignSID(idMatcher.getId(usid.getNodeId()),usid, ref, mapper.writer());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -165,6 +166,9 @@ public class DefaultSIDFactory implements SIDFactory {
     }
 
     public static ActorPath usidToActorPath(USID usid) {
+        if (usid == null) {
+            return new NullRef().getPath();
+        }
         String path = null;
         if(usid.getTypeId() == 0) {
             path = "/app/services/"+usid.getServiceId();

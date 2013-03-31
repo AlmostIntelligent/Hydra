@@ -19,7 +19,6 @@ public class BrokerActivator implements ServiceActivator {
 
     @Override
     public void start(ServiceContext context) throws Exception {
-        System.out.println("broker started");
         context.registerGlobal("chat-broker", context.getSelf());
         context.registerMessageHandler(Discover.class, new MessageHandler<Discover>() {
             @Override
@@ -34,9 +33,13 @@ public class BrokerActivator implements ServiceActivator {
     }
 
     public void handleDiscover(Discover message, SID sender) {
-        for(SID s : clients) {
-            s.tell(new NewClient(sender.getUSID()));
+        try {
+            for(SID s : clients) {
+                s.tell(new NewClient(sender.getUSID()), sender);
+            }
+            clients.add(sender);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
-        clients.add(sender);
     }
 }

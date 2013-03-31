@@ -115,7 +115,7 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Nodes(idMatcher);
+                return new Nodes(idMatcher, sidFactory);
             }
         }, "nodes");
         actorSystem.spawnActor(new ActorFactory() {

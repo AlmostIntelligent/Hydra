@@ -5,12 +5,14 @@ import org.gethydrated.hydra.api.service.USID;
 /**
  *
  */
-public class Unlink {
-    private final USID usid;
+public class Unlink implements SystemEvent {
+    private USID usid;
 
     public Unlink(USID usid) {
         this.usid = usid;
     }
+
+    private Unlink() {}
 
     public USID getUsid() {
         return usid;

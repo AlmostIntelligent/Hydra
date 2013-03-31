@@ -5,12 +5,14 @@ import org.gethydrated.hydra.api.service.USID;
 /**
  *
  */
-public class UnMonitor {
-    private final USID usid;
+public class UnMonitor implements SystemEvent {
+    private USID usid;
 
     public UnMonitor(USID usid) {
         this.usid = usid;
     }
+
+    private UnMonitor() {}
 
     public USID getUsid() {
         return usid;

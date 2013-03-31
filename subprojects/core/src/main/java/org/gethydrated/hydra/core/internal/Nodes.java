@@ -3,6 +3,7 @@ package org.gethydrated.hydra.core.internal;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.Connection;
 import org.gethydrated.hydra.core.transport.NodeAddress;
@@ -23,8 +24,11 @@ public class Nodes extends Actor {
 
     private final IdMatcher idMatcher;
 
-    public Nodes(IdMatcher idMatcher) {
+    private final DefaultSIDFactory sidFactory;
+
+    public Nodes(IdMatcher idMatcher, DefaultSIDFactory sidFactory) {
         this.idMatcher = idMatcher;
+        this.sidFactory = sidFactory;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class Nodes extends Actor {
         getContext().spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Node(connection, idMatcher);
+                return new Node(connection, idMatcher, sidFactory);
             }
         }, ""+idMatcher.getId(connection.getUUID()));
     }

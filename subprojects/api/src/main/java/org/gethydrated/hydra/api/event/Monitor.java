@@ -6,11 +6,13 @@ import org.gethydrated.hydra.api.service.USID;
  *
  */
 public class Monitor implements SystemEvent {
-    private final USID usid;
+    private USID usid;
 
     public Monitor(USID usid) {
         this.usid = usid;
     }
+
+    private Monitor() {}
 
     public USID getUsid() {
         return usid;

@@ -31,18 +31,13 @@ public class LocalSID implements InternalSID {
     }
 
     @Override
-    public void tell(Object message) {
-        tell(message, this);
-    }
-
-    @Override
     public ActorRef getRef() {
         return ref;
     }
 
     @Override
     public void tell(Object message, SID sender) {
-        if (!(message instanceof SystemEvent)) {
+        if (!(message instanceof SystemEvent) && !(message instanceof SerializedObject)) {
             SerializedObject so = new SerializedObject();
             so.setSender(sender.getUSID());
             so.setTarget(usid);

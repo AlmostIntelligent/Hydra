@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.core.sid;
 
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
 
@@ -26,14 +27,9 @@ public class LocalSystemSID implements InternalSID {
     }
 
     @Override
-    public void tell(Object message) {
-        tell(message, this);
-    }
-
-    @Override
     public void tell(Object message, SID sender) {
         if(sender == null) {
-            ref.tell(message, ref);
+            ref.tell(message, new NullRef());
         } else {
             ref.tell(message, ((InternalSID)sender).getRef());
         }

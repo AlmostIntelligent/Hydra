@@ -29,10 +29,6 @@ public class DeadSID implements InternalSID {
     }
 
     @Override
-    public void tell(Object message) {
-    }
-
-    @Override
     public void tell(Object message, SID sender) {
     }
 
