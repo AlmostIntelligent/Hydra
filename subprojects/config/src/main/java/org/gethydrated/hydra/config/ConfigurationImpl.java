@@ -169,7 +169,7 @@ public class ConfigurationImpl implements Configuration {
             /* Merge namesplit to tail */
             String nametail = namesplit[1];
             for (int i = 2; i < namesplit.length; i++) {
-                nametail.concat(configSeparator + namesplit[i]);
+                nametail = nametail.concat(configSeparator + namesplit[i]);
             }
             ConfigList l;
             try {
