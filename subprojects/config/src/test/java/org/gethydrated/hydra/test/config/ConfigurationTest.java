@@ -299,4 +299,21 @@ public class ConfigurationTest {
 
     }
 
+    @Test
+    public final void testDeepTree() {
+        cfg.set("tree.element.number",1);
+        cfg.set("tree.element.string","String");
+        cfg.set("tree.sub.element.number", 2);
+        cfg.set("tree.sub.element.string", "not character");
+        try {
+            assertEquals(1, cfg.get("tree.element.number"));
+            assertEquals("String", cfg.get("tree.element.string"));
+            assertEquals(2, cfg.get("tree.sub.element.number"));
+            assertEquals("not character", cfg.get("tree.sub.element.string"));
+        } catch (ConfigItemNotFoundException e) {
+            fail("Item not found");
+        }
+
+    }
+
 }

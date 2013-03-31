@@ -21,6 +21,7 @@ class Hydra():
 		
 	def shutdown(self):
 		if self._pHnd is not None:
+			self.write("local")
 			self.write("shutdown")
 			self._listenThread = {}
 			self._listener = {}

@@ -47,9 +47,9 @@ class TyphonGUI():
 		
 		self._wHnd.config(menu=self._mMenu)
 		
-		self._logText.grid(row=0, column=0, rowspan=2, columnspan=2, sticky=N+S+W+E)
-		self._command.grid(row=2, column=0, sticky=W+E)
-		self._send.grid(row=2, column=1)
+		self._logText.grid(row=0, column=0, columnspan=2, sticky=N+S+W+E)
+		self._command.grid(row=1, column=0, sticky=W+E)
+		self._send.grid(row=1, column=1)
 		
 		self._wHnd.protocol("WM_DELETE_WINDOW", self.close)
 		self._wHnd.bind("<Control-q>", lambda e:self.close() )
@@ -83,10 +83,12 @@ class TyphonGUI():
 			fname = fileDiag.askopenfilename()
 			if fname != "":
 				self._hydra = Hydra(fname)
+				self._textListener("Starting ....", "note")
 				self.startHydra()
 			
 	def restart(self):
 		if self._hydra is None:
+			self._textListener("Starting ....", "note")
 			if os.name == "nt":
 				self._hydra = Hydra(os.path.abspath("../../build/assemble/bin/hydra.bat"))
 			else:
@@ -103,6 +105,7 @@ class TyphonGUI():
 		
 	def stop(self):
 		if self._hydra is not None:
+			self._textListener("Stopping ....", "note")
 			self._hydra.shutdown()
 			self._hydra = None
 		
