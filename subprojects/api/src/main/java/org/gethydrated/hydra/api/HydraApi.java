@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.api;
 
 import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.USID;
 
 /**
  * Hydra api.
@@ -17,6 +18,10 @@ public interface HydraApi {
      * @throws HydraException on start failure.
      */
     SID startService(String name) throws HydraException;
+
+    SID getService(String name);
+
+    SID getService(USID usid);
 
     /**
      * Stops the service with the given id.

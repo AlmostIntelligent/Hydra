@@ -30,12 +30,10 @@ public class DeadSID implements InternalSID {
 
     @Override
     public void tell(Object message) {
-        throw new RuntimeException("Actor not found for usid: " + usid);
     }
 
     @Override
     public void tell(Object message, SID sender) {
-        throw new RuntimeException("Actor not found for usid: " + usid);
     }
 
     @Override

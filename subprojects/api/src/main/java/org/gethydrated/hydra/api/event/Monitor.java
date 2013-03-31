@@ -1,11 +1,11 @@
-package org.gethydrated.hydra.core.messages;
+package org.gethydrated.hydra.api.event;
 
 import org.gethydrated.hydra.api.service.USID;
 
 /**
  *
  */
-public class Monitor {
+public class Monitor implements SystemEvent {
     private final USID usid;
 
     public Monitor(USID usid) {

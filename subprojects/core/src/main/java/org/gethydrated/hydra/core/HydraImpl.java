@@ -10,6 +10,7 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
 import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
@@ -164,6 +165,16 @@ public final class HydraImpl implements InternalHydra {
         } catch (InterruptedException|ExecutionException e) {
             throw new HydraException(e);
         }
+    }
+
+    @Override
+    public SID getService(String name) {
+        return sidFactory.fromString(name);
+    }
+
+    @Override
+    public SID getService(USID usid) {
+        return sidFactory.fromUSID(usid);
     }
 
     @Override

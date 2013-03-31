@@ -23,4 +23,9 @@ public class NullRef extends AbstractMinimalRef {
     public ActorCreator getCreator() {
         throw new RuntimeException("Operation not supported.");
     }
+
+    @Override
+    public boolean isTerminated() {
+        return true;
+    }
 }

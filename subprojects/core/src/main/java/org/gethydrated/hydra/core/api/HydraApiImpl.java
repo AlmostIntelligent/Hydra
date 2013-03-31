@@ -4,6 +4,7 @@ import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraApi;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.USID;
 
 /**
  * General Hydra api implementation.
@@ -27,6 +28,16 @@ public class HydraApiImpl implements HydraApi {
     @Override
     public final SID startService(final String name) throws HydraException {
         return hydra.startService(name);
+    }
+
+    @Override
+    public SID getService(String name) {
+        return hydra.getService(name);
+    }
+
+    @Override
+    public SID getService(USID usid) {
+        return hydra.getService(usid);
     }
 
     @Override

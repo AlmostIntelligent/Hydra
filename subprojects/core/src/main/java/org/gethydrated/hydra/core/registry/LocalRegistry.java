@@ -2,9 +2,9 @@ package org.gethydrated.hydra.core.registry;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.service.SID;
-import org.gethydrated.hydra.core.messages.Monitor;
-import org.gethydrated.hydra.core.messages.ServiceDown;
-import org.gethydrated.hydra.core.messages.UnMonitor;
+import org.gethydrated.hydra.api.event.Monitor;
+import org.gethydrated.hydra.api.event.ServiceDown;
+import org.gethydrated.hydra.api.event.UnMonitor;
 import org.gethydrated.hydra.core.sid.DeadSID;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.InternalSID;

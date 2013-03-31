@@ -1,8 +1,8 @@
 package org.gethydrated.hydra.core.service;
 
+import org.gethydrated.hydra.api.event.*;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
-import org.gethydrated.hydra.core.messages.*;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 
 import java.util.HashSet;
@@ -71,10 +71,10 @@ public class ServiceMonitor {
      * Closes the service monitor.
      * <p>
      * Registered monitors are notified by
-     * {@link org.gethydrated.hydra.core.messages.ServiceDown} messages.
+     * {@link org.gethydrated.hydra.api.event.ServiceDown} messages.
      * </p><p>
      * Registered linked services are notified by
-     * {@link org.gethydrated.hydra.core.messages.ServiceExit} messages.
+     * {@link org.gethydrated.hydra.api.event.ServiceExit} messages.
      * </p>
      */
     public void close(String reason) {

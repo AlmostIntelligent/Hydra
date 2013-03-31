@@ -61,25 +61,5 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     public void subscribeEvent(Class<?> classifier) {
         service.getSystem().getEventStream().subscribe(service.getSelf(), classifier);
     }
-
-    @Override
-    public void link(SID sid) {
-
-    }
-
-    @Override
-    public void unlink(SID sid) {
-
-    }
-
-    @Override
-    public void monitor(SID sid) {
-
-    }
-
-    @Override
-    public void unmonitor(SID sid) {
-
-    }
 }
 
