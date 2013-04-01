@@ -76,7 +76,7 @@ public class TCPConnection implements Connection {
         }
         Envelope connect = objectMapper.readValue(socket.getInputStream(), Envelope.class);
         nodeid = connect.getSender();
-        nodeAddress = connect.getConnector();
+        nodeAddress = new NodeAddress(socket.getInetAddress().toString(), connect.getConnector().getPort());
         hidden = connect.isHiddenNode();
         Envelope response;
         if (idMatcher.contains(connect.getSender())) {
