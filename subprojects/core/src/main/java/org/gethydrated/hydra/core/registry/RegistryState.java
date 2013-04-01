@@ -25,4 +25,11 @@ public class RegistryState implements SystemEvent {
     public Map<String, USID> getRegistry() {
         return registry;
     }
+
+    @Override
+    public String toString() {
+        return "RegistryState{" +
+                "registry=" + registry +
+                '}';
+    }
 }

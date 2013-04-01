@@ -67,6 +67,8 @@ public class GlobalRegistry extends Actor {
 
         } else if (message instanceof RegistryState) {
             acceptUpdate(((RegistryState) message).getRegistry());
+        } else if (message instanceof Sync) {
+            getSender().tell(new RegistryState(registry), getSelf());
         } else if (message instanceof NodeUp) {
             acquireLock();
             syncing = true;
@@ -77,8 +79,41 @@ public class GlobalRegistry extends Actor {
     }
 
     private void sync() {
-        System.out.println("syncing");
-
+        System.out.println("syncing " + getSystem().getClock().getCurrentTime());
+        try {
+            Random random = new Random();
+            Set<UUID> nodes = getNodes();
+            System.out.println(registry);
+            for(UUID node : nodes) {
+                ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(node));
+                Future f = r.ask(new Sync());
+                RegistryState state = (RegistryState) f.get(10, TimeUnit.SECONDS);
+                for (Map.Entry<String, USID> s :  state.getRegistry().entrySet()) {
+                    if(!registry.containsKey(s.getKey())) {
+                        registry.put(s.getKey(), s.getValue());
+                    } else {
+                        USID ownUSID = registry.get(s.getKey());
+                        USID newUSID = s.getValue();
+                        if (!ownUSID.equals(newUSID)) {
+                            if (random.nextBoolean()) {
+                                registry.put(s.getKey(), ownUSID);
+                                System.out.println("dropping " + newUSID);
+                            } else {
+                                registry.put(s.getKey(), newUSID);
+                                System.out.println("dropping " + ownUSID);
+                            }
+                        }
+                    }
+                }
+            }
+            System.out.println(registry);
+            update();
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println("sync done " + getSystem().getClock().getCurrentTime());
+            syncing = false;
+        }
     }
 
     @Override
