@@ -38,6 +38,7 @@ public class ChatGUI extends javax.swing.JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
+                    System.out.println("hm");
                     context.stopService(context.getSelf());
                 } catch (HydraException e1) {
                     e1.printStackTrace();

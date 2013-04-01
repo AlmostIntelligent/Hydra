@@ -102,7 +102,7 @@ public class ServiceImpl extends Actor implements Service {
             logger.warn("Could not deserialize message: {}", e.getMessage(), e);
             message = null;
         }
-        if (message == null) {
+        if (message != null) {
             for (Class<?> c : handlers.keySet()) {
                 if(c.isInstance(message)) {
                     //noinspection unchecked

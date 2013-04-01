@@ -11,6 +11,8 @@ import org.gethydrated.hydra.chat.messages.Message;
 import org.gethydrated.hydra.chat.messages.NewClient;
 import org.gethydrated.hydra.chat.messages.Renamed;
 
+import javax.swing.*;
+
 /**
  *
  */
@@ -23,7 +25,7 @@ public class ChatActivator implements ServiceActivator {
     @Override
     public void start(final ServiceContext context) throws Exception {
         this.context = context;
-        this.gui = new ChatGUI(context);
+        gui = new ChatGUI(context);
         context.registerMessageHandler(NewClient.class, new MessageHandler<NewClient>() {
             @Override
             public void handle(NewClient message, SID sender) {
@@ -48,22 +50,27 @@ public class ChatActivator implements ServiceActivator {
                 gui.handleInput(context.getService(message.getUsid()), message.getName());
             }
         });
-
+        gui.setVisible(true);
         SID broker;
         try {
             broker = context.getGlobalService("chat-broker");
         } catch (HydraException e) {
             broker = context.startService("chat::broker");
         }
-
         broker.tell(new Discover(), context.getSelf());
-        gui.setVisible(true);
+
     }
 
     @Override
     public void stop(ServiceContext context) throws Exception {
-        gui.setVisible(false);
-        gui.dispose();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                gui.setVisible(false);
+                gui.dispose();
+            }
+        });
+
     }
 
 }
