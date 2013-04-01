@@ -30,6 +30,7 @@ public class BrokerActivator implements ServiceActivator {
 
     @Override
     public void stop(ServiceContext context) throws Exception {
+        System.out.println("Broker down " + context.getSelf().getUSID());
     }
 
     public void handleDiscover(Discover message, SID sender) {

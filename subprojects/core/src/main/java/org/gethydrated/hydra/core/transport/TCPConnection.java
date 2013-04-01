@@ -11,6 +11,7 @@ import org.gethydrated.hydra.core.sid.IdMatcher;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +51,7 @@ public class TCPConnection implements Connection {
     }
 
     @Override
-    public synchronized Map<UUID, NodeAddress> connect(NodeAddress connectorAddress) throws IOException {
+    public synchronized Map<UUID, NodeAddress> connect(NodeAddress connectorAddress, final Map<UUID, NodeAddress> nodes) throws IOException {
         if(connected) {
             throw new IllegalStateException("Connection handshake already done.");
         }
@@ -59,18 +60,20 @@ public class TCPConnection implements Connection {
         connect.setHiddenNode(hidden);
         connect.setSender(idMatcher.getLocal());
         connect.setConnector(connectorAddress);
+        connect.setNodes(nodes);
         objectMapper.writeValue(socket.getOutputStream(), connect);
         Envelope handShake = objectMapper.readValue(socket.getInputStream(), Envelope.class);
         if(handShake.getType() == MessageType.DECLINE) {
             throw new IllegalArgumentException(handShake.getReason());
         }
+
         nodeid = handShake.getSender();
         connected = true;
         return handShake.getNodes();
     }
 
     @Override
-    public synchronized boolean handshake(Map<UUID, NodeAddress> nodes) throws IOException {
+    public synchronized Map<UUID, NodeAddress> handshake(Map<UUID, NodeAddress> nodes) throws IOException {
         if(connected) {
             throw new IllegalStateException("Connection handshake already done.");
         }
@@ -86,7 +89,7 @@ public class TCPConnection implements Connection {
             response.setTarget(connect.getSender());
             objectMapper.writeValue(socket.getOutputStream(), response);
             socket.close();
-            return false;
+            return new HashMap<>();
         }
         response = new Envelope(MessageType.ACCEPT);
         response.setSender(idMatcher.getLocal());
@@ -94,7 +97,7 @@ public class TCPConnection implements Connection {
         response.setNodes(nodes);
         objectMapper.writeValue(socket.getOutputStream(),response);
         connected = true;
-        return true;
+        return connect.getNodes();
     }
 
     @Override

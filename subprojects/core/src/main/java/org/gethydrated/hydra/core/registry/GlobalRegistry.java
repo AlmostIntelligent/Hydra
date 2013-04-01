@@ -2,8 +2,11 @@ package org.gethydrated.hydra.core.registry;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.concurrent.Granted;
 import org.gethydrated.hydra.core.concurrent.Lock;
 import org.gethydrated.hydra.core.concurrent.Lock.RequestType;
@@ -31,6 +34,8 @@ public class GlobalRegistry extends Actor {
 
     private final DefaultSIDFactory sidFactory;
 
+    private final InternalHydra hydra;
+
     private Map<String, USID> registry = new HashMap<>();
 
     private Queue<Request> requests = new LinkedList<>();
@@ -41,9 +46,10 @@ public class GlobalRegistry extends Actor {
 
     private boolean syncing = false;
 
-    public GlobalRegistry(DefaultSIDFactory sidFactory, IdMatcher idMatcher) {
-        this.sidFactory = sidFactory;
-        this.idMatcher = idMatcher;
+    public GlobalRegistry(final InternalHydra hydra) {
+        this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
+        this.idMatcher = hydra.getIdMatcher();
+        this.hydra = hydra;
     }
 
     @Override
@@ -83,24 +89,32 @@ public class GlobalRegistry extends Actor {
         try {
             Random random = new Random();
             Set<UUID> nodes = getNodes();
-            System.out.println(registry);
-            for(UUID node : nodes) {
-                ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(node));
-                Future f = r.ask(new Sync());
-                RegistryState state = (RegistryState) f.get(10, TimeUnit.SECONDS);
-                for (Map.Entry<String, USID> s :  state.getRegistry().entrySet()) {
-                    if(!registry.containsKey(s.getKey())) {
-                        registry.put(s.getKey(), s.getValue());
-                    } else {
-                        USID ownUSID = registry.get(s.getKey());
-                        USID newUSID = s.getValue();
-                        if (!ownUSID.equals(newUSID)) {
-                            if (random.nextBoolean()) {
-                                registry.put(s.getKey(), ownUSID);
-                                System.out.println("dropping " + newUSID);
-                            } else {
-                                registry.put(s.getKey(), newUSID);
-                                System.out.println("dropping " + ownUSID);
+            //We only ask one node, as we expect a consistent state.
+            ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(nodes.iterator().next()));
+            Future f = r.ask(new Sync());
+            RegistryState state = (RegistryState) f.get(10, TimeUnit.SECONDS);
+            for (Map.Entry<String, USID> s :  state.getRegistry().entrySet()) {
+                if(!registry.containsKey(s.getKey())) {
+                    registry.put(s.getKey(), s.getValue());
+                } else {
+                    USID ownUSID = registry.get(s.getKey());
+                    USID newUSID = s.getValue();
+                    if (!ownUSID.equals(newUSID)) {
+                        if (random.nextBoolean()) {
+                            registry.put(s.getKey(), ownUSID);
+                            System.out.println("dropping " + newUSID);
+                            try {
+                                hydra.stopService(sidFactory.fromUSID(newUSID));
+                            } catch (HydraException e) {
+                                getLogger(GlobalRegistry.class).warn("{}", e.getMessage(), e);
+                            }
+                        } else {
+                            registry.put(s.getKey(), newUSID);
+                            System.out.println("dropping " + ownUSID);
+                            try {
+                                hydra.stopService(sidFactory.fromUSID(ownUSID));
+                            } catch (HydraException e) {
+                                getLogger(GlobalRegistry.class).warn("{}", e.getMessage(), e);
                             }
                         }
                     }

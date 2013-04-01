@@ -46,7 +46,7 @@ public class IdMatcher {
         return nodeIds.containsKey(id);
     }
 
-    public void remove(UUID uuid) {
+    public synchronized void remove(UUID uuid) {
         nodeIds.inverse().remove(uuid);
     }
 }

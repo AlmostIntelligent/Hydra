@@ -14,9 +14,9 @@ import java.util.concurrent.ExecutorService;
  */
 public interface Connection {
 
-    Map<UUID, NodeAddress> connect(NodeAddress connectorAddress) throws IOException;
+    Map<UUID, NodeAddress> connect(NodeAddress connectorAddress, final Map<UUID, NodeAddress> nodes) throws IOException;
 
-    boolean handshake(Map<UUID, NodeAddress> nodes) throws IOException;
+    Map<UUID, NodeAddress> handshake(Map<UUID, NodeAddress> nodes) throws IOException;
 
     void disconnect() throws IOException;
 

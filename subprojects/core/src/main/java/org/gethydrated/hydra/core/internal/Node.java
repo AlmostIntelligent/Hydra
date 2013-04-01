@@ -13,6 +13,7 @@ import org.gethydrated.hydra.core.concurrent.LockReply;
 import org.gethydrated.hydra.core.concurrent.LockRequest;
 import org.gethydrated.hydra.api.event.NodeDown;
 import org.gethydrated.hydra.api.event.NodeUp;
+import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.registry.RegistryState;
 import org.gethydrated.hydra.core.registry.Sync;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
@@ -168,6 +169,9 @@ public class Node extends Actor {
         }
         if(o instanceof RegistryState || o instanceof Sync) {
             return getContext().getActor("/app/globalregistry");
+        }
+        if(o instanceof StopService) {
+            return getContext().getActor("/app/services");
         }
         return new NullRef();
     }

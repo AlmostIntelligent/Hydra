@@ -54,7 +54,7 @@ public class EnvelopeDeserializer extends JsonDeserializer<Envelope> {
                     break;
                 case "nodes":
                     jsonParser.nextToken();
-                    if(type == MessageType.ACCEPT) {
+                    if(type == MessageType.ACCEPT || type == MessageType.CONNECT) {
                         Map<UUID,NodeAddress> uuids = parseNodeMap(jsonParser);
                         envelope.setNodes(uuids);
                     }

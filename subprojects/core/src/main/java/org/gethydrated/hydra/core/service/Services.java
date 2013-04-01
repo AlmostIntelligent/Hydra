@@ -4,6 +4,7 @@ import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.api.util.IDGenerator;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.internal.Archives;
@@ -60,12 +61,13 @@ public class Services extends Actor {
             startService(((StartService) message).name);
         }
         if(message instanceof StopService) {
-            stopService(((StopService) message).sid);
+            stopService(((StopService) message).getUsid());
         }
     }
 
-    private void stopService(InternalSID sid) {
-        getContext().stopActor(sid.getRef());
+    private void stopService(USID usid) {
+        ActorRef ref = getSystem().getActor(DefaultSIDFactory.usidToActorPath(usid));
+        getContext().stopActor(ref);
     }
 
     private void startService(String serviceName) {

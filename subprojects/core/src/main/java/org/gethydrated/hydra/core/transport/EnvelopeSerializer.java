@@ -27,7 +27,6 @@ public class EnvelopeSerializer extends JsonSerializer<Envelope> {
                 jGen.writeStringField("hidden", String.valueOf(envelope.isHiddenNode()));
                 jGen.writeFieldName("connector");
                 jGen.writeObject(envelope.getConnector());
-                break;
             case ACCEPT:
                 jGen.writeFieldName("nodes");
                 jGen.writeObject(envelope.getNodes());

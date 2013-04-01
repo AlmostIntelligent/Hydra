@@ -133,7 +133,7 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new GlobalRegistry(sidFactory, idMatcher);
+                return new GlobalRegistry(hydra);
             }
         }, "globalregistry");
     }
@@ -179,20 +179,26 @@ public final class HydraImpl implements InternalHydra {
 
     @Override
     public void stopService(final SID id) throws HydraException {
+        System.out.println(id.getClass());
         if(actorSystem.isTerminated()) {
             throw new HydraException("Hydra already shut down.");
+        }
+        if(id == null) {
+            return;
         }
         if(id.getUSID().getTypeId() != 0) {
             throw new IllegalArgumentException("Cannot stop system services. Try hydra.shutdown() instead.");
         }
+        System.out.println(id.getClass());
         if (((InternalSID) id).getRef().isTerminated()) {
             return;
         }
         if(id instanceof LocalSID) {
-            services.tell(new StopService((InternalSID) id), null);
+            services.tell(new StopService(id.getUSID()), null);
         }
         if(id instanceof ForeignSID) {
-            //TODO: send stopservice to node actor
+            ActorRef ref = actorSystem.getActor("/app/nodes/"+idMatcher.getId(id.getUSID().getNodeId()));
+            ref.tell(new StopService(id.getUSID()), null);
         }
     }
 

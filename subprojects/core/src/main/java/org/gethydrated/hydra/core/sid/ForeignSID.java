@@ -63,7 +63,7 @@ public class ForeignSID implements InternalSID {
 
     @Override
     public ActorRef getRef() {
-        return null;
+        return ref;
     }
 
     @Override
