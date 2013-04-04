@@ -121,7 +121,7 @@ public class ActorNode implements ActorSource, ActorContext {
     }
 
     public void resume(Throwable cause) {
-        sendSystem(new Restart(cause), self);
+        sendSystem(new Resume(cause), self);
     }
 
     public void sendSystem(Object o, ActorRef sender) {
@@ -176,6 +176,12 @@ public class ActorNode implements ActorSource, ActorContext {
                 stop();
             } else if (message instanceof Failed) {
                 handleFailedChild((Failed)message);
+            } else if (message instanceof Suspend) {
+                mailbox.suspend();
+                children.suspendChildren();
+            } else if (message instanceof Resume) {
+                mailbox.resume();
+                children.resumeChildren(((Resume) message).getCause());
             }
         } catch (Exception e) {
             handleError(e);
@@ -270,7 +276,6 @@ public class ActorNode implements ActorSource, ActorContext {
             nodeRef.set(this);
             actor = factory.create();
             actor.onStart();
-
             nodeRef.remove();
         } catch (Throwable e) {
             if(Util.isNonFatal(e)) {

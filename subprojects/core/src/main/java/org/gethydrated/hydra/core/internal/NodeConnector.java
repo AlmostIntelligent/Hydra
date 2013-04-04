@@ -9,6 +9,7 @@ import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.transport.Connection;
 import org.gethydrated.hydra.core.transport.NodeAddress;
 import org.gethydrated.hydra.core.transport.TCPConnection;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -34,9 +35,14 @@ public class NodeConnector extends Actor {
 
     private final IdMatcher idMatcher;
 
+    private final Logger logger = getLogger(NodeConnector.class);
+
+    private final ActorRef nodes;
+
     public NodeConnector(Configuration cfg, IdMatcher idMatcher) {
         this.cfg = cfg;
         this.idMatcher = idMatcher;
+        nodes = getContext().getActor("/app/nodes");
     }
 
     @Override
@@ -48,9 +54,16 @@ public class NodeConnector extends Actor {
                     createServerSocket();
             }
         } else if(message instanceof ConnectTo) {
-            connectNode((ConnectTo) message);
-        } else if(message instanceof Connection) {
-            createNodeActor((Connection) message);
+            try {
+                nodes.tell("pauseIO", getSelf());
+                connectNode((ConnectTo) message);
+                getSender().tell("ok", getSelf());
+            } catch (Exception e) {
+                logger.error("{}", e.getMessage(), e);
+            } finally {
+                nodes.tell("resumeIO", getSelf());
+            }
+
         }
         } catch (ConfigItemNotFoundException e) {
             e.printStackTrace();
@@ -71,43 +84,30 @@ public class NodeConnector extends Actor {
         }
     }
 
-    private void connectNode(ConnectTo target) throws IOException, ConfigItemNotFoundException {
+    private synchronized void connectNode(ConnectTo target) throws IOException, ConfigItemNotFoundException {
+        Map<UUID, NodeAddress> knownNodes = getNodes();
+        Socket s = new Socket();
+        s.connect(new InetSocketAddress(target.ip, target.port),cfg.getInteger("network.timeout-connect"));
+        s.setSoTimeout(cfg.getInteger("network.timeout-read"));
+        s.setKeepAlive(cfg.getBoolean("network.keep-alive"));
+        Connection connection = new TCPConnection(s, idMatcher);
+        connection.setConnector(new NodeAddress(InetAddress.getByName(target.ip).getHostAddress(), target.port));
         try {
-            getLogger(NodeConnector.class).info("connecting to: " + target.ip + ":" + target.port);
-            Socket s = new Socket();
-            s.connect(new InetSocketAddress(target.ip, target.port),cfg.getInteger("network.timeout-connect"));
-            s.setSoTimeout(cfg.getInteger("network.timeout-read"));
-            s.setKeepAlive(cfg.getBoolean("network.keep-alive"));
-            Connection connection = new TCPConnection(s, idMatcher);
-            connection.setConnector(new NodeAddress(InetAddress.getByName(target.ip).getHostAddress(), target.port));
-            Map<UUID, NodeAddress> knownNodes =
-                    connection.connect(new NodeAddress(InetAddress.getLocalHost().getHostAddress(), serverSocket.getLocalPort()), getNodes());
+            Map<UUID, NodeAddress> newNodes =
+                connection.connect(new NodeAddress(InetAddress.getLocalHost().getHostAddress(), serverSocket.getLocalPort()), getNodes());
             createNodeActor(connection);
-            connectNewNodes(knownNodes);
-            getSender().tell("ok", getSelf());
-        }
-        catch (IOException e) {
-            getSender().tell(e,getSelf());
-            throw e;
-        } catch (IllegalArgumentException e) {
-            getSender().tell(e,getSelf());
-        }
-    }
-
-    private void connectNewNodes(final Map<UUID,NodeAddress> knownNodes) {
-        System.out.println("nodes " + knownNodes);
-        for(UUID key : knownNodes.keySet()) {
-            if(!idMatcher.contains(key)) {
-                System.out.println("new node:" + key);
-                NodeAddress n = knownNodes.get(key);
-                ConnectTo c = new ConnectTo(n.getIp(),n.getPort());
-                getSelf().tell(c,getSelf());
+            for (Map.Entry<UUID, NodeAddress> na : newNodes.entrySet()) {
+                if(!na.getKey().equals(idMatcher.getLocal())) {
+                    ConnectTo ct = new ConnectTo(na.getValue().getIp(), na.getValue().getPort());
+                    connectNode(ct);
+                }
             }
+        } catch (IllegalArgumentException e) {
+            //skip
         }
     }
 
     private void createNodeActor(Connection connection) {
-        System.out.println(connection.getUUID());
         if (!idMatcher.contains(connection.getUUID())) {
             idMatcher.addUUID(connection.getUUID());
             ActorRef nodes = getContext().getActor("/app/nodes");
@@ -119,10 +119,14 @@ public class NodeConnector extends Actor {
         if(serverSocket != null) {
             serverSocket.close();
         }
-        serverSocket = new ServerSocket(cfg.getInteger("network.port"));
-        Thread t = new Thread(new SocketRunner(serverSocket));
-        t.setDaemon(true);
-        t.start();
+        try {
+            serverSocket = new ServerSocket(cfg.getInteger("network.port"));
+            Thread t = new Thread(new SocketRunner(serverSocket));
+            t.setDaemon(true);
+            t.start();
+        } catch (IOException e) {
+            getLogger(NodeConnector.class).warn("{}", e.getMessage(), e);
+        }
     }
 
     private Map<UUID, NodeAddress> getNodes() {
@@ -151,14 +155,22 @@ public class NodeConnector extends Actor {
                     Socket s = ssocket.accept();
                     s.setSoTimeout(cfg.getInteger("network.timeout-read"));
                     s.setKeepAlive(cfg.getBoolean("network.keep-alive"));
+                    nodes.tell("pauseIO", getSelf());
                     Connection connection = new TCPConnection(s, idMatcher);
-                    Map<UUID, NodeAddress> knownNodes = connection.handshake(getNodes());
-                    connectNewNodes(knownNodes);
-                    getSelf().tell(connection, getSelf());
+                    Map<UUID, NodeAddress> otherNodes = connection.handshake(getNodes());
+                    createNodeActor(connection);
+                    for (Map.Entry<UUID, NodeAddress> na : otherNodes.entrySet()) {
+                        if (!na.getKey().equals(idMatcher.getLocal())) {
+                            ConnectTo ct = new ConnectTo(na.getValue().getIp(), na.getValue().getPort());
+                            connectNode(ct);
+                        }
+                    }
                 } catch (IOException e) {
                     // skip.
                 } catch (Throwable e) {
                     getLogger(SocketRunner.class).error(e.getMessage() ,e);
+                } finally {
+                    nodes.tell("resumeIO", getSelf());
                 }
             }
         }

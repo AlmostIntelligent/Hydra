@@ -17,6 +17,8 @@ import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.NodeConnector;
 import org.gethydrated.hydra.core.internal.Nodes;
+import org.gethydrated.hydra.core.io.network.NetKernel;
+import org.gethydrated.hydra.core.io.network.NetKernelImpl;
 import org.gethydrated.hydra.core.messages.StartService;
 import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.registry.GlobalRegistry;
@@ -26,6 +28,7 @@ import org.gethydrated.hydra.core.sid.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -64,6 +67,8 @@ public final class HydraImpl implements InternalHydra {
 
     private IdMatcher idMatcher = new IdMatcher();
 
+    private NetKernel netKernel;
+
     /**
      * Constructor.
      * 
@@ -75,12 +80,14 @@ public final class HydraImpl implements InternalHydra {
         this.cfg = cfg;
         shutdownhook.register();
         archives = new Archives(cfg);
+
         createNodeUUID();
         try {
             actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
+            netKernel = new NetKernelImpl(cfg, actorSystem);
             sidFactory = new DefaultSIDFactory(actorSystem, idMatcher);
             initSystemActors();
-        } catch (ConfigItemNotFoundException|ConfigItemTypeException  e) {
+        } catch (Exception e) {
             logger.error("Invalid configuration.", e);
             throw new HydraException(e);
         }
@@ -145,6 +152,7 @@ public final class HydraImpl implements InternalHydra {
         if(actorSystem != null) {
             actorSystem.shutdown();
         }
+        netKernel.close();
     }
 
     @Override
@@ -179,7 +187,6 @@ public final class HydraImpl implements InternalHydra {
 
     @Override
     public void stopService(final SID id) throws HydraException {
-        System.out.println(id.getClass());
         if(actorSystem.isTerminated()) {
             throw new HydraException("Hydra already shut down.");
         }
@@ -189,7 +196,6 @@ public final class HydraImpl implements InternalHydra {
         if(id.getUSID().getTypeId() != 0) {
             throw new IllegalArgumentException("Cannot stop system services. Try hydra.shutdown() instead.");
         }
-        System.out.println(id.getClass());
         if (((InternalSID) id).getRef().isTerminated()) {
             return;
         }
@@ -220,5 +226,10 @@ public final class HydraImpl implements InternalHydra {
     @Override
     public IdMatcher getIdMatcher() {
         return idMatcher;
+    }
+
+    @Override
+    public NetKernel getNetKernel() {
+        return netKernel;
     }
 }

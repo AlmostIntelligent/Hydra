@@ -97,6 +97,7 @@ project("core") {
         compile 'com.fasterxml.jackson.core:jackson-databind:2.1.4'
         compile 'com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.1.4'
         compile "org.eclipse.jetty:jetty-server:8.1.8.v20121106"   //Workaround for jetty dependency copying.
+        compile "io.netty:netty:4.0.0.Alpha8"
 	}
 
     task copyVersionTemplate(type: Copy) {

@@ -3,16 +3,15 @@ package org.gethydrated.hydra.core.internal;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.actors.refs.InternalRef;
 import org.gethydrated.hydra.actors.refs.NullRef;
-import org.gethydrated.hydra.api.event.InputEvent;
-import org.gethydrated.hydra.api.event.SystemEvent;
+import org.gethydrated.hydra.api.event.*;
 import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.USIDAware;
 import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.concurrent.LockRelease;
 import org.gethydrated.hydra.core.concurrent.LockReply;
 import org.gethydrated.hydra.core.concurrent.LockRequest;
-import org.gethydrated.hydra.api.event.NodeDown;
-import org.gethydrated.hydra.api.event.NodeUp;
 import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.registry.RegistryState;
 import org.gethydrated.hydra.core.registry.Sync;
@@ -58,6 +57,12 @@ public class Node extends Actor {
                     logger.info("Node disconnected: ", getSelf().toString());
                     idMatcher.remove(connection.getUUID());
                     getContext().stopActor(getSelf());
+                    break;
+                case "init":
+                    setCallback();
+                    if(!connection.isHidden()) {
+                        getSystem().getEventStream().publish(new NodeUp(connection.getUUID()));
+                    }
                     break;
             }
         } else if (message instanceof SystemEvent) {
@@ -109,10 +114,6 @@ public class Node extends Actor {
 
     @Override
     public void onStart() {
-        setCallback();
-        if(!connection.isHidden()) {
-            getSystem().getEventStream().publish(new NodeUp(connection.getUUID()));
-        }
     }
 
     @Override
@@ -121,6 +122,8 @@ public class Node extends Actor {
         if(!connection.isHidden()) {
             getSystem().getEventStream().publish(new NodeDown(connection.getUUID()));
         }
+        ActorRef ref = getContext().getActor(getSelf().getPath().parent());
+        ref.tell(new NodeDown(connection.getUUID()), getSelf());
     }
 
     private void setCallback() {
@@ -188,7 +191,12 @@ public class Node extends Actor {
         if (getSender() != null) {
             so.setSender(DefaultSIDFactory.actorPathToUSID(getSender().getPath(), connection.getUUID()));
         }
-        so.setTarget(DefaultSIDFactory.actorPathToUSID(getRecipient(systemEvent).getPath(), connection.getUUID()));
+        if (systemEvent instanceof Monitor || systemEvent instanceof UnMonitor || systemEvent instanceof Link
+                || systemEvent instanceof Unlink || systemEvent instanceof ServiceDown || systemEvent instanceof ServiceExit) {
+            so.setTarget(((USIDAware) systemEvent).getUSID());
+        } else {
+            so.setTarget(DefaultSIDFactory.actorPathToUSID(getRecipient(systemEvent).getPath(), connection.getUUID()));
+        }
         env.setSObject(so);
         return env;
     }

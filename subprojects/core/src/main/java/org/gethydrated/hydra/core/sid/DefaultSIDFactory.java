@@ -69,7 +69,7 @@ public class DefaultSIDFactory implements SIDFactory {
         UUID localNode = idMatcher.getLocal();
         USID usid = actorPathToUSID(path, localNode);
         if(usid == null) {
-            throw new RuntimeException("Could not apply actor path to sid: " + path);
+            return new DeadSID(new USID(localNode, 0, 0));
         }
         return fromUSID(usid);
     }

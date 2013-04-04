@@ -5,6 +5,7 @@ import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.messages.ConnectTo;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -55,12 +56,13 @@ public class CLICommandConnect extends CLICommand {
         } else {
             return new CLIResponse("Invalid number of arguments. Please use 'connect ip:port' or 'connect ip port'.\n");
         }
-        ActorRef connector = getHydra().getActorSystem().getActor("/app/connector");
-        Future res = connector.ask(new ConnectTo(ip, port));
         try {
-            return new CLIResponse((String) res.get(10, TimeUnit.SECONDS) + "\n");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            getHydra().getNetKernel().connect(ip, port);
+            return new CLIResponse("\n");
+        } catch (Exception e) {
+            e.printStackTrace();
             return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
+
         }
     }
 

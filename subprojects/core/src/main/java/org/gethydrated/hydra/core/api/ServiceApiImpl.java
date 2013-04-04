@@ -108,22 +108,22 @@ public class ServiceApiImpl extends HydraApiImpl implements ServiceApi {
 
     @Override
     public void link(SID sid1, SID sid2) {
-        sid1.tell(new Link(sid2.getUSID()), null);
+        sid1.tell(new Link(sid2.getUSID()), sid2);
     }
 
     @Override
     public void unlink(SID sid1, SID sid2) {
-        sid1.tell(new Unlink(sid2.getUSID()), null);
+        sid1.tell(new Unlink(sid2.getUSID()), sid2);
     }
 
     @Override
     public void monitor(SID sid1, SID sid2) {
-        sid2.tell(new Monitor(sid1.getUSID()), null);
+        sid2.tell(new Monitor(sid1.getUSID()), sid1);
     }
 
     @Override
     public void unmonitor(SID sid1, SID sid2) {
-        sid2.tell(new UnMonitor(sid1.getUSID()), null);
+        sid2.tell(new UnMonitor(sid1.getUSID()), sid1);
     }
 
 }

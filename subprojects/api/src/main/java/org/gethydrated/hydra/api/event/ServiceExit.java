@@ -1,24 +1,25 @@
 package org.gethydrated.hydra.api.event;
 
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.USIDAware;
 
 /**
  *
  */
-public class ServiceExit implements SystemEvent {
-    private USID sid;
+public class ServiceExit implements SystemEvent, USIDAware {
+    private USID usid;
 
     private String reason;
 
-    public ServiceExit(USID sid, String reason) {
-        this.sid = sid;
+    public ServiceExit(USID usid, String reason) {
+        this.usid = usid;
         this.reason = reason;
     }
 
     private ServiceExit() {}
 
-    public USID getUsid() {
-        return sid;
+    public USID getUSID() {
+        return usid;
     }
 
     public String getReason() {

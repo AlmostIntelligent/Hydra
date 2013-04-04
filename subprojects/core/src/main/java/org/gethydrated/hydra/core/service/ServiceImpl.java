@@ -80,8 +80,11 @@ public class ServiceImpl extends Actor implements Service {
 
     @Override
     public void onStop() throws Exception {
-        activator.stop(ctx);
-        monitor.close("stopped");
+        try {
+            activator.stop(ctx);
+        } finally {
+            monitor.close("stopped");
+        }
     }
 
     @Override
@@ -118,16 +121,16 @@ public class ServiceImpl extends Actor implements Service {
             monitor.addLink((Link) message);
             return null;
         } else if (message instanceof Unlink) {
-            monitor.removeLink(new Link(((Unlink)message).getUsid()));
+            monitor.removeLink(new Link(((Unlink)message).getUSID()));
             return null;
         } else if (message instanceof Monitor) {
             monitor.addMonitor((Monitor) message);
             return null;
         } else if (message instanceof UnMonitor) {
-            monitor.removeMonitor(new Monitor(((UnMonitor) message).getUsid()));
+            monitor.removeMonitor(new Monitor(((UnMonitor) message).getUSID()));
             return null;
         } else if (message instanceof ServiceExit) {
-            if(monitor.isLinked(((ServiceExit) message).getUsid())) {
+            if(monitor.isLinked(((ServiceExit) message).getUSID())) {
                 monitor.close(((ServiceExit) message).getReason());
                 getContext().stopActor(getSelf());
             }

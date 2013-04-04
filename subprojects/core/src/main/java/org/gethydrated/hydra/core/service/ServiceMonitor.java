@@ -32,11 +32,11 @@ public class ServiceMonitor {
         if(!closed) {
             if(!links.contains(link)) {
                 links.add(link);
-                SID ref = sidFactory.fromUSID(link.getUsid());
+                SID ref = sidFactory.fromUSID(link.getUSID());
                 ref.tell(new Link(self.getUSID()), self);
             }
         } else {
-            SID ref = sidFactory.fromUSID(link.getUsid());
+            SID ref = sidFactory.fromUSID(link.getUSID());
             ref.tell(new ServiceExit(self.getUSID(), "already down"),self);
         }
     }
@@ -44,7 +44,7 @@ public class ServiceMonitor {
     public void removeLink(Link link) {
         if(!closed) {
             if(links.remove(link)) {
-                SID ref = sidFactory.fromUSID(link.getUsid());
+                SID ref = sidFactory.fromUSID(link.getUSID());
                 ref.tell(new Unlink(self.getUSID()), self);
             }
         }
@@ -56,7 +56,7 @@ public class ServiceMonitor {
                 monitors.add(monitor);
             }
         } else {
-            SID ref = sidFactory.fromUSID(monitor.getUsid());
+            SID ref = sidFactory.fromUSID(monitor.getUSID());
             ref.tell(new ServiceDown(self.getUSID(), "already down"),self);
         }
     }
@@ -83,11 +83,11 @@ public class ServiceMonitor {
             ServiceExit exit = new ServiceExit(self.getUSID(), reason);
             ServiceDown down = new ServiceDown(self.getUSID(), reason);
             for(Link l : links) {
-                SID ref = sidFactory.fromUSID(l.getUsid());
+                SID ref = sidFactory.fromUSID(l.getUSID());
                 ref.tell(exit, self);
             }
             for(Monitor m : monitors) {
-                SID ref = sidFactory.fromUSID(m.getUsid());
+                SID ref = sidFactory.fromUSID(m.getUSID());
                 ref.tell(down, self);
             }
         }
@@ -95,7 +95,7 @@ public class ServiceMonitor {
 
     public boolean isLinked(USID usid) {
         for (Link l : links) {
-            if (l.getUsid().equals(usid)) {
+            if (l.getUSID().equals(usid)) {
                 return true;
             }
         }

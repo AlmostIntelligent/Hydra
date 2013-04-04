@@ -2,18 +2,14 @@ package org.gethydrated.hydra.core.registry;
 
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.event.*;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.concurrent.Granted;
 import org.gethydrated.hydra.core.concurrent.Lock;
 import org.gethydrated.hydra.core.concurrent.Lock.RequestType;
-import org.gethydrated.hydra.api.event.Monitor;
-import org.gethydrated.hydra.api.event.NodeDown;
-import org.gethydrated.hydra.api.event.NodeUp;
-import org.gethydrated.hydra.api.event.UnMonitor;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.sid.InternalSID;
@@ -58,7 +54,8 @@ public class GlobalRegistry extends Actor {
             acquireLock();
             enqueue(message);
         } else if (message instanceof String) {
-            retrieve((String) message);
+            acquireLock();
+            enqueue(message);
         } else if (message instanceof Granted) {
             hasLock = true;
             waitingForLock = false;
@@ -78,14 +75,16 @@ public class GlobalRegistry extends Actor {
         } else if (message instanceof NodeUp) {
             acquireLock();
             syncing = true;
-            System.out.println("nodeup:" + ((NodeUp) message).getUuid());
-        } else {
-            System.out.println(message.toString());
+        } else if (message instanceof NodeDown) {
+            acquireLock();
+            enqueue(message);
+        } else if (message instanceof ServiceDown) {
+            acquireLock();
+            enqueue(message);
         }
     }
 
     private void sync() {
-        System.out.println("syncing " + getSystem().getClock().getCurrentTime());
         try {
             Random random = new Random();
             Set<UUID> nodes = getNodes();
@@ -102,7 +101,6 @@ public class GlobalRegistry extends Actor {
                     if (!ownUSID.equals(newUSID)) {
                         if (random.nextBoolean()) {
                             registry.put(s.getKey(), ownUSID);
-                            System.out.println("dropping " + newUSID);
                             try {
                                 hydra.stopService(sidFactory.fromUSID(newUSID));
                             } catch (HydraException e) {
@@ -110,7 +108,6 @@ public class GlobalRegistry extends Actor {
                             }
                         } else {
                             registry.put(s.getKey(), newUSID);
-                            System.out.println("dropping " + ownUSID);
                             try {
                                 hydra.stopService(sidFactory.fromUSID(ownUSID));
                             } catch (HydraException e) {
@@ -120,12 +117,10 @@ public class GlobalRegistry extends Actor {
                     }
                 }
             }
-            System.out.println(registry);
             update();
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            getLogger(GlobalRegistry.class).debug("{}", e.getMessage(), e);
         } finally {
-            System.out.println("sync done " + getSystem().getClock().getCurrentTime());
             syncing = false;
         }
     }
@@ -154,6 +149,12 @@ public class GlobalRegistry extends Actor {
             Request r = requests.remove();
             if(r.message instanceof RegisterService) {
                 register(((RegisterService) r.message).getSID(), ((RegisterService) r.message).getName(), r.sender);
+            } else if (r.message instanceof NodeDown) {
+                unregisterAll(((NodeDown)r.message).getUuid());
+            } else if (r.message instanceof ServiceDown) {
+                unregisterUSID(((ServiceDown)r.message).getUSID());
+            } else if (r.message instanceof String) {
+                retrieve((String) r.message, r.sender);
             } else {
                 unregister(((UnregisterService)r.message).getName(), r.sender);
             }
@@ -192,13 +193,13 @@ public class GlobalRegistry extends Actor {
         }
     }
 
-    private void retrieve(String name) {
+    private void retrieve(String name, ActorRef sender) {
         USID usid = registry.get(name);
         if(usid != null) {
             SID sid = sidFactory.fromUSID(usid);
-            getSender().tell(sid, getSelf());
+            sender.tell(sid, getSelf());
         } else {
-            getSender().tell(new RegistryException("Name is not in use."), getSelf());
+            sender.tell(new RegistryException("Name is not in use."), getSelf());
         }
     }
 
@@ -238,6 +239,34 @@ public class GlobalRegistry extends Actor {
             }
         } else {
             sender.tell(new RegistryException("Name is not in use."), getSelf());
+        }
+    }
+
+    private void unregisterUSID(USID usid) {
+        Iterator<USID> it = registry.values().iterator();
+        while (it.hasNext()) {
+            if(it.next().equals(usid)) {
+                it.remove();
+            }
+        }
+        try {
+            update();
+        } catch (Exception e) {
+            getLogger(GlobalRegistry.class).warn("{}", e.getMessage(), e);
+        }
+    }
+
+    private void unregisterAll(UUID uuid) {
+        Iterator<USID> it = registry.values().iterator();
+        while (it.hasNext()) {
+            if(it.next().getNodeId().equals(uuid)) {
+                it.remove();
+            }
+        }
+        try {
+            update();
+        } catch (Exception e) {
+            getLogger(GlobalRegistry.class).warn("{}", e.getMessage(), e);
         }
     }
 

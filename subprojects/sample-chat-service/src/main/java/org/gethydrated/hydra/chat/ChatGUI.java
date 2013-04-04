@@ -15,10 +15,7 @@ import org.gethydrated.hydra.chat.messages.Renamed;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  *
@@ -38,7 +35,6 @@ public class ChatGUI extends javax.swing.JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    System.out.println("hm");
                     context.stopService(context.getSelf());
                 } catch (HydraException e1) {
                     e1.printStackTrace();
@@ -217,9 +213,19 @@ public class ChatGUI extends javax.swing.JFrame {
 
     public void removeClient(SID sid) {
         if(users.containsKey(sid.getUSID())) {
-            users.remove(sid);
+            users.remove(sid.getUSID());
             context.unmonitor(context.getSelf(), sid);
             updateUsers();
         }
+    }
+
+    public void removeAll(final UUID uuid) {
+        Iterator<USID> it = users.keySet().iterator();
+        while (it.hasNext()) {
+            if (it.next().getNodeId().equals(uuid)) {
+                it.remove();
+            }
+        }
+        updateUsers();
     }
 }

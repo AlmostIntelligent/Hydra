@@ -43,7 +43,7 @@ public class LocalRegistry  extends Actor {
     }
 
     private void checkServiceDown(ServiceDown serviceDown) {
-        SID sid = new DeadSID(serviceDown.getUsid());
+        SID sid = new DeadSID(serviceDown.getUSID());
         while (registry.containsValue(sid)) {
             registry.values().remove(sid);
         }

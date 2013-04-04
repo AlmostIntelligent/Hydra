@@ -1,11 +1,12 @@
 package org.gethydrated.hydra.api.event;
 
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.USIDAware;
 
 /**
  *
  */
-public class Monitor implements SystemEvent {
+public class Monitor implements SystemEvent, USIDAware {
     private USID usid;
 
     public Monitor(USID usid) {
@@ -14,7 +15,7 @@ public class Monitor implements SystemEvent {
 
     private Monitor() {}
 
-    public USID getUsid() {
+    public USID getUSID() {
         return usid;
     }
 
@@ -33,4 +34,12 @@ public class Monitor implements SystemEvent {
     public int hashCode() {
         return usid != null ? usid.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "Monitor{" +
+                "usid=" + usid +
+                '}';
+    }
+
 }

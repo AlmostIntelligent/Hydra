@@ -4,6 +4,7 @@ import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.SIDFactory;
+import org.gethydrated.hydra.core.io.network.NetKernel;
 import org.gethydrated.hydra.core.sid.IdMatcher;
 
 /**
@@ -18,4 +19,6 @@ public interface InternalHydra extends Hydra {
     SIDFactory getDefaultSIDFactory();
 
     IdMatcher getIdMatcher();
+
+    NetKernel getNetKernel();
 }

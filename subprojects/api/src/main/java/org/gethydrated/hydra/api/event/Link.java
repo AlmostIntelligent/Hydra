@@ -1,11 +1,12 @@
 package org.gethydrated.hydra.api.event;
 
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.USIDAware;
 
 /**
  *
  */
-public class Link implements SystemEvent {
+public class Link implements SystemEvent, USIDAware {
     private USID usid;
 
     public Link(USID usid) {
@@ -14,7 +15,7 @@ public class Link implements SystemEvent {
 
     private Link() {}
 
-    public USID getUsid() {
+    public USID getUSID() {
         return usid;
     }
 

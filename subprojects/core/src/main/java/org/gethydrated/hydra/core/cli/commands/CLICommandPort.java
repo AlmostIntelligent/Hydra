@@ -5,6 +5,8 @@ import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
 
+import java.io.IOException;
+
 /**
  *
  */
@@ -50,9 +52,12 @@ public class CLICommandPort extends CLICommand {
             }
         } else if(args.length == 1) {
             int port = Integer.parseInt(args[0]);
-            ActorRef connector = getHydra().getActorSystem().getActor("/app/connector");
             getHydra().getConfiguration().setInteger("network.port", port);
-            connector.tell("portchanged", null);
+            try {
+                getHydra().getNetKernel().bind(port);
+            } catch (IOException e) {
+                return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
+            }
             return new CLIResponse(String.format("Port set to: %d\n", port));
         } else {
             return new CLIResponse("Invalid number of arguments!\n");

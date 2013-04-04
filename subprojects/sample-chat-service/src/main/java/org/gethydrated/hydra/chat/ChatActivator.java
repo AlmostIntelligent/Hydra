@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.chat;
 
 import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.event.NodeDown;
 import org.gethydrated.hydra.api.event.ServiceDown;
 import org.gethydrated.hydra.api.service.MessageHandler;
 import org.gethydrated.hydra.api.service.SID;
@@ -22,6 +23,8 @@ public class ChatActivator implements ServiceActivator {
 
     private ServiceContext context;
 
+    private SID broker;
+
     @Override
     public void start(final ServiceContext context) throws Exception {
         this.context = context;
@@ -35,7 +38,30 @@ public class ChatActivator implements ServiceActivator {
         context.registerMessageHandler(ServiceDown.class, new MessageHandler<ServiceDown>() {
             @Override
             public void handle(ServiceDown message, SID sender) {
-                gui.removeClient(context.getService(message.getUsid()));
+                if(message.getUSID().equals(broker.getUSID())) {
+                    try {
+                        broker = getBroker();
+                        broker.tell(new Discover(), context.getSelf());
+                    } catch (HydraException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    gui.removeClient(context.getService(message.getUSID()));
+                }
+            }
+        });
+        context.registerMessageHandler(NodeDown.class, new MessageHandler<NodeDown>() {
+            @Override
+            public void handle(final NodeDown message, final SID sender) {
+                if(broker.getUSID().getNodeId().equals(message.getUuid())) {
+                    try {
+                        broker = getBroker();
+                        broker.tell(new Discover(), context.getSelf());
+                    } catch (HydraException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                gui.removeAll(message.getUuid());
             }
         });
         context.registerMessageHandler(Renamed.class, new MessageHandler<Renamed>() {
@@ -50,15 +76,24 @@ public class ChatActivator implements ServiceActivator {
                 gui.handleInput(context.getService(message.getUsid()), message.getName());
             }
         });
+        context.subscribeEvent(NodeDown.class);
         gui.setVisible(true);
-        SID broker;
-        try {
-            broker = context.getGlobalService("chat-broker");
-        } catch (HydraException e) {
-            broker = context.startService("chat::broker");
+        if(broker == null) {
+            broker = getBroker();
         }
         broker.tell(new Discover(), context.getSelf());
 
+    }
+
+    private SID getBroker() throws HydraException {
+        SID b;
+        try {
+            b =  context.getGlobalService("chat-broker");
+        } catch (HydraException e) {
+            b =  context.startService("chat::broker");
+        }
+        context.monitor(context.getSelf(), b);
+        return b;
     }
 
     @Override

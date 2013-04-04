@@ -51,7 +51,7 @@ public class TCPConnection implements Connection {
     }
 
     @Override
-    public synchronized Map<UUID, NodeAddress> connect(NodeAddress connectorAddress, final Map<UUID, NodeAddress> nodes) throws IOException {
+    public Map<UUID, NodeAddress> connect(NodeAddress connectorAddress, final Map<UUID, NodeAddress> nodes) throws IOException {
         if(connected) {
             throw new IllegalStateException("Connection handshake already done.");
         }
@@ -73,13 +73,13 @@ public class TCPConnection implements Connection {
     }
 
     @Override
-    public synchronized Map<UUID, NodeAddress> handshake(Map<UUID, NodeAddress> nodes) throws IOException {
+    public Map<UUID, NodeAddress> handshake(Map<UUID, NodeAddress> nodes) throws IOException {
         if(connected) {
             throw new IllegalStateException("Connection handshake already done.");
         }
         Envelope connect = objectMapper.readValue(socket.getInputStream(), Envelope.class);
         nodeid = connect.getSender();
-        nodeAddress = new NodeAddress(socket.getInetAddress().toString(), connect.getConnector().getPort());
+        nodeAddress = new NodeAddress(socket.getInetAddress().getHostAddress(), connect.getConnector().getPort());
         hidden = connect.isHiddenNode();
         Envelope response;
         if (idMatcher.contains(connect.getSender())) {
@@ -201,7 +201,6 @@ public class TCPConnection implements Connection {
                         }
                     } else {
                         Envelope env = parser.readValueAs(Envelope.class);
-                        //Envelope env = objectMapper.readValue(socket.getInputStream(), Envelope.class);
                         if(env.getType() == MessageType.DISCONNECT) {
                             callback.tell("disconnected", null);
                             closed = true;
