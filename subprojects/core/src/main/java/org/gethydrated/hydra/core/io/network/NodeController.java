@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.core.io.network;
 
-import org.gethydrated.hydra.core.transport.Con;
-import org.gethydrated.hydra.core.transport.Connection;
+import com.sun.tools.javac.util.Pair;
 import org.gethydrated.hydra.core.transport.NodeAddress;
 
 import java.util.HashMap;
@@ -11,7 +10,7 @@ import java.util.UUID;
 public class NodeController {
     private final UUID local = UUID.randomUUID();
 
-    private final Map<UUID, Con> nodes = new HashMap<>();
+    private final Map<UUID, NodeAddress> nodes = new HashMap<>();
 
     public UUID getLocal() {
         return local;
@@ -35,7 +34,7 @@ public class NodeController {
         return null;
     }
 
-    public void addNode(final UUID sender, final Con con) {
+    public void addNode(final UUID sender, final NodeAddress con) {
         if(!isKnownNode(sender)) {
             System.out.println("new con: " + sender);
             nodes.put(sender, con);
