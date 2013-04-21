@@ -1,43 +1,40 @@
 package org.gethydrated.hydra.core.io.network;
 
-import com.sun.tools.javac.util.Pair;
-import org.gethydrated.hydra.core.transport.NodeAddress;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.channel.Channel;
+import org.gethydrated.hydra.core.io.transport.NodeAddress;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public class NodeController {
-    private final UUID local = UUID.randomUUID();
+public interface NodeController {
 
-    private final Map<UUID, NodeAddress> nodes = new HashMap<>();
+    UUID getLocal();
 
-    public UUID getLocal() {
-        return local;
-    }
+    NodeAddress getConnector();
 
-    public int getID(UUID nodeid) {
-        if (nodeid.equals(local)) {
-            return 0;
-        }
-        if (nodes.containsKey(nodeid)) {
+    UUID getUUID(int id);
 
-        }
-        return -1;
-    }
+    int getID(UUID nodeid);
 
-    public boolean isKnownNode(UUID nodeid) {
-        return nodeid.equals(local) || nodes.containsKey(nodeid);
-    }
+    Set<UUID> getNodes();
 
-    public NodeAddress getConnector() {
-        return null;
-    }
+    Map<UUID, NodeAddress> getNodesWithAddress();
 
-    public void addNode(final UUID sender, final NodeAddress con) {
-        if(!isKnownNode(sender)) {
-            System.out.println("new con: " + sender);
-            nodes.put(sender, con);
-        }
-    }
+    boolean isConnected(UUID node);
+
+    boolean isConnected(int id);
+
+    boolean addConnectingNode(UUID node);
+
+    void removeConnectingNode(UUID node);
+
+    boolean addConnectedNode(UUID node, final Channel channel, boolean force);
+
+    boolean addKnownNode(UUID node, NodeAddress nodeAddress);
+
+    void addKnownNodes(Map<UUID,NodeAddress> nodes, boolean flag);
+
+    ObjectMapper defaultMapper();
 }

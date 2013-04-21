@@ -6,8 +6,6 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSystem;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
-import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
@@ -15,7 +13,6 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
 import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
-import org.gethydrated.hydra.core.internal.NodeConnector;
 import org.gethydrated.hydra.core.internal.Nodes;
 import org.gethydrated.hydra.core.io.network.NetKernel;
 import org.gethydrated.hydra.core.io.network.NetKernelImpl;
@@ -24,12 +21,13 @@ import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.registry.GlobalRegistry;
 import org.gethydrated.hydra.core.registry.LocalRegistry;
 import org.gethydrated.hydra.core.service.Services;
-import org.gethydrated.hydra.core.sid.*;
+import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
+import org.gethydrated.hydra.core.sid.ForeignSID;
+import org.gethydrated.hydra.core.sid.InternalSID;
+import org.gethydrated.hydra.core.sid.LocalSID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -65,8 +63,6 @@ public final class HydraImpl implements InternalHydra {
 
     private DefaultSIDFactory sidFactory;
 
-    private IdMatcher idMatcher = new IdMatcher();
-
     private NetKernel netKernel;
 
     /**
@@ -80,23 +76,15 @@ public final class HydraImpl implements InternalHydra {
         this.cfg = cfg;
         shutdownhook.register();
         archives = new Archives(cfg);
-
-        createNodeUUID();
         try {
             actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
-            netKernel = new NetKernelImpl(cfg, actorSystem);
-            sidFactory = new DefaultSIDFactory(actorSystem, idMatcher);
+            netKernel = new NetKernelImpl(this);
+            sidFactory = new DefaultSIDFactory(actorSystem, netKernel);
             initSystemActors();
         } catch (Exception e) {
             logger.error("Invalid configuration.", e);
             throw new HydraException(e);
         }
-    }
-
-    private void createNodeUUID() {
-        UUID localId = UUID.randomUUID();
-        idMatcher.setLocal(localId);
-        logger.debug("Local node uuid: {}", localId);
     }
 
     private void initSystemActors() {
@@ -116,21 +104,15 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new DistributedLockManager(idMatcher);
+                return new DistributedLockManager(netKernel);
             }
         }, "locking");
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Nodes(idMatcher, sidFactory);
+                return new Nodes(netKernel, sidFactory);
             }
         }, "nodes");
-        actorSystem.spawnActor(new ActorFactory() {
-            @Override
-            public Actor create() throws Exception {
-                return new NodeConnector(cfg, idMatcher);
-            }
-        }, "connector");
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
@@ -203,7 +185,7 @@ public final class HydraImpl implements InternalHydra {
             services.tell(new StopService(id.getUSID()), null);
         }
         if(id instanceof ForeignSID) {
-            ActorRef ref = actorSystem.getActor("/app/nodes/"+idMatcher.getId(id.getUSID().getNodeId()));
+            ActorRef ref = actorSystem.getActor("/app/nodes/" + netKernel.getID(id.getUSID().getNodeId()));
             ref.tell(new StopService(id.getUSID()), null);
         }
     }
@@ -221,11 +203,6 @@ public final class HydraImpl implements InternalHydra {
     @Override
     public DefaultSIDFactory getDefaultSIDFactory() {
         return sidFactory;
-    }
-
-    @Override
-    public IdMatcher getIdMatcher() {
-        return idMatcher;
     }
 
     @Override

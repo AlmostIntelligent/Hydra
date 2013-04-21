@@ -7,7 +7,7 @@ import org.gethydrated.hydra.api.service.*;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.api.ServiceContextImpl;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
-import org.gethydrated.hydra.core.transport.SerializedObject;
+import org.gethydrated.hydra.core.io.transport.SerializedObject;
 import org.slf4j.Logger;
 
 import java.util.HashMap;

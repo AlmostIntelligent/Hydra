@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.transport;
+package org.gethydrated.hydra.core.io.transport;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,7 +27,12 @@ public class EnvelopeSerializer extends JsonSerializer<Envelope> {
                 jGen.writeStringField("hidden", String.valueOf(envelope.isHiddenNode()));
                 jGen.writeFieldName("connector");
                 jGen.writeObject(envelope.getConnector());
+                break;
             case ACCEPT:
+                jGen.writeFieldName("connector");
+                jGen.writeObject(envelope.getConnector());
+            case ACK:
+            case NODES:
                 jGen.writeFieldName("nodes");
                 jGen.writeObject(envelope.getNodes());
                 break;

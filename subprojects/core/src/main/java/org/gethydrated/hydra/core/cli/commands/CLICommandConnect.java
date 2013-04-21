@@ -1,15 +1,7 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-import org.gethydrated.hydra.core.messages.ConnectTo;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -58,9 +50,8 @@ public class CLICommandConnect extends CLICommand {
         }
         try {
             getHydra().getNetKernel().connect(ip, port);
-            return new CLIResponse("\n");
+            return new CLIResponse("Connected to " + ip + ":" + port+ "\n");
         } catch (Exception e) {
-            e.printStackTrace();
             return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
 
         }

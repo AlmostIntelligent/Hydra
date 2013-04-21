@@ -2,10 +2,10 @@ package org.gethydrated.hydra.test.core.transport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.gethydrated.hydra.core.transport.Envelope;
-import org.gethydrated.hydra.core.transport.EnvelopeModule;
-import org.gethydrated.hydra.core.transport.MessageType;
-import org.gethydrated.hydra.core.transport.NodeAddress;
+import org.gethydrated.hydra.core.io.transport.Envelope;
+import org.gethydrated.hydra.core.io.transport.EnvelopeModule;
+import org.gethydrated.hydra.core.io.transport.MessageType;
+import org.gethydrated.hydra.core.io.transport.NodeAddress;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

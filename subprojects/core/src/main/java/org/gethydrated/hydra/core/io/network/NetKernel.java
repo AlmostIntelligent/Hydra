@@ -2,7 +2,7 @@ package org.gethydrated.hydra.core.io.network;
 
 import java.io.IOException;
 
-public interface NetKernel {
+public interface NetKernel extends NodeController {
 
     void bind(int port) throws IOException;
 

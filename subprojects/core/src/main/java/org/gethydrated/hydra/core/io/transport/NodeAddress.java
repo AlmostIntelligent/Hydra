@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.transport;
+package org.gethydrated.hydra.core.io.transport;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -49,5 +49,13 @@ public class NodeAddress {
         int result = ip.hashCode();
         result = 31 * result + port;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "NodeAddress{" +
+                "ip='" + ip + '\'' +
+                ", port=" + port +
+                '}';
     }
 }

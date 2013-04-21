@@ -6,7 +6,7 @@ import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
-import org.gethydrated.hydra.core.transport.SerializedObject;
+import org.gethydrated.hydra.core.io.transport.SerializedObject;
 
 import java.util.concurrent.Future;
 

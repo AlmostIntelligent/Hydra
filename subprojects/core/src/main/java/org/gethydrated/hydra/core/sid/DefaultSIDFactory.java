@@ -10,6 +10,7 @@ import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.SIDFactory;
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.core.io.network.NodeController;
 
 import java.net.MalformedURLException;
 import java.util.UUID;
@@ -21,13 +22,13 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private final ActorSystem actorSystem;
 
-    private final IdMatcher idMatcher;
+    private final NodeController nodeController;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public DefaultSIDFactory(ActorSystem actorSystem, IdMatcher idMatcher) {
+    public DefaultSIDFactory(ActorSystem actorSystem, NodeController nodeController) {
         this.actorSystem = actorSystem;
-        this.idMatcher = idMatcher;
+        this.nodeController = nodeController;
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.registerModule(new JaxbAnnotationModule());
     }
@@ -42,13 +43,13 @@ public class DefaultSIDFactory implements SIDFactory {
         }
         sid = sid.substring(1, sid.length()-1);
         String[] arr = sid.split(":");
-        UUID uuid = idMatcher.getUUID(Integer.parseInt(arr[0]));
+        UUID uuid = nodeController.getUUID(Integer.parseInt(arr[0]));
         return fromUSID(new USID(uuid ,Integer.parseInt(arr[1]),Long.parseLong(arr[2])));
     }
 
     @Override
     public SID fromUSID(USID usid) {
-        if (!usid.getNodeId().equals(idMatcher.getLocal())) {
+        if (!usid.getNodeId().equals(nodeController.getLocal())) {
             return buildForeignNodeSID(usid);
         }
         if (usid.getTypeId()==1) {
@@ -66,7 +67,7 @@ public class DefaultSIDFactory implements SIDFactory {
      * @return created sid
      */
     public SID fromActorPath(ActorPath path) {
-        UUID localNode = idMatcher.getLocal();
+        UUID localNode = nodeController.getLocal();
         USID usid = actorPathToUSID(path, localNode);
         if(usid == null) {
             return new DeadSID(new USID(localNode, 0, 0));
@@ -90,7 +91,7 @@ public class DefaultSIDFactory implements SIDFactory {
             if(ref.isTerminated()) {
                 return new DeadSID(usid);
             }
-            return new LocalSID(idMatcher.getLocal(),ref, mapper.writer());
+            return new LocalSID(nodeController.getLocal(),ref, mapper.writer());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -113,9 +114,9 @@ public class DefaultSIDFactory implements SIDFactory {
 
     private SID buildForeignNodeSID(USID usid) {
         try {
-            ActorPath path = ActorPath.apply("/app/nodes/"+idMatcher.getId(usid.getNodeId()));
+            ActorPath path = ActorPath.apply("/app/nodes/" + nodeController.getID(usid.getNodeId()));
             ActorRef ref = actorSystem.getActor(path);
-            return new ForeignSID(idMatcher.getId(usid.getNodeId()),usid, ref, mapper.writer());
+            return new ForeignSID(nodeController.getID(usid.getNodeId()),usid, ref, mapper.writer());
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

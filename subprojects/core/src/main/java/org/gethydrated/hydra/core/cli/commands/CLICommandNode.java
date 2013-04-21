@@ -41,7 +41,7 @@ public class CLICommandNode extends CLICommand {
                 return new CLIResponse("Wrong paramter number.\n");
             }
             int id = Integer.parseInt(args[0]);
-            if(id != 0 && getHydra().getIdMatcher().contains(id)) {
+            if(id != 0 && getHydra().getNetKernel().isConnected(id)) {
                 getRootCommand().setCurrentNodeId(id);
                 return new CLIResponse("You are now on Node " +  id + ". To return to your local node, use the 'local' command.\n");
             } else {

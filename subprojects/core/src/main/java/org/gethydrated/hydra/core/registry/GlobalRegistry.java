@@ -10,10 +10,9 @@ import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.concurrent.Granted;
 import org.gethydrated.hydra.core.concurrent.Lock;
 import org.gethydrated.hydra.core.concurrent.Lock.RequestType;
+import org.gethydrated.hydra.core.io.network.NodeController;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
-import org.gethydrated.hydra.core.sid.IdMatcher;
 import org.gethydrated.hydra.core.sid.InternalSID;
-import org.gethydrated.hydra.core.transport.NodeAddress;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class GlobalRegistry extends Actor {
 
-    private final IdMatcher idMatcher;
+    private final NodeController nodeController;
 
     private final DefaultSIDFactory sidFactory;
 
@@ -44,7 +43,7 @@ public class GlobalRegistry extends Actor {
 
     public GlobalRegistry(final InternalHydra hydra) {
         this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
-        this.idMatcher = hydra.getIdMatcher();
+        this.nodeController = hydra.getNetKernel();
         this.hydra = hydra;
     }
 
@@ -89,7 +88,7 @@ public class GlobalRegistry extends Actor {
             Random random = new Random();
             Set<UUID> nodes = getNodes();
             //We only ask one node, as we expect a consistent state.
-            ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(nodes.iterator().next()));
+            ActorRef r = getContext().getActor("/app/nodes/" + nodeController.getID(nodes.iterator().next()));
             Future f = r.ask(new Sync());
             RegistryState state = (RegistryState) f.get(10, TimeUnit.SECONDS);
             for (Map.Entry<String, USID> s :  state.getRegistry().entrySet()) {
@@ -169,7 +168,7 @@ public class GlobalRegistry extends Actor {
         Set<UUID> nodes = getNodes();
         Set<Future<?>> results = new HashSet<>();
         for(UUID u : nodes) {
-            ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(u));
+            ActorRef r = getContext().getActor("/app/nodes/" + nodeController.getID(u));
             results.add(r.ask(new RegistryState(registry)));
         }
         for (Future<?> f : results) {
@@ -270,10 +269,10 @@ public class GlobalRegistry extends Actor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Set<UUID> getNodes() throws InterruptedException, ExecutionException, TimeoutException {
         Future f = getContext().getActor("/app/nodes").ask("nodes");
-        Map<UUID, NodeAddress> nodes = (Map<UUID, NodeAddress>) f.get(10, TimeUnit.SECONDS);
-        return nodes.keySet();
+        return  (Set<UUID>) f.get(10, TimeUnit.SECONDS);
     }
 
     private static class Request {

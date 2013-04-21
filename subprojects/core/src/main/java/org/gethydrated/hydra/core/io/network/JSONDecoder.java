@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.gethydrated.hydra.core.transport.Envelope;
+import org.gethydrated.hydra.core.io.transport.Envelope;
 
 public class JSONDecoder extends ByteToMessageDecoder {
 
@@ -16,13 +16,11 @@ public class JSONDecoder extends ByteToMessageDecoder {
 
     @Override
     public Object decode(final ChannelHandlerContext ctx, final ByteBuf in) throws Exception {
-        System.out.println("here1");
         if(in.readableBytes() < 4) {
             return null;
         }
         in.markReaderIndex();
         int length = in.readInt();
-        System.out.println(length);
         if (in.readableBytes() < length){
             in.resetReaderIndex();
             return null;

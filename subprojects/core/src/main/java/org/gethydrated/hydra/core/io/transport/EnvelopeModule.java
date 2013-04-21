@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.transport;
+package org.gethydrated.hydra.core.io.transport;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
 

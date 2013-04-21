@@ -1,16 +1,11 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-import org.gethydrated.hydra.core.transport.NodeAddress;
+import org.gethydrated.hydra.core.io.transport.NodeAddress;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  *
@@ -46,33 +41,30 @@ public class CLICommandNodes extends CLICommand {
 
     @Override
     public CLIResponse execute(String[] args) {
-        ActorRef nodes = getHydra().getActorSystem().getActor("/app/nodes");
-        Future result = nodes.ask("nodes");
-        try {
-            @SuppressWarnings("unchecked")
-            HashMap<UUID,NodeAddress> connectedNodes = (HashMap<UUID,NodeAddress>) result.get(1, TimeUnit.SECONDS);
-            if(connectedNodes.size() == 0) {
-                return new CLIResponse(String.format("No nodes connected.\n"));
-            }
-            StringBuilder sb = new StringBuilder();
-            sb.append("Connected Nodes: \n");
-            for(UUID uuid : connectedNodes.keySet()) {
-                sb.append("Node ");
-                sb.append(getHydra().getIdMatcher().getId(uuid));
-                sb.append(": ");
-                NodeAddress n = connectedNodes.get(uuid);
-                sb.append(n.getIp());
-                sb.append(":");
-                sb.append(n.getPort());
-                sb.append("(");
-                sb.append(uuid);
-                sb.append(")\n");
-            }
-	    sb.append("\n");
-            return new CLIResponse(sb.toString());
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
+        Map<UUID, NodeAddress> connectedNodes = getHydra().getNetKernel().getNodesWithAddress();
+        if(connectedNodes.size() == 0) {
+            return new CLIResponse(String.format("No nodes connected.\n"));
         }
+        StringBuilder sb = new StringBuilder();
+        sb.append("Connected Nodes: \n");
+        for(UUID uuid : connectedNodes.keySet()) {
+            sb.append("Node ");
+            sb.append(getHydra().getNetKernel().getID(uuid));
+            sb.append(": ");
+            NodeAddress n = connectedNodes.get(uuid);
+            sb.append(n.getIp());
+            sb.append(":");
+            sb.append(n.getPort());
+            sb.append("(");
+            sb.append(uuid);
+            sb.append(") ");
+            if (getHydra().getNetKernel().isConnected(uuid)) {
+                sb.append("(connected)");
+            }
+            sb.append("\n");
+        }
+	    sb.append("\n");
+        return new CLIResponse(sb.toString());
     }
 
     @Override

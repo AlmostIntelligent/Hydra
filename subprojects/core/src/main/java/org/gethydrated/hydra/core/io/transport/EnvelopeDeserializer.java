@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.transport;
+package org.gethydrated.hydra.core.io.transport;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -48,13 +48,13 @@ public class EnvelopeDeserializer extends JsonDeserializer<Envelope> {
                     break;
                 case "connector":
                     jsonParser.nextToken();
-                    if(type == MessageType.CONNECT) {
+                    if(type == MessageType.CONNECT || type == MessageType.ACCEPT) {
                         envelope.setConnector(jsonParser.readValueAs(NodeAddress.class));
                     }
                     break;
                 case "nodes":
                     jsonParser.nextToken();
-                    if(type == MessageType.ACCEPT) {
+                    if(type == MessageType.ACCEPT || type == MessageType.ACK || type == MessageType.NODES) {
                         Map<UUID,NodeAddress> uuids = parseNodeMap(jsonParser);
                         envelope.setNodes(uuids);
                     }

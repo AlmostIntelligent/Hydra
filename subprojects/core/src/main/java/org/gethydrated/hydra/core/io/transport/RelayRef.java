@@ -1,4 +1,4 @@
-package org.gethydrated.hydra.core.transport;
+package org.gethydrated.hydra.core.io.transport;
 
 import org.gethydrated.hydra.actors.ActorCreator;
 import org.gethydrated.hydra.actors.ActorPath;

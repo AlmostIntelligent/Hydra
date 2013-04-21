@@ -3,8 +3,7 @@ package org.gethydrated.hydra.core.concurrent;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.NodeDown;
-import org.gethydrated.hydra.core.sid.IdMatcher;
-import org.gethydrated.hydra.core.transport.NodeAddress;
+import org.gethydrated.hydra.core.io.network.NodeController;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class DistributedLockManager extends Actor {
 
-    private final IdMatcher idMatcher;
+    private final NodeController nodeController;
 
     private Set<UUID> remainingGranted;
 
@@ -38,8 +37,8 @@ public class DistributedLockManager extends Actor {
         }
     });
 
-    public DistributedLockManager(IdMatcher idMatcher) {
-        this.idMatcher = idMatcher;
+    public DistributedLockManager(NodeController nodeController) {
+        this.nodeController = nodeController;
     }
 
     @Override
@@ -75,14 +74,14 @@ public class DistributedLockManager extends Actor {
     private void releaseLocal(Lock lock) {
         if(holder != null && holder.getId().equals(lock.getId())) {
             try {
-                LockRelease rl = new LockRelease(idMatcher.getLocal());
+                LockRelease rl = new LockRelease(nodeController.getLocal());
                 Set<UUID> nodes = getNodes();
                 for(UUID u : nodes) {
-                    ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(u));
+                    ActorRef r = getContext().getActor("/app/nodes/" + nodeController.getID(u));
                     r.tell(rl, getSelf());
                 }
                 holder = null;
-                release(new LockRelease(idMatcher.getLocal()));
+                release(new LockRelease(nodeController.getLocal()));
             } catch (InterruptedException | ExecutionException | TimeoutException e) {
                 getSelf().tell(lock, getSender());
             }
@@ -93,16 +92,16 @@ public class DistributedLockManager extends Actor {
 
     private void enqueueLocal(Lock lock) {
         localQueue.put(lock, getSender());
-        enqueue(new LockRequest(idMatcher.getLocal(),getSystem().getClock().getCurrentTime()));
+        enqueue(new LockRequest(nodeController.getLocal(),getSystem().getClock().getCurrentTime()));
     }
 
     private void enqueue(LockRequest lockRequest) {
-        if(lockRequest.getNodeId().equals(idMatcher.getLocal())) {
+        if(lockRequest.getNodeId().equals(nodeController.getLocal())) {
             if(!enqueued && holder == null) {
                 try {
                     Set<UUID> nodes = getNodes();
                     for(UUID u : nodes) {
-                        ActorRef r = getContext().getActor("/app/nodes/" + idMatcher.getId(u));
+                        ActorRef r = getContext().getActor("/app/nodes/" + nodeController.getID(u));
                         r.tell(lockRequest, getSelf());
                     }
                     remainingGranted = nodes;
@@ -115,7 +114,7 @@ public class DistributedLockManager extends Actor {
             }
         } else {
             queue.add(lockRequest);
-            getSender().tell(new LockReply(idMatcher.getLocal(), getSystem().getClock().getCurrentTime()), getSelf());
+            getSender().tell(new LockReply(nodeController.getLocal(), getSystem().getClock().getCurrentTime()), getSelf());
         }
 
     }
@@ -127,7 +126,7 @@ public class DistributedLockManager extends Actor {
 
     private void checkGranted() {
         if(remainingGranted != null && remainingGranted.isEmpty() && !queue.isEmpty()
-                && queue.peek().getNodeId().equals(idMatcher.getLocal()) && holder == null) {
+                && queue.peek().getNodeId().equals(nodeController.getLocal()) && holder == null) {
             enqueued = false;
             if(!localQueue.isEmpty()) {
                 Entry<Lock, ActorRef> e = localQueue.entrySet().iterator().next();
@@ -136,19 +135,19 @@ public class DistributedLockManager extends Actor {
                     e.getValue().tell(new Granted(), getSelf());
                     localQueue.remove(e.getKey());
                 } else {
-                    release(new LockRelease(idMatcher.getLocal()));
+                    release(new LockRelease(nodeController.getLocal()));
                 }
             } else {
-                release(new LockRelease(idMatcher.getLocal()));
+                release(new LockRelease(nodeController.getLocal()));
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Set<UUID> getNodes() throws InterruptedException, ExecutionException, TimeoutException {
         ActorRef nodesRef = getContext().getActor("/app/nodes");
         Future f = nodesRef.ask("nodes");
-        Map<UUID, NodeAddress> nodes = (Map<UUID, NodeAddress>) f.get(10, TimeUnit.SECONDS);
-        return nodes.keySet();
+        return  (Set<UUID>) f.get(10, TimeUnit.SECONDS);
     }
 
     @Override

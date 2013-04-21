@@ -1,13 +1,15 @@
-package org.gethydrated.hydra.core.transport;
+package org.gethydrated.hydra.core.io.transport;
 
 /**
  *
  */
 public enum MessageType {
     CONNECT,
-    DISCONNECT,
+    ACK,
     ACCEPT,
     DECLINE,
+    DISCONNECT,
+    NODES,
     SYSTEM,
     USER
 }
