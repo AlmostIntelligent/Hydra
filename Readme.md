@@ -151,7 +151,7 @@ To shutdown your hydra instance, type
 	
 ### Complete Command Reference
 
-The complete reference for all commands can be found in the [wiki](wiki/Command-Reference).
+The complete reference for all commands can be found in the [wiki](https://github.com/AlmostIntelligent/Hydra/wiki/Command-Reference).
 
 
 
