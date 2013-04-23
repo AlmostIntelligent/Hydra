@@ -77,7 +77,7 @@ It comes bundled with a wrapper script `gradlew`.
 
 Assuming the repository is already checked out, open a command line and type:
 
-	gradlew build dist
+	gradlew build
 	
 This will start the build process. The initial build will take a bit longer as 
 usual as gradle downloads all the dependencies needed for the build.
