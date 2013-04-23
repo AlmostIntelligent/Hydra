@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.gethydrated.hydra.test.config;
 
@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  * @author Hanno Sternberg
  * @since 0.1.0
- * 
+ *
  */
 public class ConfigurationTest {
 
@@ -58,7 +58,7 @@ public class ConfigurationTest {
         try {
             cfg.set("Name", "test");
             assertEquals(cfg.getRoot().getChildren().size(), 1);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             fail("Got Exception");
         }
 
@@ -77,9 +77,9 @@ public class ConfigurationTest {
         try {
             assertEquals(cfg.getRoot().getChildren().size(), 1);
             child = ((ConfigList) cfg.getRoot()).getChild("Network");
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("SubList not created!");
-        } catch (ConfigItemTypeException e) {
+        } catch (final ConfigItemTypeException e) {
             fail("Got type exception");
         }
         assertNotNull(child);
@@ -94,7 +94,7 @@ public class ConfigurationTest {
                     ((ConfigValue<?>) ((ConfigList) child).getChild("Host"))
                             .value(),
                     "local");
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("SubItem not created.");
         }
 
@@ -130,7 +130,7 @@ public class ConfigurationTest {
             assertEquals(cfg.get("Name"), "test");
             assertEquals(cfg.get("Network.Host"), "local");
             assertEquals(cfg.get("Network.Port"), 1337);
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Item nor found");
         }
     }
@@ -147,7 +147,7 @@ public class ConfigurationTest {
         try {
             assertTrue(((ConfigValue<Boolean>) ((ConfigList) cfg.getRoot()).getChild("Active"))
                     .value());
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -162,7 +162,7 @@ public class ConfigurationTest {
         cfg.setBoolean("Active", true);
         try {
             assertTrue(cfg.getBoolean("Active"));
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -181,7 +181,7 @@ public class ConfigurationTest {
                     ((ConfigValue<Integer>) ((ConfigList) cfg.getRoot()).getChild("A_Number"))
                             .value(),
                     (Integer) 1337);
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -196,7 +196,7 @@ public class ConfigurationTest {
         cfg.setInteger("A_Number", 1337);
         try {
             assertEquals(cfg.getInteger("A_Number"), (Integer) 1337);
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -215,7 +215,7 @@ public class ConfigurationTest {
                     ((ConfigValue<Double>) ((ConfigList) cfg.getRoot()).getChild("A_Double"))
                             .value(),
                     (Double) 13.37);
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -234,7 +234,7 @@ public class ConfigurationTest {
                     ((ConfigValue<Double>) ((ConfigList) cfg.getRoot()).getChild("A_Double"))
                             .value(),
                     (Double) 13.37);
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -253,7 +253,7 @@ public class ConfigurationTest {
                     ((ConfigValue<String>) ((ConfigList) cfg.getRoot()).getChild("A_String"))
                             .value(),
                     "foobar");
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -268,7 +268,7 @@ public class ConfigurationTest {
         cfg.setString("A_String", "foobar");
         try {
             assertEquals(cfg.getString("A_String"), "foobar");
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
     }
@@ -278,7 +278,7 @@ public class ConfigurationTest {
      */
     @Test
     public final void testCopy() {
-        ConfigurationImpl cp = cfg.copy();
+        final ConfigurationImpl cp = cfg.copy();
         assertFalse(cp == cfg);
         assertEquals(cfg, cp);
     }
@@ -289,11 +289,11 @@ public class ConfigurationTest {
         cfg.set("Network.Port", 1337);
         cfg.set("Network.Host", "local");
         try {
-            Configuration sub = cfg.getSubItems("Network");
+            final Configuration sub = cfg.getSubItems("Network");
             assertEquals("[Port, Host]", sub.list("").toString());
-        } catch (ConfigItemTypeException e) {
+        } catch (final ConfigItemTypeException e) {
             fail("Type error");
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Item not found");
         }
 
@@ -310,7 +310,7 @@ public class ConfigurationTest {
             assertEquals("String", cfg.get("tree.element.string"));
             assertEquals(2, cfg.get("tree.sub.element.number"));
             assertEquals("not character", cfg.get("tree.sub.element.string"));
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Item not found");
         }
 

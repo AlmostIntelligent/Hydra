@@ -1,15 +1,18 @@
 package org.gethydrated.hydra.config.files;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.util.xml.XMLParser;
 import org.w3c.dom.Element;
 
-import java.util.LinkedList;
-import java.util.List;
-
 /**
+ * Configuration Parser. Creates a configuration from a XML document.
  *
+ * @author Hanno Sternberg
+ * @since 0.1.0
  */
 public class ConfigurationParser implements XMLParser<Configuration> {
 
@@ -23,71 +26,115 @@ public class ConfigurationParser implements XMLParser<Configuration> {
      */
     private StringStack stack;
 
+    /**
+     * Flag to indicate, if the parsing is complete.
+     */
     private boolean complete = false;
 
     @Override
-    public Configuration getResult() {
+    public final Configuration getResult() {
         return complete ? cfg : null;
     }
 
     @Override
-    public void startElement(Element element) {
+    public final void startElement(final Element element) {
         switch (element.getTagName()) {
-            case "hydra:configuration": parseConfigStart(element);
-                break;
-            case "configlist":  parseConfigListStart(element);
-                break;
-            case "configvalue": parseConfigValue(element);
+        case "hydra:configuration":
+            parseConfigStart(element);
+            break;
+        case "configlist":
+            parseConfigListStart(element);
+            break;
+        case "configvalue":
+            parseConfigValue(element);
+        default:
+            break;
         }
     }
 
     @Override
-    public void endElement(Element element) {
+    public final void endElement(final Element element) {
         switch (element.getTagName()) {
-            case "hydra:configuration": parseConfigEnd(element);
-                break;
-            case "configlist":  parseConfigListEnd(element);
-                break;
+        case "hydra:configuration":
+            parseConfigEnd(element);
+            break;
+        case "configlist":
+            parseConfigListEnd(element);
+            break;
+        default:
+            break;
         }
     }
 
-    private void parseConfigStart(Element element) {
+    /**
+     * Parse a configuration start tag.
+     *
+     * @param element
+     *            The parsed element.
+     */
+    private void parseConfigStart(final Element element) {
         cfg = new ConfigurationImpl();
         stack = new StringStack();
     }
 
-    private void parseConfigEnd(Element element) {
+    /**
+     * Parse a configuration end tag.
+     *
+     * @param element
+     *            The parsed element.
+     */
+    private void parseConfigEnd(final Element element) {
         complete = true;
     }
 
-    private void parseConfigListStart(Element element) {
+    /**
+     * Parse the start of a configuration list.
+     *
+     * @param element
+     *            The parsed element.
+     */
+    private void parseConfigListStart(final Element element) {
         stack.push(element.getAttribute("name"));
     }
 
-    private void parseConfigListEnd(Element element) {
+    /**
+     * Parse the end of a configuration list.
+     *
+     * @param element
+     *            The parsed element.
+     */
+    private void parseConfigListEnd(final Element element) {
         stack.pop();
     }
 
-    private void parseConfigValue(Element element) {
+    /**
+     * Parse a configuration value.
+     *
+     * @param element
+     *            The parsed element.
+     */
+    private void parseConfigValue(final Element element) {
 
-        String value = element.getAttribute("value");
-        if(!value.trim().isEmpty()) {
-            String name = stack.toString(ConfigurationImpl.getConfigSeparator());
-            name = name.trim().isEmpty() ? element.getAttribute("name") : name +
-                    ConfigurationImpl.getConfigSeparator() + element.getAttribute("name");
-            if(value.equalsIgnoreCase("TRUE")) {
+        final String value = element.getAttribute("value");
+        if (!value.trim().isEmpty()) {
+            String name = stack
+                    .toString(ConfigurationImpl.getConfigSeparator());
+            name = name.trim().isEmpty() ? element.getAttribute("name") : name
+                    + ConfigurationImpl.getConfigSeparator()
+                    + element.getAttribute("name");
+            if (value.equalsIgnoreCase("TRUE")) {
                 cfg.setBoolean(name, true);
-            } else if(value.equalsIgnoreCase("FALSE")) {
+            } else if (value.equalsIgnoreCase("FALSE")) {
                 cfg.setBoolean(name, false);
             } else {
                 try {
-                    int i = Integer.parseInt(value);
+                    final int i = Integer.parseInt(value);
                     cfg.setInteger(name, i);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     try {
-                        double d = Double.parseDouble(value);
+                        final double d = Double.parseDouble(value);
                         cfg.setFloat(name, d);
-                    } catch (Exception ee) {
+                    } catch (final Exception ee) {
                         cfg.setString(name, value);
                     }
                 }
@@ -140,9 +187,9 @@ public class ConfigurationParser implements XMLParser<Configuration> {
          * @return The stack as a single string.
          */
         public String toString(final String seperator) {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             String str;
-            for (String s : strs) {
+            for (final String s : strs) {
                 sb.append(s);
                 sb.append(seperator);
             }

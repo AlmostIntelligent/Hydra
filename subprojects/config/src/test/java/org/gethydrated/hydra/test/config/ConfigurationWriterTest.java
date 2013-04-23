@@ -27,7 +27,7 @@ public class ConfigurationWriterTest {
 
     /**
      * Test setup.
-     * 
+     *
      * @throws Exception .
      */
     @Before
@@ -40,7 +40,7 @@ public class ConfigurationWriterTest {
 
     /**
      * Test tear down.
-     * 
+     *
      * @throws Exception .
      */
     @After
@@ -52,9 +52,9 @@ public class ConfigurationWriterTest {
      */
     @Test
     public final void testXML() {
-        XMLConfigurationWriter dut = new XMLConfigurationWriter(cfg);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
+        final XMLConfigurationWriter dut = new XMLConfigurationWriter(cfg);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final PrintStream ps = new PrintStream(baos);
         dut.saveToStream(ps);
         try {
             assertEquals(
@@ -75,7 +75,7 @@ public class ConfigurationWriterTest {
                             + "</Configuration>"
                             + System.getProperty("line.separator"),
                     baos.toString("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             fail("");
         }
 
@@ -86,9 +86,9 @@ public class ConfigurationWriterTest {
      */
     @Test
     public final void testPlain() {
-        PlainConfigurationWriter dut = new PlainConfigurationWriter(cfg);
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
+        final PlainConfigurationWriter dut = new PlainConfigurationWriter(cfg);
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final PrintStream ps = new PrintStream(baos);
         dut.saveToStream(ps);
         try {
             assertEquals(
@@ -99,7 +99,7 @@ public class ConfigurationWriterTest {
                             + "Configuration.Network.Host=local"
                             + System.getProperty("line.separator"),
                     baos.toString("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             fail("");
         }
 
