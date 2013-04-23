@@ -27,234 +27,44 @@ Whenever Hercules sliced off one head, two new heads appeared.
 He could only overcome the creature, because of his nephew Iolaus, 
 who cauterized the stumps of the heads after Hercules decapitated them.
 
-This computing network is like a hydra, with its multiple heads, each head with its own brain.
-By not implementing the decapitation feature, there should be no way of shutting down (killing) this "network-beast".
+This distributed computing network with its nodes is like a hydra with its heads.
+Hydra acts as a distributed service-plattform. 
 
-(Memo to self) Name the shutdown procedure "cauterize".
+The structure
+-------------
 
+Like every other network, the hydra is build from different interconnected nodes.
+A node can either be a dedicated or a virtual machine. 
+It is even possible to connected two JVMs on the same host machine.
 
+The network is fully interconnected, allowing every node to directly communicate
+with the others. By monitoring the TCP connections, the nodes can easily detect,
+if a node is still up and reachable.
 
-Anatomy of a beast: The Network structure
------------------------------------------
+The nodes share a global registry, which holds information about a network structure.
+Each time a new nodes connects into the network, it will receive a replica of the registry.
+It is seen as consensus, that the registry is always in sync. 
+The ability to force a re-sync will be added later.
 
+The network shares an eventstream, acting as an abstraction layer for the 
+interprocess communication.
 
-### The computing node: *head*
+A single Node inside the net has two main layers.
+On the bottom layer, their is an actor system, encapsulating every process, so 
+they behave like being atomic. 
 
-The network is organised in computing nodes called *heads*. A *head* can be a dedicated or a virtual machine. 
-Theoretically it is also possible to run multiple instances on the same machine. 
-The sense of this is open for discussion.
+Each actor can listen to specific messages inside the eventstream and can send 
+messages in response. 
+The system will also generate eventmessages, if for example a new node connects
+to the network.
 
-The nodes test their connection to each other by frequently sending ping-like request.
-After a change in the structure, they (re-)elect an *Immortal* head (there can be only one), which serves their coordinator.
-Possible election algorithms:
-	- [Bully Algorithm](http://en.wikipedia.org/wiki/Bully_Algorithm "Bully Algorithm in the Wikipedia")
+In the layer above the actor system, their are services.
+A service can be everything, from a single (low level) database query to a 
+complex business application, build from other lower level services.
 
-Each head act as a host for processes.
+This layer holds the "userland" - the application forming code.
+As a result, it should by atypical to have the need to write an actor as part
+of a user service or application.
 
 
-### Crunching the numbers: The *process*
 
-A process is a piece of (program-) code. Every process is packed in one JAR file to ensure its transferability.
-
-The network shares the same process code. 
-New nodes automatically distribute and receive the process code to and from the network.
-Inside the network every line of code is seen as "trusthworty". Meaning there is no malicious code.
-
-
-### Differentiation of heads: The *roles*
-
-Based on its (hardware-) configurations a head has multiple *roles*. 
-Each process can require specific roles to fulfill its duties.
-
-As a result, a process can only be *invoked* on a head that provides these prerequisites.
-
-Examples for these *roles* are:
-
-- Network connection
-- Dedicated graphics card
-
-
-### Getting work done: The *service*
-
-A *service* is a set of processes. By starting a service, one or more processes are invoked inside the net.
-The invokation can happen on multiple *nodes* at the same time. 
-A service can't rely on every node in the the net for execution of processes. 
-Therefore there must be a handler to react, if 
-
-- A node with an externally invoked process shuts down / looses its network connection.
-- A node that has invoked processes on other nodes shuts down / looses its connection.
-
-
-### Solving a problem: The *application*
-
-An *application* uses multiple services to solve a problem. An example can be the encoding of a movie file.
-
-> The application "Movie Render" uses the service "Encode MPG", and "Stream to Disk".
->
-> The service "Encode MPG" invokes several "Encode" processes on heads with encoding hardware.
->
-> The service "Stream to disk" invokes a process, that saves the result of the encoding to a HDD.
-
-
-On Screen: The communication
-----------------------------
-
-### Base Protocoll
-
-__*TCP* or *UDP* - that is the question.__
-Both have their (dis-) advantages over each other.
-
-With a growing number of nodes in the network, managing the TCP-socket can get tough.
-On the other hand, the TC-Protocol itself takes care of resending packets if they get lost.
-
-(Open for discussion) Maybe a look into the thesis of chris can help finding the best solution.
-
-### Packetformat
-
-The network packets can be formatted using the *XML* or the *JSON*-language.
-*JSON* is a bit more lightweight than *XML* , but since both formats are a representation of a tree, 
-they should be exchangable.
-
-A basic packet possibly has the following structure. (This is open for discussion)
-
-		\--root
-		   +--Version
-		   +--Type
-		   +--Command
-		   |  +--Command type
-		   |  \--Command parameters
-		   \--Payload
-		      +--payload length
-		      +--payload type
-		      \--payload data
-
-
-
-Inside the brain: Basic function of every head
-----------------------------------------------
-
-Since we're using Java, everything is an object.
-
-The arguments passed to a (possibly remote) called function are objects, 
-the result of that call is an object.
-Therefore a serialisation algoritm is needed to pass those objects around.
-How this algorithm works is yet to be specified.
-
-
-### In the beginning, their is *Invoke*
-
-Starting a process on a head is called invoking.
-This is comparable to a function call on a remote machine.
-
-The invokation of a process creates an process-identifing object (maybe called *PIDO*?).
-From now one every head can access this process from all over the network
-using this unique identifier.
-
-This identifiers can be aquired using the *->status* command.
-
-
-### Quis custodiet ipsos custodes: *Watch / Link*
-
-It is often necessary that some process are watched by others.
-
-A process can either be watched by another, meaning if the watch processes terminates unplanned,
-the watching process will restart it.
-
-If a process is linked to another, it will automatically terminate itself, if the parent process is terminated.
-
-
-### Interprocess communication: *Send / Receive*
-
-To fulfill their destiny the processes need to exchange data.
-This is done by the send and receive procedures. 
-To transfer any kind of data (processing data, Exceptions, status information, payload) everything is 
-packed into objects.
-
-Aside the data transfer, these functions can synchronise the distributed program flow. 
-If a process is ready to _receive_ data, it's possible, that the data isn't there yet.
-In this case, the process suspends and await the arrival.
-If the data can be tagged with a process identifier only data from this process will be accepted, 
-otherwise any process can send it.
-To avoid locks, e.g. in case of an unexpected process termination, it should be possible, to
-
-- ping tagged process, to check if they are alive
-- attach a timeout
-
-to prevent endless waiting.
-
-
-### Are you still there?: *Status*
-
-To tame (aka administer) the Hydra (aka the network) it would be usefull to see,
-what their heads are doing at the moment.
-The status request can be called from any head.
-The result contains a package with
-
-0. Base information (version, runtime, etc etc)
-1. active processes (PIDOs)
-2. available services
-3. roles
-4. possibly the current / peak load
-
-
-### Code Exchange: *Push / Pull*
-
-If a structural change inside the net occures, there could be code that needs to be exchanged.
-Therefore these two functions exists. 
-
-A new node pushes its process code to the net. 
-All other nodes pull this code, from the coordinator.
-
-Is it useful, to check every code archive using checksum?
-Which algorithm?
-Only after exchange or on a regular basis (in idle?)?
-
-
-Getting on with the evolution: Future features
-----------------------------------------------
-
-### One layer on top
-
-Implementing a network layer on top to create a communication between multiple networks. 
-This could lead towards a decentralised, distributive computation network.
-
-The abstract idea behind this layer is a network, that provides the users with the ability to
-access computational resources if needed with autmatic load balancing over the whole network.
-
-My personal example is this:
-
-> I record a video with my smartphone, uploaded the raw material to a cloud server and now want to cut it.
-> So I start my cutting application on that smartphone (or any other device in my reach, like a tablet).
-> 
-> As those devices are connected to my Hydranet ("Being hydrated"),
-> I can cut the movies directly on my device and render them remotely.
-> By starting the rendering of the new movie with possibly another encoding, my device automatically selecteds
-> the nearest Hydra (getting location information by GPS for example) that provides the service *Render Movie*.
-> Those head could be one of my one machines, or a machine inside my *peer group* or *ring of trust*.
-> 
-> The Hydra starts rendering my movie by using its own hardware and/or delegating the work to other hydras inside
-> its ring of trust.
->
-> As a result, it could be possible, that the movie, I recorded in my vacation in Berlin could be rendered 
-> on a Hydra in Hamburg which delegates the work to other Hydras all over the world.
-
-It should be possible that a Hydra can request the code for a service from another Hydra, to expand its
-capabilities. As a result, their could be malicious code, which makes the security of code a
-prime aspect of the implementation.
-
-This layer needs sophisticated routing algorithms to transport services and their data throuh the whole network of
-interconnected hydras which is the second main aspect of the implementation.
-
-In this layer a Hydra can has a single head, meaning only one single machine, a group of machines forming a network
-an also a cloud computer like Amazons EC2  which can spawn new head or even complete Hydras up to their needs.
-The boundaries between single and multi-headed Hydras blur. The big difference is the security and the interconnection.
-A head inside a Hydra knows every other head and its capabilities and trust its process code - A Hydra doesn't.
-Their is no need to know every single Hydra in the world, especially not those malicious one. 
-
-The only thing a Hydra needs to know is:
-
-- What can I do?
-- If I can't do something, do I know someone who can (or someone, who knows someone who can...)?
-
-This theoretically enables a Hydra to perform every thinkable task, either on its own heads, or by delegating the 
-task to (multiple) other Hydras it trusts.

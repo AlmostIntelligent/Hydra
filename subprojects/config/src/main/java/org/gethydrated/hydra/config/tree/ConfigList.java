@@ -8,17 +8,20 @@ import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
 /**
- * 
+ * Configuration List.
+ *
+ * Holds a list of child items. Can be leaf or node in the configuration tree.
+ *
  * @author Hanno Sternberg
  * @since 0.1.0
- * 
+ *
  */
 public class ConfigList extends ConfigItemBase {
 
     /**
-     * 
+     * Constructor.
      * @param itemName
-     *            .
+     *            Name of the item.
      */
     public ConfigList(final String itemName) {
         super(itemName);
@@ -26,12 +29,12 @@ public class ConfigList extends ConfigItemBase {
     }
 
     /**
-     * @var List of child item.
+     * List of child item.
      */
     private final List<ConfigurationItem> children;
 
     /**
-     * 
+     *
      * @return Child items.
      */
     @Override
@@ -40,7 +43,7 @@ public class ConfigList extends ConfigItemBase {
     }
 
     /**
-     * 
+     *
      * @param name
      *            .
      * @return Configuration Item with the given name.
@@ -82,12 +85,17 @@ public class ConfigList extends ConfigItemBase {
     }
 
     /**
-     * 
-     * @param prefix .
-     * @param separator .
-     * @return .
-     * @throws ConfigItemNotFoundException .
-     * @throws ConfigItemTypeException .
+     * Get a list of sub items with a common prefix.
+     *
+     * @param prefix
+     *            Name prefix.
+     * @param separator
+     *            Separator.
+     * @return ConfigList with matching items.
+     * @throws ConfigItemNotFoundException
+     *             if the name prefix doesn't exists.
+     * @throws ConfigItemTypeException
+     *             if the resulting configuration item is a value item.
      */
     public final ConfigList getSubItem(final String prefix,
             final String separator) throws ConfigItemNotFoundException,
@@ -100,11 +108,15 @@ public class ConfigList extends ConfigItemBase {
     }
 
     /**
-     * 
-     * @param prefix .
-     * @return .
-     * @throws ConfigItemNotFoundException .
-     * @throws ConfigItemTypeException .
+     * Get a list of sub items with a common prefix.
+     *
+     * @param prefix
+     *            Name prefix
+     * @return ConfigList with matching items.
+     * @throws ConfigItemNotFoundException
+     *             if the name prefix doesn't exists.
+     * @throws ConfigItemTypeException
+     *             if the resulting configuration item is a value item.
      */
     public final ConfigList getSubItem(final String[] prefix)
             throws ConfigItemNotFoundException, ConfigItemTypeException {
@@ -117,7 +129,8 @@ public class ConfigList extends ConfigItemBase {
                 for (final ConfigurationItem i : getChildren()) {
                     if (prefix[1].equalsIgnoreCase(i.getName())) {
                         if (i.hasChildren()) {
-                            final String[] newPrefix = new String[prefix.length - 1];
+                            final String[] newPrefix =
+                                    new String[prefix.length - 1];
                             System.arraycopy(prefix, 1, newPrefix, 0,
                                     prefix.length - 1);
                             return ((ConfigList) i).getSubItem(newPrefix);
@@ -167,3 +180,4 @@ public class ConfigList extends ConfigItemBase {
     }
 
 }
+

@@ -14,16 +14,16 @@ import org.junit.Test;
 
 /**
  * Testsuite for XML Configuration reader.
- * 
+ *
  * @author Hanno Sternberg
  * @since 0.1.0
- * 
+ *
  */
 public class ConfigurationReaderTest {
 
     /**
      * Test set up.
-     * 
+     *
      * @throws Exception .
      */
     @Before
@@ -32,7 +32,7 @@ public class ConfigurationReaderTest {
 
     /**
      * Test tear down.
-     * 
+     *
      * @throws Exception .
      */
     @After
@@ -47,8 +47,7 @@ public class ConfigurationReaderTest {
         final XMLConfigurationReader ld = new XMLConfigurationReader();
 
         try {
-            final InputStream inputStream = this.getClass().getClassLoader()
-                    .getResourceAsStream("testConfig.xml");
+            final InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("testConfig.xml");
             final Configuration cfg = ld.parse(inputStream);
             assertEquals("Test-configuration", cfg.getString("name"));
             assertEquals((Integer) 1337, cfg.getInteger("network.port"));

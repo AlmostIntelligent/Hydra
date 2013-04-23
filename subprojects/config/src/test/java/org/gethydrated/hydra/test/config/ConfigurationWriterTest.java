@@ -27,7 +27,7 @@ public class ConfigurationWriterTest {
 
     /**
      * Test setup.
-     * 
+     *
      * @throws Exception .
      */
     @Before
@@ -40,7 +40,7 @@ public class ConfigurationWriterTest {
 
     /**
      * Test tear down.
-     * 
+     *
      * @throws Exception .
      */
     @After

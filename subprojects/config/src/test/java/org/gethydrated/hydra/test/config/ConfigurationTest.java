@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.gethydrated.hydra.test.config;
 
@@ -23,7 +23,7 @@ import org.junit.Test;
 /**
  * @author Hanno Sternberg
  * @since 0.1.0
- * 
+ *
  */
 public class ConfigurationTest {
 
@@ -145,8 +145,8 @@ public class ConfigurationTest {
     public final void testSetBoolean() {
         cfg.setBoolean("Active", true);
         try {
-            assertTrue(((ConfigValue<Boolean>) ((ConfigList) cfg.getRoot())
-                    .getChild("Active")).value());
+            assertTrue(((ConfigValue<Boolean>) ((ConfigList) cfg.getRoot()).getChild("Active"))
+                    .value());
         } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
@@ -179,7 +179,8 @@ public class ConfigurationTest {
         try {
             assertEquals(
                     ((ConfigValue<Integer>) ((ConfigList) cfg.getRoot()).getChild("A_Number"))
-                            .value(), (Integer) 1337);
+                            .value(),
+                    (Integer) 1337);
         } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
@@ -212,7 +213,8 @@ public class ConfigurationTest {
         try {
             assertEquals(
                     ((ConfigValue<Double>) ((ConfigList) cfg.getRoot()).getChild("A_Double"))
-                            .value(), (Double) 13.37);
+                            .value(),
+                    (Double) 13.37);
         } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
@@ -230,7 +232,8 @@ public class ConfigurationTest {
         try {
             assertEquals(
                     ((ConfigValue<Double>) ((ConfigList) cfg.getRoot()).getChild("A_Double"))
-                            .value(), (Double) 13.37);
+                            .value(),
+                    (Double) 13.37);
         } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
@@ -248,7 +251,8 @@ public class ConfigurationTest {
         try {
             assertEquals(
                     ((ConfigValue<String>) ((ConfigList) cfg.getRoot()).getChild("A_String"))
-                            .value(), "foobar");
+                            .value(),
+                    "foobar");
         } catch (final ConfigItemNotFoundException e) {
             fail("Value not set");
         }
@@ -297,8 +301,8 @@ public class ConfigurationTest {
 
     @Test
     public final void testDeepTree() {
-        cfg.set("tree.element.number", 1);
-        cfg.set("tree.element.string", "String");
+        cfg.set("tree.element.number",1);
+        cfg.set("tree.element.string","String");
         cfg.set("tree.sub.element.number", 2);
         cfg.set("tree.sub.element.string", "not character");
         try {

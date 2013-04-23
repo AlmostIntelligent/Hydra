@@ -6,26 +6,28 @@ import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
 /**
- * 
+ * Configuration Value.
+ *
+ * Stores a single value. Is always a leaf in the configuration tree.
+ *
  * @author Hanno Sternberg
  * @since 0.1.0
- * 
  * @param <T>
- *            .
+ *            Type of the item.
  */
 public class ConfigValue<T> extends ConfigItemBase {
 
     /**
-     * 
+     * Constructor.
+     *
      * @param itemName
-     *            .
+     *            Name of the item.
      */
     public ConfigValue(final String itemName) {
         super(itemName);
     }
 
     /**
-     * 
      * @param itemName
      *            .
      * @param itemValue
@@ -63,7 +65,8 @@ public class ConfigValue<T> extends ConfigItemBase {
     }
 
     /**
-     * 
+     * Get the item value.
+     *
      * @return the value.
      */
     public final T value() {
@@ -71,7 +74,8 @@ public class ConfigValue<T> extends ConfigItemBase {
     }
 
     /**
-     * 
+     * Set the item value.
+     *
      * @param itemValue
      *            the value.
      */
@@ -80,7 +84,7 @@ public class ConfigValue<T> extends ConfigItemBase {
     }
 
     /**
-     * 
+     *
      * @return Type of the value.
      */
     public final Object type() {
@@ -113,7 +117,8 @@ public class ConfigValue<T> extends ConfigItemBase {
             return false;
         }
         @SuppressWarnings("unchecked")
-        final ConfigValue<T> other = (ConfigValue<T>) obj;
+        final
+        ConfigValue<T> other = (ConfigValue<T>) obj;
         return (value.equals(other.value()));
     }
 

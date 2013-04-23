@@ -8,28 +8,30 @@ import org.gethydrated.hydra.config.tree.ConfigList;
 import org.gethydrated.hydra.config.tree.ConfigValue;
 
 /**
- * 
+ * Configuration Write for XML document.
+ *
  * @author Hanno Sternberg
  * @since 0.1.0
- * 
  */
 public class XMLConfigurationWriter extends ConfigurationWriter {
 
     /**
-     * 
+     * Constructor.
+     *
      * @param cfg
-     *            Configuration.
+     *            The Configuration to write.
      */
     public XMLConfigurationWriter(final ConfigurationImpl cfg) {
         super(cfg);
     }
 
     /**
-     * 
+     * Write a number of indention characters to a stream.
+     *
      * @param stream
-     *            .
+     *            The Stream.
      * @param indent
-     *            Number of indentions.
+     *            Number of indention.
      */
     protected final void writeIndent(final PrintStream stream, final int indent) {
         for (int i = 0; i < indent; i++) {
@@ -39,11 +41,12 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
     }
 
     /**
-     * 
+     * Write a value to the stream.
+     *
      * @param stream
-     *            .
+     *            The Stream.
      * @param value
-     *            .
+     *            The value.
      * @param indent
      *            Indention.
      */
@@ -61,11 +64,12 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
     }
 
     /**
-     * 
+     * Write a list to the stream.
+     *
      * @param stream
-     *            .
+     *            The Streams.
      * @param list
-     *            .
+     *            The list.
      * @param indent
      *            Indention.
      */
@@ -91,8 +95,10 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
     }
 
     /**
+     * Save the stream.
+     *
      * @param stream
-     *            .
+     *            The stream.
      */
     @Override
     public final void saveToStream(final PrintStream stream) {

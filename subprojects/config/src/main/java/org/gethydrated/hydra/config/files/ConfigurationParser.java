@@ -9,10 +9,10 @@ import org.gethydrated.hydra.util.xml.XMLParser;
 import org.w3c.dom.Element;
 
 /**
- * Configuration parser.
- * 
- * @author Christian Kulpa
- * @since 0.2.0
+ * Configuration Parser. Creates a configuration from a XML document.
+ *
+ * @author Hanno Sternberg
+ * @since 0.1.0
  */
 public class ConfigurationParser implements XMLParser<Configuration> {
 
@@ -26,15 +26,18 @@ public class ConfigurationParser implements XMLParser<Configuration> {
      */
     private StringStack stack;
 
+    /**
+     * Flag to indicate, if the parsing is complete.
+     */
     private boolean complete = false;
 
     @Override
-    public Configuration getResult() {
+    public final Configuration getResult() {
         return complete ? cfg : null;
     }
 
     @Override
-    public void startElement(final Element element) {
+    public final void startElement(final Element element) {
         switch (element.getTagName()) {
         case "hydra:configuration":
             parseConfigStart(element);
@@ -50,7 +53,7 @@ public class ConfigurationParser implements XMLParser<Configuration> {
     }
 
     @Override
-    public void endElement(final Element element) {
+    public final void endElement(final Element element) {
         switch (element.getTagName()) {
         case "hydra:configuration":
             parseConfigEnd(element);
@@ -63,23 +66,53 @@ public class ConfigurationParser implements XMLParser<Configuration> {
         }
     }
 
+    /**
+     * Parse a configuration start tag.
+     *
+     * @param element
+     *            The parsed element.
+     */
     private void parseConfigStart(final Element element) {
         cfg = new ConfigurationImpl();
         stack = new StringStack();
     }
 
+    /**
+     * Parse a configuration end tag.
+     *
+     * @param element
+     *            The parsed element.
+     */
     private void parseConfigEnd(final Element element) {
         complete = true;
     }
 
+    /**
+     * Parse the start of a configuration list.
+     *
+     * @param element
+     *            The parsed element.
+     */
     private void parseConfigListStart(final Element element) {
         stack.push(element.getAttribute("name"));
     }
 
+    /**
+     * Parse the end of a configuration list.
+     *
+     * @param element
+     *            The parsed element.
+     */
     private void parseConfigListEnd(final Element element) {
         stack.pop();
     }
 
+    /**
+     * Parse a configuration value.
+     *
+     * @param element
+     *            The parsed element.
+     */
     private void parseConfigValue(final Element element) {
 
         final String value = element.getAttribute("value");
@@ -111,7 +144,7 @@ public class ConfigurationParser implements XMLParser<Configuration> {
 
     /**
      * A stack of strings.
-     * 
+     *
      * @author Hanno
      * @since 0.1.0
      */
@@ -123,7 +156,7 @@ public class ConfigurationParser implements XMLParser<Configuration> {
         private final List<String> strs = new LinkedList<>();
 
         /**
-         * 
+         *
          * @param s
          *            .
          */
@@ -139,7 +172,16 @@ public class ConfigurationParser implements XMLParser<Configuration> {
         }
 
         /**
-         * 
+         *
+         * @param s
+         *            .
+         */
+        public void remove(final String s) {
+            strs.remove(s);
+        }
+
+        /**
+         *
          * @param seperator
          *            .
          * @return The stack as a single string.
