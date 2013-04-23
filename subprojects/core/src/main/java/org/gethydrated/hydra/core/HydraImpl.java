@@ -1,8 +1,5 @@
 package org.gethydrated.hydra.core;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -16,6 +13,7 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
 import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
+import org.gethydrated.hydra.core.internal.DeadMessageRecycler;
 import org.gethydrated.hydra.core.internal.Nodes;
 import org.gethydrated.hydra.core.io.network.NetKernel;
 import org.gethydrated.hydra.core.io.network.NetKernelImpl;
@@ -30,6 +28,9 @@ import org.gethydrated.hydra.core.sid.InternalSID;
 import org.gethydrated.hydra.core.sid.LocalSID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Hydra implementation.
@@ -126,6 +127,12 @@ public final class HydraImpl implements InternalHydra {
                 return new GlobalRegistry(hydra);
             }
         }, "globalregistry");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
+                return new DeadMessageRecycler(sidFactory);
+            }
+        }, "recycler");
     }
 
     @Override

@@ -15,7 +15,7 @@ import org.gethydrated.hydra.chat.messages.Renamed;
 import javax.swing.*;
 
 /**
- *
+ * Example chat service activator.
  */
 public class ChatActivator implements ServiceActivator {
 

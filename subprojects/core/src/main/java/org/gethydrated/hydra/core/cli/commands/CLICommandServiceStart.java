@@ -49,10 +49,10 @@ public class CLICommandServiceStart extends CLICommand {
         try {
             final SID id = getHydra().startService(args[0]);
             return new CLIResponse(String.format(
-                    "Service started with SID: %s", id.toString()));
+                    "Service started with SID: %s\n", id.toString()));
         } catch (final HydraException e) {
             return new CLIResponse(String.format("An exception occurred:"
-                    + e.getMessage()));
+                    + e.getMessage() + "\n"));
         }
     }
 

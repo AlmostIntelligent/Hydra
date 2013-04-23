@@ -70,7 +70,7 @@ public class ServerHandshakeHandler extends
     }
 
     @Override
-    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+    public void channelRegistered(final ChannelHandlerContext ctx) throws Exception {
         this.ctx = ctx;
         timeout = ctx.executor().schedule(new Runnable() {
 

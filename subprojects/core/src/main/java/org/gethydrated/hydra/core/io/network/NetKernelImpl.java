@@ -9,6 +9,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
@@ -94,6 +95,7 @@ public final class NetKernelImpl implements NetKernel {
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(initializerFactory.createServerInitializer());
+            serverBootstrap.option(ChannelOption.SO_REUSEADDR, false);
             try {
                 final ChannelFuture f = serverBootstrap.bind(port)
                         .syncUninterruptibly();

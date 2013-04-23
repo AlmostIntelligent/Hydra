@@ -130,6 +130,8 @@ public class ClientHandshakeHandler extends
                     setFailure(new RuntimeException(
                             "Concurrent connection attempt."));
                 }
+            } else {
+                System.out.println(msg);
             }
         }
 
@@ -151,9 +153,9 @@ public class ClientHandshakeHandler extends
     }
 
     private void setFailure(final Throwable cause) {
-        timeout.cancel(true);
         handshakeFailure = true;
         failureCause = cause;
+        timeout.cancel(true);
         for (;;) {
             final ChannelPromise f = handshakeFutures.poll();
             if (f == null) {
@@ -165,8 +167,8 @@ public class ClientHandshakeHandler extends
     }
 
     private void setSuccess() {
-        timeout.cancel(true);
         handshakeSuccess = true;
+        timeout.cancel(true);
         for (;;) {
             final ChannelPromise f = handshakeFutures.poll();
             if (f == null) {

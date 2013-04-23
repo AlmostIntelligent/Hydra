@@ -1,11 +1,12 @@
 package org.gethydrated.hydra.actors.mailbox;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.node.ActorNode;
+import org.gethydrated.hydra.api.event.DeadMessage;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Mailbox queue implementation using a blocking queue.
@@ -46,15 +47,22 @@ public class BlockingQueueMailbox implements Mailbox {
 
     @Override
     public void enqueue(final ActorRef self, final Message m) {
-        synchronized (messages) {
-            messages.offer(m);
+        if (!closed) {
+            synchronized (messages) {
+                messages.offer(m);
+            }
+        }else {
+            actorNode.getSystem().getEventStream().publish(new DeadMessage(m.getMessage()));
         }
+
     }
 
     @Override
     public void enqueueSystem(final ActorRef self, final Message m) {
-        synchronized (systemMessages) {
-            systemMessages.offer(m);
+        if (!closed) {
+            synchronized (systemMessages) {
+                systemMessages.offer(m);
+            }
         }
     }
 
@@ -109,6 +117,13 @@ public class BlockingQueueMailbox implements Mailbox {
     @Override
     public void setClosed() {
         closed = true;
+        for (;;) {
+            Message m = messages.poll();
+            if (m == null) {
+                break;
+            }
+            actorNode.getSystem().getEventStream().publish(new DeadMessage(m.getMessage()));
+        }
     }
 
     @Override
