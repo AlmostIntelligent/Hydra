@@ -61,17 +61,18 @@ public class GlobalRegistry extends Actor {
             acquireLock();
             enqueue(message);
         } else if (message instanceof Granted) {
-            hasLock = true;
-            waitingForLock = false;
-            if (syncing) {
-                sync();
+            if (((Granted) message).isValid()) {
+                hasLock = true;
+                waitingForLock = false;
+                if (syncing) {
+                    sync();
+                }
+                try {
+                    processQueue();
+                } finally {
+                    releaseLock();
+                }
             }
-            try {
-                processQueue();
-            } finally {
-                releaseLock();
-            }
-
         } else if (message instanceof RegistryState) {
             acceptUpdate(((RegistryState) message).getRegistry());
         } else if (message instanceof Sync) {

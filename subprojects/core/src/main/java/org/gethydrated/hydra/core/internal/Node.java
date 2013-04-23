@@ -214,9 +214,6 @@ public class Node extends Actor {
                     getRecipient(systemEvent).getPath(), connection.uuid()));
         }
         env.setSObject(so);
-        if (systemEvent instanceof ServiceDown) {
-            System.out.println(env);
-        }
         return env;
     }
 

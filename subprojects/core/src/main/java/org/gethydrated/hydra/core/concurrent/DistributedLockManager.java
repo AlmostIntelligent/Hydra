@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Implements Lamport's Distributed Mutual Exclusion Algorithm.
@@ -26,6 +27,8 @@ public class DistributedLockManager extends Actor {
     private boolean enqueued;
 
     private final HashMap<Lock, ActorRef> localQueue = new HashMap<>();
+
+    private AtomicBoolean currentGranted;
 
     private final PriorityQueue<LockRequest> queue = new PriorityQueue<>(10,
             new Comparator<LockRequest>() {
@@ -90,6 +93,8 @@ public class DistributedLockManager extends Actor {
                     r.tell(rl, getSelf());
                 }
                 holder = null;
+                currentGranted.set(false);
+                currentGranted = null;
                 release(new LockRelease(nodeController.getLocal()));
             } catch (InterruptedException | ExecutionException
                     | TimeoutException e) {
@@ -150,7 +155,8 @@ public class DistributedLockManager extends Actor {
                         .iterator().next();
                 if (e.getValue() != null) {
                     holder = e.getKey();
-                    e.getValue().tell(new Granted(), getSelf());
+                    currentGranted = new AtomicBoolean(true);
+                    e.getValue().tell(new Granted(currentGranted), getSelf());
                     localQueue.remove(e.getKey());
                 } else {
                     release(new LockRelease(nodeController.getLocal()));
