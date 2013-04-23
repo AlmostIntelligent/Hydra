@@ -1,18 +1,19 @@
 package org.gethydrated.hydra.util.xml;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- *
+ * Default document loader implementation.
  */
 public class DefaultDocumentLoader implements DocumentLoader {
 
@@ -30,23 +31,35 @@ public class DefaultDocumentLoader implements DocumentLoader {
 
     private final EntityResolver entityResolver;
 
+    /**
+     * Constructor.
+     */
     public DefaultDocumentLoader() {
         this.errorHandler = new DefaultErrorHandler();
         this.entityResolver = new LocalSchemaResolver();
     }
 
-    public DefaultDocumentLoader(EntityResolver entityResolver, ErrorHandler errorHandler) {
+    /**
+     * Constructor.
+     * @param entityResolver schema resolver.
+     * @param errorHandler error handler.
+     */
+    public DefaultDocumentLoader(final EntityResolver entityResolver,
+            final ErrorHandler errorHandler) {
         this.entityResolver = entityResolver;
         this.errorHandler = errorHandler;
     }
 
     @Override
-    public Document loadDocument(InputStream inputStream) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    public Document loadDocument(final InputStream inputStream)
+            throws ParserConfigurationException, IOException, SAXException {
+        final DocumentBuilderFactory builderFactory = DocumentBuilderFactory
+                .newInstance();
         builderFactory.setValidating(true);
         builderFactory.setNamespaceAware(true);
-        builderFactory.setAttribute(SCHEMA_LANGUAGE_ATTRIBUTE, XSD_SCHEMA_LANGUAGE);
-        DocumentBuilder builder = builderFactory.newDocumentBuilder();
+        builderFactory.setAttribute(SCHEMA_LANGUAGE_ATTRIBUTE,
+                XSD_SCHEMA_LANGUAGE);
+        final DocumentBuilder builder = builderFactory.newDocumentBuilder();
         builder.setErrorHandler(errorHandler);
         builder.setEntityResolver(entityResolver);
         return builder.parse(inputStream);

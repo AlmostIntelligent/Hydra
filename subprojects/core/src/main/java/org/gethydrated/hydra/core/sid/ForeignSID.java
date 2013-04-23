@@ -1,19 +1,21 @@
 package org.gethydrated.hydra.core.sid;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import java.util.concurrent.Future;
+
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.core.io.transport.SerializedObject;
 
-import java.util.concurrent.Future;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 /**
- *
+ * Service identifier used for services on other
+ * Hydra nodes.
  */
-public class ForeignSID implements InternalSID {
+public final class ForeignSID implements InternalSID {
 
     private final USID usid;
 
@@ -21,9 +23,17 @@ public class ForeignSID implements InternalSID {
 
     private final int nodeId;
 
-    private ObjectWriter writer;
+    private final ObjectWriter writer;
 
-    public ForeignSID(int nodeId, USID usid, ActorRef ref, ObjectWriter writer) {
+    /**
+     * Default constructor.
+     * @param nodeId    Hydra node id.
+     * @param usid      Unique service id.
+     * @param ref       Actorref of the io actor.
+     * @param writer    Object serializer.
+     */
+    public ForeignSID(final int nodeId, final USID usid, final ActorRef ref,
+            final ObjectWriter writer) {
         this.ref = ref;
         this.usid = usid;
         this.nodeId = nodeId;
@@ -36,20 +46,22 @@ public class ForeignSID implements InternalSID {
     }
 
     @Override
-    public void tell(Object message, SID sender) {
-        if (!(message instanceof SystemEvent) && !(message instanceof SerializedObject)) {
-            SerializedObject so = new SerializedObject();
+    public void tell(final Object m, final SID sender) {
+        Object message = m;
+        if (!(message instanceof SystemEvent)
+                && !(message instanceof SerializedObject)) {
+            final SerializedObject so = new SerializedObject();
             so.setSender(sender.getUSID());
             so.setTarget(usid);
             so.setClassName(message.getClass().getName());
             try {
                 so.setData(writer.writeValueAsBytes(message));
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 e.printStackTrace();
             }
             message = so;
         }
-        if(sender == null) {
+        if (sender == null) {
             ref.tell(message, ref);
         } else {
             ref.tell(message, ((InternalSID) sender).getRef());
@@ -57,7 +69,7 @@ public class ForeignSID implements InternalSID {
     }
 
     @Override
-    public Future<?> ask(Object message) {
+    public Future<?> ask(final Object message) {
         return null;
     }
 
@@ -68,6 +80,7 @@ public class ForeignSID implements InternalSID {
 
     @Override
     public String toString() {
-        return "<"+ nodeId + ":" + usid.getTypeId()+ ":" + usid.getServiceId() + ">";
+        return "<" + nodeId + ":" + usid.getTypeId() + ":"
+                + usid.getServiceId() + ">";
     }
 }

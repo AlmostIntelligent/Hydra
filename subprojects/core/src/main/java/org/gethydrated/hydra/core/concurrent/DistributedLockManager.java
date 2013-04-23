@@ -25,64 +25,74 @@ public class DistributedLockManager extends Actor {
 
     private boolean enqueued;
 
-    private HashMap<Lock, ActorRef> localQueue = new HashMap<>();
+    private final HashMap<Lock, ActorRef> localQueue = new HashMap<>();
 
-    private PriorityQueue<LockRequest> queue = new PriorityQueue<>(10, new Comparator<LockRequest>() {
-        @Override
-        public int compare(LockRequest o1, LockRequest o2) {
-            if(o1.getTimestamp() == o2.getTimestamp()) {
-                return o1.getNodeId().compareTo(o2.getNodeId());
-            }
-            return ((Long)o1.getTimestamp()).compareTo(o2.getTimestamp());
-        }
-    });
+    private final PriorityQueue<LockRequest> queue = new PriorityQueue<>(10,
+            new Comparator<LockRequest>() {
+                @Override
+                public int compare(final LockRequest o1, final LockRequest o2) {
+                    if (o1.getTimestamp() == o2.getTimestamp()) {
+                        return o1.getNodeId().compareTo(o2.getNodeId());
+                    }
+                    return ((Long) o1.getTimestamp()).compareTo(o2
+                            .getTimestamp());
+                }
+            });
 
-    public DistributedLockManager(NodeController nodeController) {
+    /**
+     * Constructor.
+     * @param nodeController node controller.
+     */
+    public DistributedLockManager(final NodeController nodeController) {
         this.nodeController = nodeController;
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
+    public void onReceive(final Object message) throws Exception {
         try {
-            if(message instanceof LockRequest) {
+            if (message instanceof LockRequest) {
                 enqueue((LockRequest) message);
-            } else if(message instanceof LockRelease) {
+            } else if (message instanceof LockRelease) {
                 release((LockRelease) message);
             } else if (message instanceof LockReply) {
-                if(remainingGranted != null) {
+                if (remainingGranted != null) {
                     remainingGranted.remove(((LockReply) message).getNodeId());
                     checkGranted();
                 }
-            } else if(message instanceof Lock) {
+            } else if (message instanceof Lock) {
                 switch (((Lock) message).getType()) {
-                    case LOCK:
-                        enqueueLocal((Lock) message);
-                        break;
-                    case UNLOCK:
-                        releaseLocal((Lock) message);
-
-                        break;
+                case LOCK:
+                    enqueueLocal((Lock) message);
+                    break;
+                case UNLOCK:
+                    releaseLocal((Lock) message);
+                    break;
+                default:
+                    break;
                 }
-            } else if(message instanceof NodeDown) {
+            } else if (message instanceof NodeDown) {
                 release(new LockRelease(((NodeDown) message).getUuid()));
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void releaseLocal(Lock lock) {
-        if(holder != null && holder.getId().equals(lock.getId())) {
+    private void releaseLocal(final Lock lock) {
+        if (holder != null && holder.getId().equals(lock.getId())) {
             try {
-                LockRelease rl = new LockRelease(nodeController.getLocal());
-                Set<UUID> nodes = getNodes();
-                for(UUID u : nodes) {
-                    ActorRef r = getContext().getActor("/app/nodes/" + nodeController.getID(u));
+                final LockRelease rl = new LockRelease(
+                        nodeController.getLocal());
+                final Set<UUID> nodes = getNodes();
+                for (final UUID u : nodes) {
+                    final ActorRef r = getContext().getActor(
+                            "/app/nodes/" + nodeController.getID(u));
                     r.tell(rl, getSelf());
                 }
                 holder = null;
                 release(new LockRelease(nodeController.getLocal()));
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            } catch (InterruptedException | ExecutionException
+                    | TimeoutException e) {
                 getSelf().tell(lock, getSender());
             }
         } else if (localQueue.containsKey(lock)) {
@@ -90,47 +100,55 @@ public class DistributedLockManager extends Actor {
         }
     }
 
-    private void enqueueLocal(Lock lock) {
+    private void enqueueLocal(final Lock lock) {
         localQueue.put(lock, getSender());
-        enqueue(new LockRequest(nodeController.getLocal(),getSystem().getClock().getCurrentTime()));
+        enqueue(new LockRequest(nodeController.getLocal(), getSystem()
+                .getClock().getCurrentTime()));
     }
 
-    private void enqueue(LockRequest lockRequest) {
-        if(lockRequest.getNodeId().equals(nodeController.getLocal())) {
-            if(!enqueued && holder == null) {
+    private void enqueue(final LockRequest lockRequest) {
+        if (lockRequest.getNodeId().equals(nodeController.getLocal())) {
+            if (!enqueued && holder == null) {
                 try {
-                    Set<UUID> nodes = getNodes();
-                    for(UUID u : nodes) {
-                        ActorRef r = getContext().getActor("/app/nodes/" + nodeController.getID(u));
+                    final Set<UUID> nodes = getNodes();
+                    for (final UUID u : nodes) {
+                        final ActorRef r = getContext().getActor(
+                                "/app/nodes/" + nodeController.getID(u));
                         r.tell(lockRequest, getSelf());
                     }
                     remainingGranted = nodes;
                     queue.add(lockRequest);
                     enqueued = true;
                     checkGranted();
-                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                } catch (InterruptedException | ExecutionException
+                        | TimeoutException e) {
                     getSelf().tell(lockRequest, getSender());
                 }
             }
         } else {
             queue.add(lockRequest);
-            getSender().tell(new LockReply(nodeController.getLocal(), getSystem().getClock().getCurrentTime()), getSelf());
+            getSender().tell(
+                    new LockReply(nodeController.getLocal(), getSystem()
+                            .getClock().getCurrentTime()), getSelf());
         }
 
     }
 
-    private void release(LockRelease lockRelease) {
-        queue.remove(new LockRequest(lockRelease.getNodeId(),0));
+    private void release(final LockRelease lockRelease) {
+        queue.remove(new LockRequest(lockRelease.getNodeId(), 0));
         checkGranted();
     }
 
     private void checkGranted() {
-        if(remainingGranted != null && remainingGranted.isEmpty() && !queue.isEmpty()
-                && queue.peek().getNodeId().equals(nodeController.getLocal()) && holder == null) {
+        if (remainingGranted != null && remainingGranted.isEmpty()
+                && !queue.isEmpty()
+                && queue.peek().getNodeId().equals(nodeController.getLocal())
+                && holder == null) {
             enqueued = false;
-            if(!localQueue.isEmpty()) {
-                Entry<Lock, ActorRef> e = localQueue.entrySet().iterator().next();
-                if(e.getValue() != null) {
+            if (!localQueue.isEmpty()) {
+                final Entry<Lock, ActorRef> e = localQueue.entrySet()
+                        .iterator().next();
+                if (e.getValue() != null) {
                     holder = e.getKey();
                     e.getValue().tell(new Granted(), getSelf());
                     localQueue.remove(e.getKey());
@@ -144,10 +162,11 @@ public class DistributedLockManager extends Actor {
     }
 
     @SuppressWarnings("unchecked")
-    private Set<UUID> getNodes() throws InterruptedException, ExecutionException, TimeoutException {
-        ActorRef nodesRef = getContext().getActor("/app/nodes");
-        Future f = nodesRef.ask("nodes");
-        return  (Set<UUID>) f.get(10, TimeUnit.SECONDS);
+    private Set<UUID> getNodes() throws InterruptedException,
+            ExecutionException, TimeoutException {
+        final ActorRef nodesRef = getContext().getActor("/app/nodes");
+        final Future<?> f = nodesRef.ask("nodes");
+        return (Set<UUID>) f.get(10, TimeUnit.SECONDS);
     }
 
     @Override

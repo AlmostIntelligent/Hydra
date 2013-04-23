@@ -1,14 +1,18 @@
 package org.gethydrated.hydra.actors.refs;
 
-import org.gethydrated.hydra.actors.*;
-import org.gethydrated.hydra.actors.node.ActorNode;
-
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.gethydrated.hydra.actors.ActorCreator;
+import org.gethydrated.hydra.actors.ActorFactory;
+import org.gethydrated.hydra.actors.ActorPath;
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.actors.SyncVar;
+import org.gethydrated.hydra.actors.node.ActorNode;
+
 /**
- * Wraps an ActorNode into a Reference. There can
- * only be one ActorNodeRef per ActorNode.
+ * Wraps an ActorNode into a Reference. There can only be one ActorNodeRef per
+ * ActorNode.
  */
 public class ActorNodeRef implements InternalRef {
 
@@ -16,7 +20,15 @@ public class ActorNodeRef implements InternalRef {
 
     private final ActorPath actorPath;
 
-    public ActorNodeRef(String name, ActorFactory actorFactory, InternalRef parent, ActorCreator creator) {
+    /**
+     * Constructor.
+     * @param name Name of the actor node.
+     * @param actorFactory actor factory.
+     * @param parent parent actor.
+     * @param creator actor creator.
+     */
+    public ActorNodeRef(final String name, final ActorFactory actorFactory,
+            final InternalRef parent, final ActorCreator creator) {
         this.actorPath = parent.getPath().createChild(name);
         this.actorNode = new ActorNode(this, parent, actorFactory, creator);
     }
@@ -32,7 +44,7 @@ public class ActorNodeRef implements InternalRef {
     }
 
     @Override
-    public void restart(Throwable cause) {
+    public void restart(final Throwable cause) {
         actorNode.restart(cause);
     }
 
@@ -42,26 +54,26 @@ public class ActorNodeRef implements InternalRef {
     }
 
     @Override
-    public void resume(Throwable cause) {
+    public void resume(final Throwable cause) {
         actorNode.resume(cause);
     }
 
     @Override
-    public void tellSystem(Object o, ActorRef sender) {
+    public void tellSystem(final Object o, final ActorRef sender) {
         actorNode.sendSystem(o, sender);
     }
 
     @Override
-    public InternalRef getChild(String name) {
-        InternalRef child = actorNode.getChild(name);
-        if(child != null) {
+    public InternalRef getChild(final String name) {
+        final InternalRef child = actorNode.getChild(name);
+        if (child != null) {
             return child;
         }
         return new NullRef();
     }
 
     @Override
-    public InternalRef findActor(List<String> names) {
+    public InternalRef findActor(final List<String> names) {
         if (names.isEmpty()) {
             return this;
         }
@@ -94,14 +106,14 @@ public class ActorNodeRef implements InternalRef {
     }
 
     @Override
-    public void tell(Object o, ActorRef sender) {
-        actorNode.sendMessage(o,sender);
+    public void tell(final Object o, final ActorRef sender) {
+        actorNode.sendMessage(o, sender);
     }
 
     @Override
-    public Future<?> ask(Object o) {
-        SyncVar<?> f = new SyncVar<>();
-        FutureRef<?> ref = new FutureRef<>(f, actorNode.getCreator());
+    public Future<?> ask(final Object o) {
+        final SyncVar<?> f = new SyncVar<>();
+        final FutureRef<?> ref = new FutureRef<>(f, actorNode.getCreator());
         tell(o, ref);
         return f;
     }

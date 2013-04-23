@@ -10,17 +10,15 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
  * 
  */
 public class CLICommandConfig extends CLICommand {
-
+    
     /**
-         * 
-         */
-
-    /**
-     *
+     * Constructor.
      * @param hydra
-     *            Service context.
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandConfig(final InternalHydra hydra, CLICommand root) {
+    public CLICommandConfig(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
         addSubCommand(new CLICommandConfigSet(hydra, root));
         addSubCommand(new CLICommandConfigGet(hydra, root));
@@ -49,7 +47,7 @@ public class CLICommandConfig extends CLICommand {
 
     @Override
     protected final String generateHelpText() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }

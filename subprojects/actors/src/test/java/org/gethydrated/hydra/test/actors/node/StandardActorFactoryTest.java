@@ -1,9 +1,8 @@
 package org.gethydrated.hydra.test.actors.node;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -25,19 +24,21 @@ import org.junit.runner.RunWith;
  */
 @RunWith(JMockit.class)
 public class StandardActorFactoryTest {
-	
-	@Mocked ActorNode m;
-	
-	@Before
-	public void setup() {
-		new MockUp<ActorNode>() {
-			
-			@Mock ActorNode getLocalActorNode() {
-				return m;
-			}
-		};
-	}
-	
+
+    @Mocked
+    ActorNode m;
+
+    @Before
+    public void setup() {
+        new MockUp<ActorNode>() {
+
+            @Mock
+            ActorNode getLocalActorNode() {
+                return m;
+            }
+        };
+    }
+
     /**
      * 'Normal' public static nested class.
      * 
@@ -46,8 +47,8 @@ public class StandardActorFactoryTest {
      */
     @Test
     public void testStaticClassCreation() throws Exception {
-        ActorFactory af = new DefaultActorFactory(StaticActor.class);
-        Actor ac = af.create();
+        final ActorFactory af = new DefaultActorFactory(StaticActor.class);
+        final Actor ac = af.create();
 
         assertNotNull(ac);
         assertTrue(ac instanceof StaticActor);
@@ -63,9 +64,9 @@ public class StandardActorFactoryTest {
      */
     @Test(expected = NoSuchMethodException.class)
     public void testNonStaticClassCreation() throws Exception {
-        ActorFactory af = new DefaultActorFactory(NonStaticActor.class);
+        final ActorFactory af = new DefaultActorFactory(NonStaticActor.class);
 
-        Actor ac = af.create();
+        final Actor ac = af.create();
 
         assertNotNull(ac);
     }
@@ -79,9 +80,9 @@ public class StandardActorFactoryTest {
      */
     @Test(expected = NoSuchMethodException.class)
     public void testPrivateClassCreation() throws Exception {
-        ActorFactory af = new DefaultActorFactory(PrivateActor.class);
+        final ActorFactory af = new DefaultActorFactory(PrivateActor.class);
 
-        Actor ac = af.create();
+        final Actor ac = af.create();
 
         assertNotNull(ac);
     }
@@ -95,10 +96,10 @@ public class StandardActorFactoryTest {
      */
     @Test
     public void testInstanceNotEqual() throws Exception {
-        ActorFactory af = new DefaultActorFactory(StaticActor.class);
+        final ActorFactory af = new DefaultActorFactory(StaticActor.class);
 
-        Actor ac1 = af.create();
-        Actor ac2 = af.create();
+        final Actor ac1 = af.create();
+        final Actor ac2 = af.create();
 
         assertNotNull(ac1);
         assertNotNull(ac2);
@@ -109,38 +110,41 @@ public class StandardActorFactoryTest {
 
     /**
      * Public static test class.
+     * 
      * @author Christian Kulpa
-     *
+     * 
      */
     public static class StaticActor extends Actor {
 
         @Override
-        public void onReceive(Object message) throws Exception {
+        public void onReceive(final Object message) throws Exception {
         }
     }
 
     /**
      * Public non-static test class.
+     * 
      * @author Christian Kulpa
-     *
+     * 
      */
     public class NonStaticActor extends Actor {
 
         @Override
-        public void onReceive(Object message) throws Exception {
+        public void onReceive(final Object message) throws Exception {
         }
 
     }
 
     /**
      * Private static test class.
+     * 
      * @author Christian Kulpa
-     *
+     * 
      */
     private static class PrivateActor extends Actor {
 
         @Override
-        public void onReceive(Object message) throws Exception {
+        public void onReceive(final Object message) throws Exception {
         }
     }
 }

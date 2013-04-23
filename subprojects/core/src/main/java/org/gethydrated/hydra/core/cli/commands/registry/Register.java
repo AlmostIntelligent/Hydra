@@ -5,13 +5,15 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.cli.commands.CLICommand;
 
 /**
- *
+ * Service register command.
  */
 public class Register extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra parent Hydra.
+     * @param root Root command.
      */
-    public Register(InternalHydra hydra, CLICommand root) {
+    public Register(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
         addSubCommand(new RegisterLocal(hydra, root));
         addSubCommand(new RegisterGlobal(hydra, root));
@@ -38,7 +40,7 @@ public class Register extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         return new CLIResponse(displayHelp());
     }
 

@@ -1,18 +1,22 @@
 package org.gethydrated.hydra.actors;
 
-import org.gethydrated.hydra.actors.node.ActorNode;
-
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gethydrated.hydra.actors.node.ActorNode;
+
 /**
  * Immutable path that can be used to describe actor addresses.
  */
 public class ActorPath implements Serializable {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -6954568935779532441L;
     /**
      * String array that represents the name hierarchy.
      */
@@ -27,7 +31,9 @@ public class ActorPath implements Serializable {
 
     /**
      * Copy constructor.
-     * @param path source path
+     * 
+     * @param path
+     *            source path
      */
     private ActorPath(final ActorPath path) {
         this.pathStack = new String[path.pathStack.length];
@@ -36,8 +42,9 @@ public class ActorPath implements Serializable {
 
     /**
      * Creates a new ActorPath from a given name hierarchy.
-     *
-     * @param path name hierarchy represented by a string array.
+     * 
+     * @param path
+     *            name hierarchy represented by a string array.
      */
     public ActorPath(final String[] path) {
         pathStack = new String[path.length];
@@ -46,7 +53,7 @@ public class ActorPath implements Serializable {
 
     /**
      * Returns true, if the path is a root "/" path.
-     *
+     * 
      * @return true, if the path is root.
      */
     public final boolean isRoot() {
@@ -55,13 +62,14 @@ public class ActorPath implements Serializable {
 
     /**
      * Creates a new child path under the current path.
-     *
-     * @param name child name.
+     * 
+     * @param name
+     *            child name.
      * @return child path.
      */
     public final ActorPath createChild(final String name) {
         validateName(name);
-        String[] newPathStack = new String[pathStack.length + 1];
+        final String[] newPathStack = new String[pathStack.length + 1];
         System.arraycopy(pathStack, 0, newPathStack, 0, pathStack.length);
         newPathStack[pathStack.length] = name;
         return new ActorPath(newPathStack);
@@ -69,23 +77,23 @@ public class ActorPath implements Serializable {
 
     /**
      * Returns a path to the parent of the current path.
-     *
+     * 
      * @return the parents path.
-     * @throws RuntimeException when trying to get parent of root.
      */
     public final ActorPath parent() {
         if (isRoot()) {
             throw new RuntimeException("There is no parent to root");
         }
-        String[] newPathStack = new String[pathStack.length - 1];
+        final String[] newPathStack = new String[pathStack.length - 1];
         System.arraycopy(pathStack, 0, newPathStack, 0, pathStack.length - 1);
         return new ActorPath(newPathStack);
     }
 
     /**
      * Checks if the current path is an ancestor of the given path.
-     *
-     * @param parent ancestor path.
+     * 
+     * @param parent
+     *            ancestor path.
      * @return true, if given path is a valid ancestor.
      */
     public final boolean isChildOf(final ActorPath parent) {
@@ -102,7 +110,7 @@ public class ActorPath implements Serializable {
 
     /**
      * Returns the target actors name.
-     *
+     * 
      * @return actor name.
      */
     public String getName() {
@@ -114,8 +122,8 @@ public class ActorPath implements Serializable {
         if (isRoot()) {
             return "/";
         }
-        StringBuilder sb = new StringBuilder();
-        for (String s : pathStack) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String s : pathStack) {
             sb.append("/");
             sb.append(s);
         }
@@ -123,7 +131,7 @@ public class ActorPath implements Serializable {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -136,7 +144,7 @@ public class ActorPath implements Serializable {
         if (getClass() != o.getClass()) {
             return false;
         }
-        ActorPath actorPath = (ActorPath) o;
+        final ActorPath actorPath = (ActorPath) o;
         return java.util.Arrays.equals(pathStack, actorPath.pathStack);
 
     }
@@ -146,15 +154,17 @@ public class ActorPath implements Serializable {
         return Arrays.hashCode(pathStack);
     }
 
-    public static ActorPath apply(ActorPath path, String uri) throws MalformedURLException {
+    public static ActorPath apply(final ActorPath path, final String uri)
+            throws MalformedURLException {
         ActorPath result = path;
-        if (uri.startsWith("/")) {
+        String tmp = uri;
+        if (tmp.startsWith("/")) {
             result = new ActorPath();
-            uri = uri.substring(1);
+            tmp = tmp.substring(1);
         }
-        String[] uris = uri.split("/");
+        final String[] uris = tmp.split("/");
         try {
-            for (String s : uris) {
+            for (final String s : uris) {
                 if (s.equals("..")) {
                     result = result.parent();
                 } else {
@@ -162,16 +172,18 @@ public class ActorPath implements Serializable {
                 }
             }
             return result;
-        } catch (Exception e) {
-            throw new MalformedURLException("Cannot apply " + uri + " to '" + path + "'");
+        } catch (final Exception e) {
+            throw new MalformedURLException("Cannot apply " + uri + " to '"
+                    + path + "'");
         }
     }
 
-    public static ActorPath apply(final String uri) throws MalformedURLException {
+    public static ActorPath apply(final String uri)
+            throws MalformedURLException {
         return apply(new ActorPath(), uri);
     }
 
-    private static boolean validateName(String name) {
+    private static boolean validateName(final String name) {
         return name.matches("[a-zA-Z0-9_-]");
     }
 

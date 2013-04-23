@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.core.io.transport;
 
+import java.lang.ref.WeakReference;
+
 import org.gethydrated.hydra.actors.ActorCreator;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -8,24 +10,31 @@ import org.gethydrated.hydra.actors.refs.InternalRef;
 import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.service.USID;
 
-import java.lang.ref.WeakReference;
-
 /**
- * Temporary actor
+ * Temporary actor ref.
+ * @author Christian Kulpa
+ * @since 0.2.0
  */
 public class RelayRef extends AbstractMinimalRef {
 
-    private WeakReference<ActorRef> parent;
+    private final WeakReference<ActorRef> parent;
 
-    private ActorCreator creator;
+    private final ActorCreator creator;
 
-    private ActorPath path;
+    private final ActorPath path;
 
-    private USID relay;
+    private final USID relay;
 
-    private boolean systemHint;
+    private final boolean systemHint;
 
-    public RelayRef(ActorRef parent, USID relay, boolean systemHint) {
+    /**
+     * Constructor.
+     * @param parent parent actor.
+     * @param relay relay usid.
+     * @param systemHint system relay.
+     */
+    public RelayRef(final ActorRef parent, final USID relay,
+            final boolean systemHint) {
         super();
         this.parent = new WeakReference<>(parent);
         this.creator = ((InternalRef) parent).getCreator();
@@ -51,39 +60,68 @@ public class RelayRef extends AbstractMinimalRef {
     }
 
     @Override
-    public void tell(Object o, ActorRef sender) {
-        ActorRef ref = parent.get();
+    public void tell(final Object o, final ActorRef sender) {
+        final ActorRef ref = parent.get();
         if (ref != null) {
             ref.tell(new RelayedMessage(o, sender, relay, systemHint), this);
         }
         creator.unregisterTempActor(path);
     }
 
+    /**
+     * Relay message wrapper.
+     * @author Christian Kulpa
+     * @since 0.2.0
+     */
     public static class RelayedMessage {
         private final Object message;
         private final ActorRef sender;
         private final USID relay;
         private final boolean systemHint;
 
-        public RelayedMessage(Object message, ActorRef sender, USID relay, boolean systemHint) {
+        /**
+         * Constructor.
+         * @param message Message object.
+         * @param sender Sender actor ref.
+         * @param relay relay actor ref.
+         * @param systemHint system relay.
+         */
+        public RelayedMessage(final Object message, final ActorRef sender,
+                final USID relay, final boolean systemHint) {
             this.message = message;
             this.sender = sender;
             this.relay = relay;
             this.systemHint = systemHint;
         }
 
+        /**
+         * Returns the relay usid.
+         * @return releay usid.
+         */
         public USID getRelay() {
             return relay;
         }
 
+        /**
+         * Returns the message object.
+         * @return message object.
+         */
         public Object getMessage() {
             return message;
         }
 
+        /**
+         * Returns the message source.
+         * @return message source.
+         */
         public ActorRef getSender() {
             return sender;
         }
 
+        /**
+         * Returns if the relay is a system relay.
+         * @return true if system relay.
+         */
         public boolean isSystemRelay() {
             return systemHint;
         }

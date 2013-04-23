@@ -1,5 +1,10 @@
 package org.gethydrated.hydra.core.cli.commands.registry;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.core.InternalHydra;
@@ -7,19 +12,16 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.cli.commands.CLICommand;
 import org.gethydrated.hydra.core.registry.RegisterService;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
- *
+ * Local service register command.
  */
 public class RegisterLocal extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra parent Hydra.
+     * @param root Root command.
      */
-    public RegisterLocal(InternalHydra hydra, CLICommand root) {
+    public RegisterLocal(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -44,19 +46,24 @@ public class RegisterLocal extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
-        if(args.length == 2) {
-            SID sid = getHydra().getDefaultSIDFactory().fromString(args[0]);
-            ActorRef ref = getHydra().getActorSystem().getActor("/app/localregistry");
-            Future f = ref.ask(new RegisterService(sid, args[1]));
+    public CLIResponse execute(final String[] args) {
+        if (args.length == 2) {
+            final SID sid = getHydra().getDefaultSIDFactory().fromString(
+                    args[0]);
+            final ActorRef ref = getHydra().getActorSystem().getActor(
+                    "/app/localregistry");
+            final Future<?> f = ref.ask(new RegisterService(sid, args[1]));
             try {
-                String s = (String) f.get(15, TimeUnit.SECONDS);
-                return new CLIResponse(s+ "\n");
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                return new CLIResponse("An error occurred: " + e.getMessage() + "\n");
+                final String s = (String) f.get(15, TimeUnit.SECONDS);
+                return new CLIResponse(s + "\n");
+            } catch (InterruptedException | ExecutionException
+                    | TimeoutException e) {
+                return new CLIResponse("An error occurred: " + e.getMessage()
+                        + "\n");
             }
         } else {
-            return new CLIResponse("Wrong parameter count. Usage: register local [sid] [name]\n");
+            return new CLIResponse(
+                    "Wrong parameter count. Usage: register local [sid] [name]\n");
         }
     }
 

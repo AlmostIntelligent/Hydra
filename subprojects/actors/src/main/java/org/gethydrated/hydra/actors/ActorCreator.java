@@ -1,9 +1,9 @@
 package org.gethydrated.hydra.actors;
 
+import java.util.List;
+
 import org.gethydrated.hydra.actors.actors.RootGuardian;
 import org.gethydrated.hydra.actors.refs.InternalRef;
-
-import java.util.List;
 
 /**
  *

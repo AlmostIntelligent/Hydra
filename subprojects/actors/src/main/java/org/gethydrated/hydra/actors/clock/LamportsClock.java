@@ -20,9 +20,9 @@ public class LamportsClock implements LogicalClock {
     }
 
     @Override
-    public synchronized void sync(long time) {
-        if(count < time) {
-            count = time++;
+    public synchronized void sync(final long time) {
+        if (count < time) {
+            count = time + 1;
         }
     }
 }

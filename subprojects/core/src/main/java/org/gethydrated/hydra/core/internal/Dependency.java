@@ -1,9 +1,14 @@
 package org.gethydrated.hydra.core.internal;
 
 /**
- *
+ * Service depencencies. Not yet supported.
  */
 public class Dependency {
-    public Dependency(String name, String version) {
+    /**
+     * Constructor.
+     * @param name dependency name.
+     * @param version depencency version.
+     */
+    public Dependency(final String name, final String version) {
     }
 }

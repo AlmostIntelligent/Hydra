@@ -1,11 +1,11 @@
 package org.gethydrated.hydra.core.concurrent;
 
-import org.gethydrated.hydra.api.event.SystemEvent;
-
 import java.util.UUID;
 
+import org.gethydrated.hydra.api.event.SystemEvent;
+
 /**
- *
+ * LockRequest message.
  */
 public class LockRequest implements SystemEvent {
 
@@ -13,29 +13,50 @@ public class LockRequest implements SystemEvent {
 
     private UUID nodeId;
 
-    public LockRequest(UUID nodeId, long timestamp) {
+    /**
+     * Constructor.
+     * @param nodeId node uuid.
+     * @param timestamp logical clock timestamp.
+     */
+    public LockRequest(final UUID nodeId, final long timestamp) {
         this.timestamp = timestamp;
         this.nodeId = nodeId;
     }
 
-    private LockRequest() {}
+    @SuppressWarnings("unused")
+    private LockRequest() {
+    }
 
+    /**
+     * Returns the request timestamp.
+     * @return timestamp.
+     */
     public long getTimestamp() {
         return timestamp;
     }
 
+    /**
+     * Returns the node uuid.
+     * @return node uuid.
+     */
     public UUID getNodeId() {
         return nodeId;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-        LockRequest that = (LockRequest) o;
+        final LockRequest that = (LockRequest) o;
 
-        if (nodeId != null ? !nodeId.equals(that.nodeId) : that.nodeId != null) return false;
+        if (nodeId != null ? !nodeId.equals(that.nodeId) : that.nodeId != null) {
+            return false;
+        }
 
         return true;
     }
@@ -47,9 +68,7 @@ public class LockRequest implements SystemEvent {
 
     @Override
     public String toString() {
-        return "LockRequest{" +
-                "timestamp=" + timestamp +
-                ", nodeId=" + nodeId +
-                '}';
+        return "LockRequest{" + "timestamp=" + timestamp + ", nodeId=" + nodeId
+                + '}';
     }
 }

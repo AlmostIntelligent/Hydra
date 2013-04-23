@@ -3,24 +3,39 @@ package org.gethydrated.hydra.chat.messages;
 import org.gethydrated.hydra.api.service.USID;
 
 /**
- *
+ * Chat message.
  */
 public class Message {
     private USID usid;
-    private String name;
+    private String message;
 
-    public Message(USID usid, String name) {
+    /**
+     * Constructor.
+     * @param usid Source usid.
+     * @param message Message.
+     */
+    public Message(final USID usid, final String message) {
         this.usid = usid;
-        this.name = name;
+        this.message = message;
     }
 
-    private Message() {}
+    @SuppressWarnings("unused")
+    private Message() {
+    }
 
+    /**
+     * Returns the source usid.
+     * @return source usid.
+     */
     public USID getUsid() {
         return usid;
     }
 
-    public String getName() {
-        return name;
+    /**
+     * Returns the message.
+     * @return Message.
+     */
+    public String getMessage() {
+        return message;
     }
 }

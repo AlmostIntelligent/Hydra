@@ -1,15 +1,15 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.event.InputEvent;
-import org.gethydrated.hydra.core.InternalHydra;
-import org.gethydrated.hydra.core.cli.CLIResponse;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.InputEvent;
+import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -40,8 +40,7 @@ public abstract class CLICommand {
     private final String shortDescr;
 
     /**
-     * Current node too execute commands on.
-     * Id 0 is always the local node.
+     * Current node too execute commands on. Id 0 is always the local node.
      */
     private int currentNodeId;
 
@@ -51,8 +50,10 @@ public abstract class CLICommand {
      * 
      * @param hydra
      *            Service hydra.
+     * @param root
+     *            cli root command.
      */
-    public CLICommand(final InternalHydra hydra, CLICommand root) {
+    public CLICommand(final InternalHydra hydra, final CLICommand root) {
         setHydra(hydra);
         setRoot(root);
         subCommands = new LinkedList<>();
@@ -88,14 +89,18 @@ public abstract class CLICommand {
         this.hydra = hydra;
     }
 
-    private void setRoot(CLICommand root) {
-        if(root != null) {
+    private void setRoot(final CLICommand root) {
+        if (root != null) {
             this.root = root;
         } else {
             this.root = this;
         }
     }
 
+    /**
+     * Returns the root command.
+     * @return root command.
+     */
     protected CLICommand getRootCommand() {
         return root;
     }
@@ -149,6 +154,7 @@ public abstract class CLICommand {
      * 
      * @param args
      *            Array with arguments.
+     * @return cli response.
      */
     public abstract CLIResponse execute(final String[] args);
 
@@ -160,16 +166,18 @@ public abstract class CLICommand {
     private CLIResponse executeSecure(final String[] args) {
         try {
             return execute(args);
-        } catch (Exception e) {
-            return new CLIResponse("Caught exception in command execution! "+ e);
+        } catch (final Exception e) {
+            return new CLIResponse("Caught exception in command execution! "
+                    + e);
         }
     }
 
     /**
      * Displays the help text.
+     * @return result.
      */
     public final String displayHelp() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(String.format("Help for command %s - ", getCommandWord()));
         sb.append(System.getProperty("line.separator"));
         sb.append(getShortDescription());
@@ -181,7 +189,7 @@ public abstract class CLICommand {
         if (hasSubCommands()) {
             sb.append("List of sub commands");
             sb.append(System.getProperty("line.separator"));
-            for (CLICommand cmd : subCommands) {
+            for (final CLICommand cmd : subCommands) {
                 sb.append(String.format("\t%s: %s", cmd.getCommandWord(),
                         cmd.getShortDescription()));
                 sb.append(System.getProperty("line.separator"));
@@ -200,7 +208,7 @@ public abstract class CLICommand {
      * @return True, if "str" is a sub command.
      */
     public final Boolean hasSubCommand(final String str) {
-        for (CLICommand c : subCommands) {
+        for (final CLICommand c : subCommands) {
             if (c.testString(str)) {
                 return true;
             }
@@ -229,7 +237,7 @@ public abstract class CLICommand {
      */
     public final CLICommand isSubCommand(final String str)
             throws CLISubCommandDoesNotExistsException {
-        for (CLICommand cmd : subCommands) {
+        for (final CLICommand cmd : subCommands) {
             if (cmd.testString(str)) {
                 return cmd;
             }
@@ -241,13 +249,16 @@ public abstract class CLICommand {
      * 
      * @param cmd
      *            The command string.
+     * @return cli response.
      */
     public final CLIResponse parse(final String cmd) {
         if (cmd.contains("\"")) {
-            List<String> list = new ArrayList<>();
-            Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(cmd);
-            while (m.find())
+            final List<String> list = new ArrayList<>();
+            final Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*")
+                    .matcher(cmd);
+            while (m.find()) {
                 list.add(m.group(1).replace("\"", ""));
+            }
             return parse(list.toArray(new String[list.size()]), cmd);
         } else {
             return parse(cmd.split(" "), cmd);
@@ -255,11 +266,12 @@ public abstract class CLICommand {
     }
 
     /**
-     *
-     * @param cmds
-     *            .
+     * 
+     * @param cmds .
+     * @param input .
+     * @return cli response.
      */
-    public final CLIResponse parse(final String[] cmds, String input) {
+    public final CLIResponse parse(final String[] cmds, final String input) {
         if (cmds.length > 0
                 && (cmds[0].equalsIgnoreCase("-help")
                         || cmds[0].equalsIgnoreCase("--h") || cmds[0]
@@ -267,39 +279,58 @@ public abstract class CLICommand {
             return new CLIResponse(displayHelp());
         } else if (cmds.length > 0 && hasSubCommands()) {
             try {
-                CLICommand subCmd = isSubCommand(cmds[0]);
-                if(!isNodeLocal() && !subCmd.localOnly()) {
-                    ActorRef ref = getHydra().getActorSystem().getActor("/app/nodes/"+getCurrentNodeId());
+                final CLICommand subCmd = isSubCommand(cmds[0]);
+                if (!isNodeLocal() && !subCmd.localOnly()) {
+                    final ActorRef ref = getHydra().getActorSystem().getActor(
+                            "/app/nodes/" + getCurrentNodeId());
                     ref.tell(new InputEvent(input, null), null);
-                    //return (CLIResponse) f.get(getHydra().getConfiguration().getInteger("cli.distributed-timeout"),
-                           // TimeUnit.SECONDS);
+                    // return (CLIResponse)
+                    // f.get(getHydra().getConfiguration().getInteger("cli.distributed-timeout"),
+                    // TimeUnit.SECONDS);
                     return new CLIResponse("");
                 } else {
-                    String[] rest = new String[cmds.length - 1];
+                    final String[] rest = new String[cmds.length - 1];
                     int i;
                     for (i = 1; i < cmds.length; i++) {
                         rest[i - 1] = cmds[i];
                     }
                     return subCmd.parse(rest, input);
                 }
-            } catch (CLISubCommandDoesNotExistsException e) {
-                return new CLIResponse(String.format("No sub command: %s \n", cmds[0]));
+            } catch (final CLISubCommandDoesNotExistsException e) {
+                return new CLIResponse(String.format("No sub command: %s \n",
+                        cmds[0]));
             }
         } else {
             return executeSecure(cmds);
         }
     }
 
+    /**
+     * Returns if the command is local only.
+     * @return true if local only.
+     */
     protected abstract boolean localOnly();
 
-    protected void setCurrentNodeId(int id) {
+    /**
+     * Sets the current operating node of the cli.
+     * @param id node id.
+     */
+    protected void setCurrentNodeId(final int id) {
         currentNodeId = id;
     }
 
+    /**
+     * Returns the current operating node of the cli.
+     * @return node id.
+     */
     protected int getCurrentNodeId() {
         return currentNodeId;
     }
 
+    /**
+     * Returns if the current node is the local node.
+     * @return true if local.
+     */
     protected boolean isNodeLocal() {
         return (0 == currentNodeId);
     }

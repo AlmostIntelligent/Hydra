@@ -1,28 +1,41 @@
 package org.gethydrated.hydra.core.sid;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import java.util.UUID;
+import java.util.concurrent.Future;
+
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.api.event.SystemEvent;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.core.io.transport.SerializedObject;
 
-import java.util.UUID;
-import java.util.concurrent.Future;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class LocalSID implements InternalSID {
+/**
+ * Local user service id.
+ * @author Chris
+ *
+ */
+public final class LocalSID implements InternalSID {
 
     private final ActorRef ref;
 
     private final USID usid;
 
-    private ObjectWriter writer;
+    private final ObjectWriter writer;
 
-    public LocalSID(UUID nodeId, ActorRef ref, ObjectWriter writer) {
-       this.ref = ref;
-       this.writer = writer;
-       usid = new USID(nodeId, 0, Long.parseLong(ref.getName()));
+    /**
+     * Default constructor.
+     * @param nodeId    Hydra node id.
+     * @param ref       Actorref of the target service actor.
+     * @param writer    Object serializer.
+     */
+    public LocalSID(final UUID nodeId, final ActorRef ref,
+            final ObjectWriter writer) {
+        this.ref = ref;
+        this.writer = writer;
+        usid = new USID(nodeId, 0, Long.parseLong(ref.getName()));
     }
 
     @Override
@@ -36,20 +49,22 @@ public class LocalSID implements InternalSID {
     }
 
     @Override
-    public void tell(Object message, SID sender) {
-        if (!(message instanceof SystemEvent) && !(message instanceof SerializedObject)) {
-            SerializedObject so = new SerializedObject();
+    public void tell(final Object m, final SID sender) {
+        Object message = m;
+        if (!(message instanceof SystemEvent)
+                && !(message instanceof SerializedObject)) {
+            final SerializedObject so = new SerializedObject();
             so.setSender(sender.getUSID());
             so.setTarget(usid);
             so.setClassName(message.getClass().getName());
             try {
                 so.setData(writer.writeValueAsBytes(message));
-            } catch (JsonProcessingException e) {
+            } catch (final JsonProcessingException e) {
                 e.printStackTrace();
             }
             message = so;
         }
-        if(sender == null) {
+        if (sender == null) {
             ref.tell(message, ref);
         } else {
             ref.tell(message, ((InternalSID) sender).getRef());
@@ -57,22 +72,28 @@ public class LocalSID implements InternalSID {
     }
 
     @Override
-    public Future<?> ask(Object message) {
+    public Future<?> ask(final Object message) {
         return ref.ask(message);
     }
 
+    @Override
     public String toString() {
         return "<0:" + usid.getTypeId() + ":" + usid.getServiceId() + ">";
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof InternalSID)) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || !(o instanceof InternalSID)) {
+            return false;
+        }
 
-        InternalSID localSID = (InternalSID) o;
+        final InternalSID localSID = (InternalSID) o;
 
-        return !(usid != null ? !usid.equals(localSID.getUSID()) : localSID.getUSID() != null);
+        return !(usid != null ? !usid.equals(localSID.getUSID()) : localSID
+                .getUSID() != null);
 
     }
 

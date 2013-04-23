@@ -7,13 +7,13 @@ import org.gethydrated.hydra.actors.error.ActorInitialisationException;
  *
  */
 public class DefaultSupervisor extends Supervisor {
-    public DefaultSupervisor(ActorSystem actorSystem) {
+    public DefaultSupervisor(final ActorSystem actorSystem) {
         super(actorSystem);
     }
 
     @Override
-    protected SupervisorAction decide(Throwable cause) {
-        if(cause instanceof ActorInitialisationException) {
+    protected SupervisorAction decide(final Throwable cause) {
+        if (cause instanceof ActorInitialisationException) {
             return SupervisorAction.STOP;
         } else if (cause instanceof Exception) {
             return SupervisorAction.RESTART;

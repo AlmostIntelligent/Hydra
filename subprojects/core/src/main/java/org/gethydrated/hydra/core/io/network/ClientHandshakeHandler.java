@@ -11,7 +11,13 @@ import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<Envelope> {
+/**
+ * Client side handshake handler.
+ * @author Christian Kulpa
+ * @since 0.2.0
+ */
+public class ClientHandshakeHandler extends
+        ChannelInboundMessageHandlerAdapter<Envelope> {
 
     private ChannelHandlerContext ctx;
     private volatile boolean handshakeSuccess = false;
@@ -23,14 +29,27 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
     private final Queue<ChannelPromise> handshakeFutures = new ArrayQueue<>();
     private final Object lock = new Object();
 
-    public ClientHandshakeHandler(NodeController nodeController) {
+    /**
+     * Controller.
+     * @param nodeController node controller.
+     */
+    public ClientHandshakeHandler(final NodeController nodeController) {
         this.nodeController = nodeController;
     }
 
+    /**
+     * Starts the handshake.
+     * @return channel future for handshake result.
+     */
     public ChannelFuture handshake() {
         return handshake(ctx.newPromise());
     }
 
+    /**
+     * Starts the handshake.
+     * @param future for handshake result.
+     * @return channel future for handshake result.
+     */
     public ChannelFuture handshake(final ChannelPromise future) {
         if (handshakeSuccess) {
             future.setSuccess();
@@ -56,7 +75,7 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
     }
 
     private void startHandshake() {
-        Envelope env = new Envelope(MessageType.CONNECT);
+        final Envelope env = new Envelope(MessageType.CONNECT);
         env.setSender(nodeController.getLocal());
         env.setCookie("nocookie");
         env.setConnector(nodeController.getConnector());
@@ -64,7 +83,8 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, Envelope msg) throws Exception {
+    public void messageReceived(final ChannelHandlerContext ctx,
+            final Envelope msg) throws Exception {
         if (handshakeFailure) {
             return;
         }
@@ -87,10 +107,14 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
                 return;
             }
             if (msg.getType() == MessageType.ACCEPT) {
-                InetSocketAddress addr = (InetSocketAddress) ctx.channel().localAddress();
-                nodeController.addKnownNode(msg.getSender(), new NodeAddress(addr.getAddress().getHostAddress(), msg.getConnector().getPort()));
-                if (nodeController.addConnectedNode(msg.getSender(), ctx.channel(), false)) {
-                    Envelope env = new Envelope(MessageType.ACK);
+                final InetSocketAddress addr = (InetSocketAddress) ctx
+                        .channel().localAddress();
+                nodeController.addKnownNode(msg.getSender(), new NodeAddress(
+                        addr.getAddress().getHostAddress(), msg.getConnector()
+                                .getPort()));
+                if (nodeController.addConnectedNode(msg.getSender(),
+                        ctx.channel(), false)) {
+                    final Envelope env = new Envelope(MessageType.ACK);
                     env.setSender(nodeController.getLocal());
                     env.setTarget(msg.getSender());
                     env.setNodes(nodeController.getNodesWithAddress());
@@ -98,12 +122,13 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
                     nodeController.addKnownNodes(msg.getNodes(), false);
                     setSuccess();
                 } else {
-                    Envelope env = new Envelope(MessageType.DECLINE);
+                    final Envelope env = new Envelope(MessageType.DECLINE);
                     env.setSender(nodeController.getLocal());
                     env.setTarget(msg.getSender());
                     env.setReason("Concurrent connection attempt.");
                     ctx.write(env).syncUninterruptibly();
-                    setFailure(new RuntimeException("Concurrent connection attempt."));
+                    setFailure(new RuntimeException(
+                            "Concurrent connection attempt."));
                 }
             }
         }
@@ -111,26 +136,26 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelRegistered(final ChannelHandlerContext ctx) throws Exception {
         this.ctx = ctx;
         timeout = ctx.executor().schedule(new Runnable() {
 
             @Override
             public void run() {
-            if (handshakeSuccess || handshakeFailure) {
-                return;
-            }
-            setFailure(new RuntimeException("Handshake timed out."));
+                if (handshakeSuccess || handshakeFailure) {
+                    return;
+                }
+                setFailure(new RuntimeException("Handshake timed out."));
             }
         }, 10000, TimeUnit.MILLISECONDS);
     }
 
-    private void setFailure(Throwable cause) {
+    private void setFailure(final Throwable cause) {
         timeout.cancel(true);
         handshakeFailure = true;
         failureCause = cause;
         for (;;) {
-            ChannelPromise f = handshakeFutures.poll();
+            final ChannelPromise f = handshakeFutures.poll();
             if (f == null) {
                 break;
             }
@@ -143,7 +168,7 @@ public class ClientHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
         timeout.cancel(true);
         handshakeSuccess = true;
         for (;;) {
-            ChannelPromise f = handshakeFutures.poll();
+            final ChannelPromise f = handshakeFutures.poll();
             if (f == null) {
                 break;
             }

@@ -4,7 +4,7 @@ package org.gethydrated.hydra.core.cli.commands;
  * 
  * @author Hanno Sternberg
  * @since 0.1.0
- *
+ * 
  */
 public class CLISubCommandDoesNotExistsException extends Exception {
 
@@ -12,7 +12,7 @@ public class CLISubCommandDoesNotExistsException extends Exception {
      * Missing sub command.
      */
     private String subCommand;
-    
+
     /**
      * 
      */
@@ -20,7 +20,8 @@ public class CLISubCommandDoesNotExistsException extends Exception {
 
     /**
      * 
-     * @param sub missing sub command.
+     * @param sub
+     *            missing sub command.
      */
     public CLISubCommandDoesNotExistsException(final String sub) {
         setSubCommand(sub);
@@ -36,10 +37,10 @@ public class CLISubCommandDoesNotExistsException extends Exception {
 
     /**
      * 
-     * @param subCommand missing sub command.
+     * @param subCommand
+     *            missing sub command.
      */
     public final void setSubCommand(final String subCommand) {
         this.subCommand = subCommand;
     }
 }
-

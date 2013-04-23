@@ -11,20 +11,22 @@ import org.xml.sax.SAXParseException;
  */
 public class DefaultErrorHandler implements ErrorHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(DefaultErrorHandler.class);
+    private final Logger logger = LoggerFactory
+            .getLogger(DefaultErrorHandler.class);
 
     @Override
-    public void warning(SAXParseException exception) throws SAXException {
+    public void warning(final SAXParseException exception) throws SAXException {
         logger.warn("{}", exception.getLocalizedMessage());
     }
 
     @Override
-    public void error(SAXParseException exception) throws SAXException {
+    public void error(final SAXParseException exception) throws SAXException {
         throw exception;
     }
 
     @Override
-    public void fatalError(SAXParseException exception) throws SAXException {
+    public void fatalError(final SAXParseException exception)
+            throws SAXException {
         throw exception;
     }
 }

@@ -54,7 +54,7 @@ public class PlainConfigurationWriter extends ConfigurationWriter {
     protected final void writeList(final PrintStream stream,
             final ConfigList list, final String namePrefix) {
         if (list.hasChildren()) {
-            for (ConfigurationItem i : list.getChildren()) {
+            for (final ConfigurationItem i : list.getChildren()) {
                 if (i.hasValue()) {
                     writeValue(stream, (ConfigValue<?>) i,
                             namePrefix + list.getName() + ".");
@@ -73,7 +73,7 @@ public class PlainConfigurationWriter extends ConfigurationWriter {
      */
     @Override
     public final void saveToStream(final PrintStream stream) {
-        writeList(stream, (ConfigList)getCfg().getRoot(), "");
+        writeList(stream, (ConfigList) getCfg().getRoot(), "");
     }
 
 }

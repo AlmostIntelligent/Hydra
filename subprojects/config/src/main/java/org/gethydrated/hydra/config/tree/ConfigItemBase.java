@@ -1,6 +1,5 @@
 package org.gethydrated.hydra.config.tree;
 
-
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
 /**
@@ -29,6 +28,7 @@ public abstract class ConfigItemBase implements ConfigurationItem {
      * 
      * @return Item name.
      */
+    @Override
     public final String getName() {
         return name;
     }
@@ -37,18 +37,21 @@ public abstract class ConfigItemBase implements ConfigurationItem {
      * 
      * @return Copy of this item.
      */
+    @Override
     public abstract ConfigurationItem copy();
 
     /**
      * 
      * @return True, if the item has a value.
      */
+    @Override
     public abstract Boolean hasValue();
 
     /**
      * 
      * @return True, if the item has children.
      */
+    @Override
     public abstract Boolean hasChildren();
 
     /**
@@ -56,11 +59,13 @@ public abstract class ConfigItemBase implements ConfigurationItem {
      *            Object for comparison.
      * @return True, if objects are equal.
      */
+    @Override
     public abstract boolean equals(Object obj);
 
     /**
      * @return HashCode;
      */
+    @Override
     public abstract int hashCode();
 
 }

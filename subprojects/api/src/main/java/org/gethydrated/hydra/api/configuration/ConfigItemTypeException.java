@@ -8,6 +8,9 @@ package org.gethydrated.hydra.api.configuration;
  */
 public class ConfigItemTypeException extends Exception {
 
-
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4595258309609840624L;
 
 }

@@ -3,10 +3,11 @@ package org.gethydrated.hydra.api.configuration;
 import java.util.List;
 
 /**
+ * Hydra configuration.
  * 
  * @author Hanno Sternberg
- * @since 0.1.0
- *
+ * @author Christian Kulpa
+ * @since 0.1.0 
  */
 public interface Configuration {
 
@@ -28,11 +29,24 @@ public interface Configuration {
      */
     Object get(final String name) throws ConfigItemNotFoundException;
 
+    /**
+     * 
+     * @param name .
+     * @return .
+     */
     Boolean has(final String name);
 
+    /**
+     * 
+     * @return .
+     */
     ConfigurationItem getRoot();
-    void setRoot(ConfigurationItem root);
 
+    /**
+     * 
+     * @param root .
+     */
+    void setRoot(ConfigurationItem root);
 
     /**
      * 
@@ -97,7 +111,6 @@ public interface Configuration {
      */
     void setString(final String name, final String value);
 
-
     /**
      * 
      * @param name
@@ -115,10 +128,22 @@ public interface Configuration {
      * @throws ConfigItemNotFoundException .
      */
     List<String> list(final String name) throws ConfigItemNotFoundException;
+
+    /**
+     * 
+     * @return .
+     * @throws ConfigItemNotFoundException .
+     */
     List<String> list() throws ConfigItemNotFoundException;
 
+    /**
+     * 
+     * @param base .
+     * @return .
+     * @throws ConfigItemNotFoundException .
+     * @throws ConfigItemTypeException .
+     */
     Configuration getSubItems(final String base)
             throws ConfigItemNotFoundException, ConfigItemTypeException;
 
 }
-

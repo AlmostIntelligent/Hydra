@@ -1,13 +1,13 @@
 package org.gethydrated.hydra.actors.event;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.event.EventListener;
-
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.EventListener;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Event stream implementation.
@@ -17,29 +17,34 @@ public class SystemEventStream implements ActorEventStream {
     /**
      * Event listeners multi map.
      */
-    private final Multimap<Class<?>, EventListener> listeners = HashMultimap.create();
+    private final Multimap<Class<?>, EventListener> listeners = HashMultimap
+            .create();
 
     @Override
-    public final boolean subscribe(final ActorRef subscriber, final Class<?> classifier) {
+    public final boolean subscribe(final ActorRef subscriber,
+            final Class<?> classifier) {
         return subscribe(new ActorRefListener(subscriber), classifier);
     }
 
     @Override
-    public final boolean subscribe(final EventListener subscriber, final Class<?> classifier) {
+    public final boolean subscribe(final EventListener subscriber,
+            final Class<?> classifier) {
         synchronized (listeners) {
             return listeners.put(classifier, subscriber);
         }
     }
 
     @Override
-    public final boolean unsubscribe(final ActorRef subscriber, final Class<?> classifier) {
+    public final boolean unsubscribe(final ActorRef subscriber,
+            final Class<?> classifier) {
         return unsubscribe(new ActorRefListener(subscriber), classifier);
     }
 
     @Override
-    public final boolean unsubscribe(final EventListener subscriber, final Class<?> classifier) {
+    public final boolean unsubscribe(final EventListener subscriber,
+            final Class<?> classifier) {
         synchronized (listeners) {
-            return listeners.remove(classifier,subscriber);
+            return listeners.remove(classifier, subscriber);
         }
     }
 
@@ -51,13 +56,14 @@ public class SystemEventStream implements ActorEventStream {
     @Override
     public final boolean unsubscribe(final EventListener subscriber) {
         synchronized (listeners) {
-            if(!listeners.containsValue(subscriber)) {
+            if (!listeners.containsValue(subscriber)) {
                 return false;
 
             }
-            Iterator<Entry<Class<?>, EventListener>> i = listeners.entries().iterator();
-            while(i.hasNext()) {
-                if(i.next().getValue().equals(subscriber)) {
+            final Iterator<Entry<Class<?>, EventListener>> i = listeners
+                    .entries().iterator();
+            while (i.hasNext()) {
+                if (i.next().getValue().equals(subscriber)) {
                     i.remove();
                 }
             }
@@ -66,20 +72,21 @@ public class SystemEventStream implements ActorEventStream {
     }
 
     @Override
-    public void publish(Object event) {
+    public void publish(final Object event) {
         dispatch(event);
     }
 
     /**
      * Dispatch method.
-     *
-     * @param event actual event.
+     * 
+     * @param event
+     *            actual event.
      */
     private void dispatch(final Object event) {
         synchronized (listeners) {
-            for (Class<?> c : listeners.keySet()) {
+            for (final Class<?> c : listeners.keySet()) {
                 if (c.isInstance(event)) {
-                    for (EventListener l : listeners.get(c)) {
+                    for (final EventListener l : listeners.get(c)) {
                         l.handle(event);
                     }
                 }
@@ -87,28 +94,41 @@ public class SystemEventStream implements ActorEventStream {
         }
 
     }
-
+    
+    /**
+     * Actor ref listener.
+     * 
+     * @author Christian Kulpa
+     * @author Hanno Sternberg
+     * @since 0.1.0
+     */
     private class ActorRefListener implements EventListener {
 
-        ActorRef ref;
+        private ActorRef ref;
 
-        ActorRefListener(ActorRef ref) {
+        ActorRefListener(final ActorRef ref) {
             this.ref = ref;
         }
 
         @Override
-        public void handle(Object event) {
+        public void handle(final Object event) {
             ref.tell(event, null);
         }
 
         @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+        public boolean equals(final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
 
-            ActorRefListener that = (ActorRefListener) o;
+            final ActorRefListener that = (ActorRefListener) o;
 
-            if (!ref.equals(that.ref)) return false;
+            if (!ref.equals(that.ref)) {
+                return false;
+            }
 
             return true;
         }
@@ -117,7 +137,6 @@ public class SystemEventStream implements ActorEventStream {
         public int hashCode() {
             return ref.hashCode();
         }
-
 
     }
 }

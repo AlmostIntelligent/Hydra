@@ -4,123 +4,215 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Flexible POJO that can be used to send
- * messages between hydra nodes.
+ * Flexible POJO that can be used to send messages between hydra nodes.
  */
 public class Envelope {
 
-    private MessageType type;
+    private final MessageType type;
     private UUID sender;
     private UUID target;
     private String cookie;
-    private Map<UUID,NodeAddress> nodes;
+    private Map<UUID, NodeAddress> nodes;
     private String reason;
     private NodeAddress connector;
     private SerializedObject sobject;
     private boolean hiddenNode;
     private long timestamp;
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public Envelope(MessageType type) {
+    
+    /**
+     * Constructor.
+     * @param type Message type.
+     */
+    public Envelope(final MessageType type) {
         this.type = type;
     }
 
+    /**
+     * Returns the message type.
+     * @return message type.
+     */
     public MessageType getType() {
         return type;
     }
 
-    public void setCookie(String cookie) {
+    /**
+     * Returns the timestamp of the envelope.
+     * @return timestamp timestamp.
+     */
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    /**
+     * Sets a timestamp for the envelope.
+     * @param timestamp timestamp.
+     */
+    public void setTimestamp(final long timestamp) {
+        this.timestamp = timestamp;
+    }   
+    
+    /**
+     * Sets a security cookie.
+     * @param cookie security cookie.
+     */
+    public void setCookie(final String cookie) {
         this.cookie = cookie;
     }
 
+    /**
+     * Returns the security cookie.
+     * @return security cookie.
+     */
     public String getCookie() {
         return cookie;
     }
 
-    public void setSender(UUID sender) {
+    /**
+     * Sets the envelopes sender.
+     * @param sender sender usid.
+     */
+    public void setSender(final UUID sender) {
         this.sender = sender;
     }
 
+    /**
+     * Returns the envelopes sender.
+     * @return sender usid.
+     */
     public UUID getSender() {
         return sender;
     }
 
+    /**
+     * Returns the envelopes target.
+     * @return target uuid.
+     */
     public UUID getTarget() {
         return target;
     }
 
-    public void setTarget(UUID target) {
+    /**
+     * Sets the envelopes target.
+     * @param target target uuid.
+     */
+    public void setTarget(final UUID target) {
         this.target = target;
     }
 
-    public void setNodes(Map<UUID,NodeAddress> uuids) {
+    /**
+     * Sets the list of known nodes.
+     * @param uuids node list.
+     */
+    public void setNodes(final Map<UUID, NodeAddress> uuids) {
         nodes = uuids;
     }
 
-    public Map<UUID,NodeAddress> getNodes() {
+    /**
+     * Returns a list of known nodes.
+     * @return node list.
+     */
+    public Map<UUID, NodeAddress> getNodes() {
         return nodes;
     }
 
     @Override
     public String toString() {
-        return "Envelope{" +
-                "type=" + type +
-                ", sender=" + sender +
-                ", target=" + target +
-                ", cookie='" + cookie + '\'' +
-                ", nodes=" + nodes +
-                ", reason='" + reason + '\'' +
-                ", connector=" + connector +
-                ", sobject=" + sobject +
-                '}';
+        return "Envelope{" + "type=" + type + ", sender=" + sender
+                + ", target=" + target + ", cookie='" + cookie + '\''
+                + ", nodes=" + nodes + ", reason='" + reason + '\''
+                + ", connector=" + connector + ", sobject=" + sobject + '}';
     }
 
+    /**
+     * Returns the rejection reason.
+     * @return reason.
+     */
     public String getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
+    /**
+     * Sets the rejection reason.
+     * @param reason reason.
+     */
+    public void setReason(final String reason) {
         this.reason = reason;
     }
 
-    public void setConnector(NodeAddress connector) {
+    /**
+     * Sets the node connector.
+     * @param connector node connector.
+     */
+    public void setConnector(final NodeAddress connector) {
         this.connector = connector;
     }
 
+    /**
+     * Returns the node connector.
+     * @return node connector.
+     */
     public NodeAddress getConnector() {
         return connector;
     }
 
+    /**
+     * Returns a serialized object.
+     * @return serialized object.
+     */
     public SerializedObject getSObject() {
         return sobject;
     }
 
-    public void setSObject(SerializedObject sobject) {
+    /**
+     * Sets a serialized object.
+     * @param sobject serialized object.
+     */
+    public void setSObject(final SerializedObject sobject) {
         this.sobject = sobject;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-        Envelope envelope = (Envelope) o;
+        final Envelope envelope = (Envelope) o;
 
-        if (connector != null ? !connector.equals(envelope.connector) : envelope.connector != null) return false;
-        if (cookie != null ? !cookie.equals(envelope.cookie) : envelope.cookie != null) return false;
-        if (nodes != null ? !nodes.equals(envelope.nodes) : envelope.nodes != null) return false;
-        if (reason != null ? !reason.equals(envelope.reason) : envelope.reason != null) return false;
-        if (sender != null ? !sender.equals(envelope.sender) : envelope.sender != null) return false;
-        if (sobject != null ? !sobject.equals(envelope.sobject) : envelope.sobject != null) return false;
-        if (target != null ? !target.equals(envelope.target) : envelope.target != null) return false;
-        if (type != envelope.type) return false;
+        if (connector != null ? !connector.equals(envelope.connector)
+                : envelope.connector != null) {
+            return false;
+        }
+        if (cookie != null ? !cookie.equals(envelope.cookie)
+                : envelope.cookie != null) {
+            return false;
+        }
+        if (nodes != null ? !nodes.equals(envelope.nodes)
+                : envelope.nodes != null) {
+            return false;
+        }
+        if (reason != null ? !reason.equals(envelope.reason)
+                : envelope.reason != null) {
+            return false;
+        }
+        if (sender != null ? !sender.equals(envelope.sender)
+                : envelope.sender != null) {
+            return false;
+        }
+        if (sobject != null ? !sobject.equals(envelope.sobject)
+                : envelope.sobject != null) {
+            return false;
+        }
+        if (target != null ? !target.equals(envelope.target)
+                : envelope.target != null) {
+            return false;
+        }
+        if (type != envelope.type) {
+            return false;
+        }
 
         return true;
     }
@@ -138,11 +230,19 @@ public class Envelope {
         return result;
     }
 
+    /**
+     * Returns if the Envelope is from a hidden node.
+     * @return true if hidden.
+     */
     public boolean isHiddenNode() {
         return hiddenNode;
     }
 
-    public void setHiddenNode(boolean hiddenNode) {
+    /**
+     * Sets the hidden node flag.
+     * @param hiddenNode hidden node flag.
+     */
+    public void setHiddenNode(final boolean hiddenNode) {
         this.hiddenNode = hiddenNode;
     }
 }

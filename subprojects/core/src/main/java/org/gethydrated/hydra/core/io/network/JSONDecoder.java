@@ -6,27 +6,38 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import org.gethydrated.hydra.core.io.transport.Envelope;
 
+/**
+ * JSON decoder for message processing.
+ * @author Christian Kulpa
+ * @since 0.2.0
+ */
 public class JSONDecoder extends ByteToMessageDecoder {
 
-    ObjectMapper mapper;
+    private ObjectMapper mapper;
 
+    /**
+     * Constructor.
+     * @param mapper object mapper.
+     */
     public JSONDecoder(final ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
     @Override
-    public Object decode(final ChannelHandlerContext ctx, final ByteBuf in) throws Exception {
-        if(in.readableBytes() < 4) {
+    public Object decode(final ChannelHandlerContext ctx, final ByteBuf in)
+            throws Exception {
+        if (in.readableBytes() < 4) {
             return null;
         }
         in.markReaderIndex();
-        int length = in.readInt();
-        if (in.readableBytes() < length){
+        final int length = in.readInt();
+        if (in.readableBytes() < length) {
             in.resetReaderIndex();
             return null;
         }
-        byte[] buffer = new byte[length];
+        final byte[] buffer = new byte[length];
         in.readBytes(buffer);
-        return mapper.readValue(buffer, Envelope.class);
+        Envelope env = mapper.readValue(buffer, Envelope.class);
+        return env;
     }
 }

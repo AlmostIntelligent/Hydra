@@ -6,8 +6,10 @@ package org.gethydrated.hydra.actors;
 public interface ActorFactory {
     /**
      * Creates a new actor instance on each call.
+     * 
      * @return new actor instance.
-     * @throws Exception on initialization error.
+     * @throws Exception
+     *             on initialization error.
      */
     Actor create() throws Exception;
 }

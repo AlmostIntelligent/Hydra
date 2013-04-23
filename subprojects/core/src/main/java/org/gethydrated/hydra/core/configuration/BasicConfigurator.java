@@ -8,10 +8,10 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public final class BasicConfigurator {
-    
+
     /**
      * Hidden constructor to prevent instantiation.
      */
@@ -31,7 +31,7 @@ public final class BasicConfigurator {
         cfg.setString("actors.test", "test");
 
         /* Network configuration */
-        //Set standard to local only.
+        // Set standard to local only.
         cfg.setInteger("network.port", 0);
         cfg.setInteger("network.timeout-connect", 10000);
         cfg.setInteger("network.timeout-read", 0);

@@ -5,13 +5,15 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.cli.commands.CLICommand;
 
 /**
- *
+ * Service look up command.
  */
 public class WhereIs extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra parent Hydra.
+     * @param root Root command.
      */
-    public WhereIs(InternalHydra hydra, CLICommand root) {
+    public WhereIs(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
         addSubCommand(new WhereIsLocal(hydra, root));
         addSubCommand(new WhereIsGlobal(hydra, root));
@@ -38,7 +40,7 @@ public class WhereIs extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         return new CLIResponse(generateHelpText());
     }
 

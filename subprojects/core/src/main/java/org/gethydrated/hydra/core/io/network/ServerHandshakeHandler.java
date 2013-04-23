@@ -11,7 +11,13 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class ServerHandshakeHandler extends ChannelInboundMessageHandlerAdapter<Envelope> {
+/**
+ * Server side handshake handler.
+ * @author Christian Kulpa
+ * @since 0.2.0
+ */
+public class ServerHandshakeHandler extends
+        ChannelInboundMessageHandlerAdapter<Envelope> {
 
     private ChannelHandlerContext ctx;
     private volatile boolean handshakeSuccess = false;
@@ -22,12 +28,17 @@ public class ServerHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
     private final Object lock = new Object();
     private int state = 0;
 
-    public ServerHandshakeHandler(NodeController nodeController) {
+    /**
+     * Constructor.
+     * @param nodeController node controller.
+     */
+    public ServerHandshakeHandler(final NodeController nodeController) {
         this.nodeController = nodeController;
     }
 
     @Override
-    public void messageReceived(ChannelHandlerContext ctx, Envelope msg) throws Exception {
+    public void messageReceived(final ChannelHandlerContext ctx,
+            final Envelope msg) throws Exception {
         if (handshakeSuccess) {
             ChannelHandlerUtil.addToNextInboundBuffer(ctx, msg);
             ctx.fireInboundBufferUpdated();
@@ -73,9 +84,9 @@ public class ServerHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
         }, 10000, TimeUnit.MILLISECONDS);
     }
 
-    private void handleConnectEnvelope(Envelope envelope) {
+    private void handleConnectEnvelope(final Envelope envelope) {
         if (envelope.getSender().equals(nodeController.getLocal())) {
-            Envelope env = new Envelope(MessageType.DECLINE);
+            final Envelope env = new Envelope(MessageType.DECLINE);
             env.setSender(nodeController.getLocal());
             env.setTarget(envelope.getSender());
             env.setReason("Cannot connect to self.");
@@ -83,17 +94,20 @@ public class ServerHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
             setFailure();
         } else {
             if (nodeController.addConnectingNode(envelope.getSender())) {
-                Envelope env = new Envelope(MessageType.ACCEPT);
+                final Envelope env = new Envelope(MessageType.ACCEPT);
                 env.setSender(nodeController.getLocal());
                 env.setTarget(envelope.getSender());
                 env.setConnector(nodeController.getConnector());
                 env.setNodes(nodeController.getNodesWithAddress());
-                InetSocketAddress addr = (InetSocketAddress) ctx.channel().localAddress();
-                nodeController.addKnownNode(envelope.getSender(), new NodeAddress(addr.getAddress().getHostAddress(), envelope.getConnector().getPort()));
+                final InetSocketAddress addr = (InetSocketAddress) ctx
+                        .channel().localAddress();
+                nodeController.addKnownNode(envelope.getSender(),
+                        new NodeAddress(addr.getAddress().getHostAddress(),
+                                envelope.getConnector().getPort()));
                 state++;
                 ctx.write(env).syncUninterruptibly();
             } else {
-                Envelope env = new Envelope(MessageType.DECLINE);
+                final Envelope env = new Envelope(MessageType.DECLINE);
                 env.setSender(nodeController.getLocal());
                 env.setTarget(envelope.getSender());
                 env.setReason("Concurrent connection attempt.");
@@ -103,10 +117,9 @@ public class ServerHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
         }
     }
 
-
-
-    private void handleAckEnvelope(Envelope envelope) {
-        if (nodeController.addConnectedNode(envelope.getSender(), ctx.channel(), true)) {
+    private void handleAckEnvelope(final Envelope envelope) {
+        if (nodeController.addConnectedNode(envelope.getSender(),
+                ctx.channel(), true)) {
             nodeController.addKnownNodes(envelope.getNodes(), true);
             handshakeSuccess = true;
             timeout.cancel(true);
@@ -115,12 +128,12 @@ public class ServerHandshakeHandler extends ChannelInboundMessageHandlerAdapter<
         }
     }
 
-    private void handleDeclineEnvelope(Envelope envelope) {
+    private void handleDeclineEnvelope(final Envelope envelope) {
         nodeController.removeConnectingNode(envelope.getSender());
         setFailure();
     }
 
-    private void handleUnexpectedEnvelope(Envelope envelope) {
+    private void handleUnexpectedEnvelope(final Envelope envelope) {
         nodeController.removeConnectingNode(envelope.getSender());
         setFailure();
     }

@@ -21,7 +21,9 @@ public class HydraException extends Exception {
 
     /**
      * Constructor.
-     * @param m Message m.
+     * 
+     * @param m
+     *            Message m.
      */
     public HydraException(final String m) {
         super(m);
@@ -29,8 +31,11 @@ public class HydraException extends Exception {
 
     /**
      * Constructor.
-     * @param m Message m.
-     * @param e Throwable e.
+     * 
+     * @param m
+     *            Message m.
+     * @param e
+     *            Throwable e.
      */
     public HydraException(final String m, final Throwable e) {
         super(m, e);

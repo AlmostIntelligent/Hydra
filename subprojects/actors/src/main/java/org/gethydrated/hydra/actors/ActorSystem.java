@@ -1,5 +1,9 @@
 package org.gethydrated.hydra.actors;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.MalformedURLException;
+import java.util.List;
+
 import org.gethydrated.hydra.actors.clock.LamportsClock;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
@@ -13,11 +17,6 @@ import org.gethydrated.hydra.api.util.LogicalClock;
 import org.gethydrated.hydra.api.util.Util;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
-
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.MalformedURLException;
-import java.util.List;
-
 
 /**
  * @author Christian Kulpa
@@ -46,12 +45,15 @@ public final class ActorSystem implements ActorSource {
     private final UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler() {
 
         @Override
-        public void uncaughtException(Thread t, Throwable e) {
+        public void uncaughtException(final Thread t, final Throwable e) {
             e.printStackTrace(System.err);
-            if(Util.isNonFatal(e)) {
-                logger.error("Unhandled exception from thread '{}'", t.getName(), e);
+            if (Util.isNonFatal(e)) {
+                logger.error("Unhandled exception from thread '{}'",
+                        t.getName(), e);
             } else {
-                logger.error("Unhandled fatal error from thread '{}'. Shutting down ActorSystem.", t.getName(), e);
+                logger.error(
+                        "Unhandled fatal error from thread '{}'. Shutting down ActorSystem.",
+                        t.getName(), e);
             }
 
         }
@@ -61,15 +63,17 @@ public final class ActorSystem implements ActorSource {
 
     private final Dispatcher defaultDispatcher;
 
-    private final FallbackLogger fallbackLogger= new FallbackLogger();
+    private final FallbackLogger fallbackLogger = new FallbackLogger();
 
     private final LogicalClock clock = new LamportsClock();
 
     /**
      * Private constructor.
-     * @param cfg configuration.
+     * 
+     * @param cfg
+     *            configuration.
      */
-    private ActorSystem(Configuration cfg) {
+    private ActorSystem(final Configuration cfg) {
         eventStream.subscribe(fallbackLogger, LogEvent.class);
         logger.info("Creating actor system.");
         config = cfg;
@@ -79,10 +83,10 @@ public final class ActorSystem implements ActorSource {
         creator.getRootGuardian().addTerminationHook(new Runnable() {
             @Override
             public void run() {
-            synchronized (awaitLock) {
-                logger.debug("shutdown");
-                awaitLock.notifyAll();
-            }
+                synchronized (awaitLock) {
+                    logger.debug("shutdown");
+                    awaitLock.notifyAll();
+                }
             }
         });
     }
@@ -97,7 +101,9 @@ public final class ActorSystem implements ActorSource {
 
     /**
      * Awaits the actor system termination.
-     * @throws InterruptedException on interrupt while waiting.
+     * 
+     * @throws InterruptedException
+     *             on interrupt while waiting.
      */
     public void await() throws InterruptedException {
         synchronized (awaitLock) {
@@ -108,8 +114,9 @@ public final class ActorSystem implements ActorSource {
     }
 
     /**
-     * Returns if the actor system is terminated. If this method
-     * returns true it will never return false again.
+     * Returns if the actor system is terminated. If this method returns true it
+     * will never return false again.
+     * 
      * @return true when actor system is shut down, false otherwise.
      */
     public boolean isTerminated() {
@@ -118,13 +125,14 @@ public final class ActorSystem implements ActorSource {
 
     /**
      * Returns the systems event stream.
+     * 
      * @return System event stream.
      */
     public ActorEventStream getEventStream() {
         return eventStream;
     }
 
-    public Dispatcher getDispatcher(String name) {
+    public Dispatcher getDispatcher(final String name) {
         return dispatchers.lookupDispatcher(name);
     }
 
@@ -137,21 +145,23 @@ public final class ActorSystem implements ActorSource {
     }
 
     @Override
-    public ActorRef spawnActor(final Class<? extends Actor> actorClass, final String name) {
+    public ActorRef spawnActor(final Class<? extends Actor> actorClass,
+            final String name) {
         return creator.getAppGuardian().unwrap().spawnActor(actorClass, name);
     }
 
     @Override
-    public ActorRef spawnActor(final ActorFactory actorFactory, final String name) {
+    public ActorRef spawnActor(final ActorFactory actorFactory,
+            final String name) {
         return creator.getAppGuardian().unwrap().spawnActor(actorFactory, name);
     }
 
     @Override
     public ActorRef getActor(final String uri) {
         try {
-            ActorPath ap = ActorPath.apply(new ActorPath(), uri);
+            final ActorPath ap = ActorPath.apply(new ActorPath(), uri);
             return getActor(ap);
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
@@ -161,28 +171,30 @@ public final class ActorSystem implements ActorSource {
         return getActor(path.toList());
     }
 
+    @Override
     public ActorRef getActor(final List<String> names) {
-        if(names.get(0).equals("tmp")) {
+        if (names.get(0).equals("tmp")) {
             return creator.getTempActor(names);
         }
         return creator.getRootGuardian().findActor(names);
     }
 
     @Override
-    public void stopActor(ActorRef ref) {
+    public void stopActor(final ActorRef ref) {
 
     }
 
     /**
      * Creates a new actor system instance.
+     * 
      * @return new actor system.
      */
     public static ActorSystem create() {
-        Configuration cfg = new ConfigurationImpl();
+        final Configuration cfg = new ConfigurationImpl();
         return new ActorSystem(cfg);
     }
 
-    public static ActorSystem create(Configuration cfg) {
+    public static ActorSystem create(final Configuration cfg) {
         return new ActorSystem(cfg);
     }
 }

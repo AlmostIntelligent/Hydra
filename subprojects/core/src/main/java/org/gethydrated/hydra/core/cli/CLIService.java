@@ -23,21 +23,21 @@ import java.util.Map;
  * 
  */
 public class CLIService extends Actor {
-    
+
     /**
      * 
      */
     private final Logger log = LoggerFactory.getLogger(CLIService.class);
 
     /**
-     * Root command, parent of all sub commands
+     * Root command, parent of all sub commands.
      */
     private final CLICommand commands;
 
     /**
-     * Dictionary for variables
+     * Dictionary for variables.
      */
-    private Map<String, String> variable_dict;
+    private final Map<String, String> variableDict;
 
     private ActorRef output;
 
@@ -61,37 +61,40 @@ public class CLIService extends Actor {
         commands.addSubCommand(new WhereIs(hydra, commands));
         commands.addSubCommand(new CLICommandHelp(hydra, commands));
 
-        variable_dict = new HashMap<>();
+        variableDict = new HashMap<>();
     }
 
     /**
      * 
      * @param str
      *            command String
+     * @return cli response
      */
     public final CLIResponse handleInputString(final String str) {
         String command;
         String var = null;
-        if (str.trim().startsWith("$")){
-            /* Got variable, handle it*/
-            var = str.substring(1, str.indexOf('=')).trim();    //1. extract variable name
-            command = str.substring(str.indexOf('=')+1).trim(); //2. extract command
+        if (str.trim().startsWith("$")) {
+            /* Got variable, handle it */
+            var = str.substring(1, str.indexOf('=')).trim(); // 1. extract
+                                                             // variable name
+            command = str.substring(str.indexOf('=') + 1).trim(); // 2. extract
+                                                                  // command
         } else {
             command = str;
         }
         if (command.contains("$")) {
-            /* Variables inside the command, replace 'em*/
-            for(String k : variable_dict.keySet()) {
-                command = command.replace("$"+k, variable_dict.get(k));
+            /* Variables inside the command, replace 'em */
+            for (final String k : variableDict.keySet()) {
+                command = command.replace("$" + k, variableDict.get(k));
             }
         }
         if (var != null) {
             /* Assign result to variable */
-            CLIResponse result = commands.parse(command);
-            variable_dict.put(var, result.getVar());
+            final CLIResponse result = commands.parse(command);
+            variableDict.put(var, result.getVar());
             return result;
         } else {
-            /* No need for assignment  */
+            /* No need for assignment */
             return commands.parse(command);
         }
     }
@@ -107,35 +110,41 @@ public class CLIService extends Actor {
     @Override
     public final void onStart() {
         try {
-        output = getContext().getActor("/sys/out");
-        getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
-        output.tell("Hydra <" + Version.getVersionString() + ">  (Use shutdown or :sd to quit)\n", null);
-        log.info("CLI Service initialised.");
-        } catch (Exception e) {
+            output = getContext().getActor("/sys/out");
+            getSystem().getEventStream().subscribe(getSelf(), InputEvent.class);
+            output.tell("Hydra <" + Version.getVersionString()
+                    + ">  (Use shutdown or :sd to quit)\n", null);
+            log.info("CLI Service initialised.");
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        if(message instanceof InputEvent) {
+    public void onReceive(final Object message) throws Exception {
+        if (message instanceof InputEvent) {
             handle((InputEvent) message);
         } else if (message instanceof CLIResponse) {
             handleCR((CLIResponse) message);
         }
     }
 
-    private void handleCR(CLIResponse message) {
+    private void handleCR(final CLIResponse message) {
         output.tell(message.getOutput(), getSelf());
     }
 
-    public void handle(InputEvent message) {
-        CLIResponse out = handleInputString(message.getInput());
-        if(message.getSource() == null || message.getSource().equals("/sys/in")) {
+    /**
+     * Handles the input message.
+     * @param message input message.
+     */
+    public void handle(final InputEvent message) {
+        final CLIResponse out = handleInputString(message.getInput());
+        if (message.getSource() == null
+                || message.getSource().equals("/sys/in")) {
             output.tell(out.getOutput(), getSelf());
         } else {
             System.out.println(message.getSource());
-            ActorRef ref = getContext().getActor(message.getSource());
+            final ActorRef ref = getContext().getActor(message.getSource());
             ref.tell(out, getSelf());
         }
     }

@@ -61,7 +61,7 @@ public abstract class ConfigurationWriter {
      */
     public final void saveToFile(final String filename)
             throws FileNotFoundException {
-        PrintStream stream = new PrintStream(filename);
+        final PrintStream stream = new PrintStream(filename);
         saveToStream(stream);
     }
 

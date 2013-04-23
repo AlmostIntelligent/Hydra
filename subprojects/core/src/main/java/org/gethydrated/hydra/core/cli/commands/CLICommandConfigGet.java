@@ -13,12 +13,13 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 public class CLICommandConfigGet extends CLICommand {
 
     /**
-     *
+     * Constructor.
      * @param ctx
-     *            Service context.
+     *              Service context.
      * @param root
+     *              root command.
      */
-    public CLICommandConfigGet(final InternalHydra ctx, CLICommand root) {
+    public CLICommandConfigGet(final InternalHydra ctx, final CLICommand root) {
         super(ctx, root);
 
     }
@@ -35,21 +36,22 @@ public class CLICommandConfigGet extends CLICommand {
 
     @Override
     public final CLIResponse execute(final String[] args) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         if (args.length >= 1) {
             try {
                 sb.append(getHydra().getConfiguration().get(args[0]));
                 sb.append(System.getProperty("line.separator"));
-            } catch (ConfigItemNotFoundException e) {
-                sb.append(String.format("Configuration item %s not found", args[0]));
+            } catch (final ConfigItemNotFoundException e) {
+                sb.append(String.format("Configuration item %s not found",
+                        args[0]));
                 sb.append(System.getProperty("line.separator"));
-            } catch (NullPointerException e) {
+            } catch (final NullPointerException e) {
                 sb.append("Caught Nullpointer exception. No Context defined?");
                 sb.append(System.getProperty("line.separator"));
             }
         } else {
-           sb.append("No key given.");
-	   sb.append(System.getProperty("line.separator"));
+            sb.append("No key given.");
+            sb.append(System.getProperty("line.separator"));
         }
         return new CLIResponse(sb.toString());
     }
@@ -61,11 +63,11 @@ public class CLICommandConfigGet extends CLICommand {
 
     @Override
     protected final String generateHelpText() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Aspects one parameter:");
         sb.append(System.getProperty("line.separator"));
         sb.append("The parameter is the key for the configuration value");
-	sb.append(System.getProperty("line.separator"));
+        sb.append(System.getProperty("line.separator"));
         return sb.toString();
     }
 

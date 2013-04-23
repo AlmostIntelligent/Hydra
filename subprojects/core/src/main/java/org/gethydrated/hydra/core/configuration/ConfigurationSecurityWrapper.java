@@ -98,8 +98,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
-    public final List<String> list()
-            throws ConfigItemNotFoundException {
+    public final List<String> list() throws ConfigItemNotFoundException {
         return getCoreConfiguration().list();
     }
 
@@ -111,7 +110,8 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
-    public Configuration getSubItems(String base) throws ConfigItemNotFoundException, ConfigItemTypeException {
+    public Configuration getSubItems(final String base)
+            throws ConfigItemNotFoundException, ConfigItemTypeException {
         return getCoreConfiguration().getSubItems(base);
     }
 
@@ -122,7 +122,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
-    public Boolean has(String name) {
+    public Boolean has(final String name) {
         return getCoreConfiguration().has(name);
     }
 
@@ -132,7 +132,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
-    public void setRoot(ConfigurationItem root) {
+    public void setRoot(final ConfigurationItem root) {
         getCoreConfiguration().setRoot(root);
     }
 

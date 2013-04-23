@@ -1,36 +1,52 @@
 package org.gethydrated.hydra.core.io.network;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 /**
- *
+ * Channel pipeline factory.
  */
 public class ChannelInitializerFactory {
 
     private final ObjectMapper mapper;
     private final NodeController nodeController;
 
-    public ChannelInitializerFactory(NodeController nodeController, ObjectMapper mapper) {
+    /**
+     * Constructor.
+     * @param nodeController node controller.
+     * @param mapper object mapper.
+     */
+    public ChannelInitializerFactory(final NodeController nodeController,
+            final ObjectMapper mapper) {
         this.mapper = mapper;
         this.nodeController = nodeController;
     }
 
+    /**
+     * Creates a server pipeline.
+     * @return server channel pipeline.
+     */
     public ChannelInitializer<SocketChannel> createServerInitializer() {
         return createInitializer(true);
     }
 
+    /**
+     * Creates a client pipeline.
+     * @return client channel pipeline.
+     */
     public ChannelInitializer<SocketChannel> createClientInitializer() {
         return createInitializer(false);
     }
 
-    private ChannelInitializer<SocketChannel> createInitializer(final boolean isServerChannel) {
+    private ChannelInitializer<SocketChannel> createInitializer(
+            final boolean isServerChannel) {
         return new ChannelInitializer<SocketChannel>() {
             @Override
-            public void initChannel(SocketChannel ch) throws Exception {
-                ChannelPipeline pipeline = ch.pipeline();
+            public void initChannel(final SocketChannel ch) throws Exception {
+                final ChannelPipeline pipeline = ch.pipeline();
                 pipeline.addLast(new JSONDecoder(mapper));
                 pipeline.addLast(new JSONEncoder(mapper));
                 if (isServerChannel) {

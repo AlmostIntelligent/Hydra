@@ -3,16 +3,12 @@ package org.gethydrated.hydra.core.service;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.api.util.IDGenerator;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.Service;
-import org.gethydrated.hydra.core.messages.StartService;
-import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
-import org.gethydrated.hydra.core.sid.InternalSID;
 import org.slf4j.Logger;
 
 /**
@@ -30,62 +26,58 @@ public class Services extends Actor {
 
     private final IDGenerator idGen;
 
-    /**
-     * Configuration.
-     */
-    private final Configuration cfg;
-
     private final Archives archives;
 
     private final DefaultSIDFactory sidFactory;
-    private InternalHydra hydra;
+    private final InternalHydra hydra;
 
     /**
      * Constructor.
-     *
-     * @param cfg
-     *            Configuration.
-     * @param hydra
+     * @param archives service archives.
+     * @param hydra internal Hydra representation.
      */
-    public Services(final Configuration cfg, final Archives archives, InternalHydra hydra) {
+    public Services(final Archives archives,
+            final InternalHydra hydra) {
         this.archives = archives;
         this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
         this.hydra = hydra;
         idGen = new IDGenerator();
-        this.cfg = cfg;
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
-        if(message instanceof StartService) {
-            startService(((StartService) message).name);
+    public void onReceive(final Object message) throws Exception {
+        if (message instanceof StartService) {
+            startService(((StartService) message).getName());
         }
-        if(message instanceof StopService) {
+        if (message instanceof StopService) {
             stopService(((StopService) message).getUsid());
         }
     }
 
-    private void stopService(USID usid) {
-        ActorRef ref = getSystem().getActor(DefaultSIDFactory.usidToActorPath(usid));
+    private void stopService(final USID usid) {
+        final ActorRef ref = getSystem().getActor(
+                DefaultSIDFactory.usidToActorPath(usid));
         getContext().stopActor(ref);
     }
 
-    private void startService(String serviceName) {
+    private void startService(final String serviceName) {
         try {
             final Service service = archives.getService(serviceName);
-            if(service != null) {
-                Long id = idGen.getId();
-                ActorRef ref = getContext().spawnActor(new ActorFactory() {
-                    @Override
-                    public Actor create() throws Exception {
-                        return new ServiceImpl(service.getActivator(), service.getClassLoader(), hydra);
-                    }
-                }, id.toString());
+            if (service != null) {
+                final Long id = idGen.getId();
+                final ActorRef ref = getContext().spawnActor(
+                        new ActorFactory() {
+                            @Override
+                            public Actor create() throws Exception {
+                                return new ServiceImpl(service.getActivator(),
+                                        service.getClassLoader(), hydra);
+                            }
+                        }, id.toString());
                 getSender().tell(sidFactory.fromActorRef(ref), getSelf());
             } else {
-                throw new RuntimeException("Service not found:"+serviceName);
+                throw new RuntimeException("Service not found:" + serviceName);
             }
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             getSender().tell(e, getSelf());
             e.printStackTrace();
         }

@@ -1,6 +1,7 @@
 package org.gethydrated.hydra.test.actors;
 
 import static org.junit.Assert.assertEquals;
+
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -31,14 +32,14 @@ public final class ActorTest {
 
     @Test
     public void testActorClassCreation() {
-        ActorRef actor = actorSystem.spawnActor(TestActor.class, "test");
+        final ActorRef actor = actorSystem.spawnActor(TestActor.class, "test");
 
         assertEquals(actor.getName(), "test");
     }
 
     @Test
     public void testActorFactoryCreation() {
-        ActorRef actor = actorSystem.spawnActor(new ActorFactory() {
+        final ActorRef actor = actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() {
                 return new TestActor();
@@ -51,7 +52,7 @@ public final class ActorTest {
     public static class TestActor extends Actor {
 
         @Override
-        public void onReceive(Object message) throws Exception {
+        public void onReceive(final Object message) throws Exception {
         }
 
     }

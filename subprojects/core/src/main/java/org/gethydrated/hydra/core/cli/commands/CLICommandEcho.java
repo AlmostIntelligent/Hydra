@@ -12,11 +12,13 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 public class CLICommandEcho extends CLICommand {
 
     /**
-     *
+     * Constructor.
      * @param hydra
-     *            Service context.
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandEcho(final InternalHydra hydra, CLICommand root) {
+    public CLICommandEcho(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -32,7 +34,7 @@ public class CLICommandEcho extends CLICommand {
 
     @Override
     public final CLIResponse execute(final String[] args) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         int i = 0;
         for (i = 0; i < args.length; i++) {
             sb.append(args[i]);
@@ -49,7 +51,7 @@ public class CLICommandEcho extends CLICommand {
 
     @Override
     protected final String generateHelpText() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Echos everything given as a parameter.\n");
         return sb.toString();
     }

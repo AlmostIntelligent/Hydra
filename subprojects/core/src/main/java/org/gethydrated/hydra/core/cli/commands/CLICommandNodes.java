@@ -13,9 +13,13 @@ import java.util.UUID;
 public class CLICommandNodes extends CLICommand {
 
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandNodes(InternalHydra hydra, CLICommand root) {
+    public CLICommandNodes(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -40,18 +44,19 @@ public class CLICommandNodes extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
-        Map<UUID, NodeAddress> connectedNodes = getHydra().getNetKernel().getNodesWithAddress();
-        if(connectedNodes.size() == 0) {
+    public CLIResponse execute(final String[] args) {
+        final Map<UUID, NodeAddress> connectedNodes = getHydra().getNetKernel()
+                .getNodesWithAddress();
+        if (connectedNodes.size() == 0) {
             return new CLIResponse(String.format("No nodes connected.\n"));
         }
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Connected Nodes: \n");
-        for(UUID uuid : connectedNodes.keySet()) {
+        for (final UUID uuid : connectedNodes.keySet()) {
             sb.append("Node ");
             sb.append(getHydra().getNetKernel().getID(uuid));
             sb.append(": ");
-            NodeAddress n = connectedNodes.get(uuid);
+            final NodeAddress n = connectedNodes.get(uuid);
             sb.append(n.getIp());
             sb.append(":");
             sb.append(n.getPort());
@@ -63,7 +68,7 @@ public class CLICommandNodes extends CLICommand {
             }
             sb.append("\n");
         }
-	    sb.append("\n");
+        sb.append("\n");
         return new CLIResponse(sb.toString());
     }
 

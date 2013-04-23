@@ -8,9 +8,13 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
  */
 public class CLICommandNode extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandNode(InternalHydra hydra, CLICommand root) {
+    public CLICommandNode(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -35,20 +39,25 @@ public class CLICommandNode extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         try {
-            if(args.length != 1) {
+            if (args.length != 1) {
                 return new CLIResponse("Wrong paramter number.\n");
             }
-            int id = Integer.parseInt(args[0]);
-            if(id != 0 && getHydra().getNetKernel().isConnected(id)) {
+            final int id = Integer.parseInt(args[0]);
+            if (id != 0 && getHydra().getNetKernel().isConnected(id)) {
                 getRootCommand().setCurrentNodeId(id);
-                return new CLIResponse("You are now on Node " +  id + ". To return to your local node, use the 'local' command.\n");
+                return new CLIResponse(
+                        "You are now on Node "
+                                + id
+                                + ". To return to your local node, use the 'local' command.\n");
             } else {
                 return new CLIResponse("Unknown node id: " + args[0] + "\n");
             }
-        } catch (NumberFormatException e) {
-            return new CLIResponse(String.format("An exception occurred: Could not convert + '" +args[0]+ "' to a number.\n"));
+        } catch (final NumberFormatException e) {
+            return new CLIResponse(
+                    String.format("An exception occurred: Could not convert + '"
+                            + args[0] + "' to a number.\n"));
         }
     }
 

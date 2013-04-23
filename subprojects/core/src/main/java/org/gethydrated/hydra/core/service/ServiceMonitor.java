@@ -9,60 +9,81 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * Service monitoring.
  */
-public class ServiceMonitor {
+public final class ServiceMonitor {
 
-    private SID self;
+    private final SID self;
 
-    private DefaultSIDFactory sidFactory;
+    private final DefaultSIDFactory sidFactory;
 
-    private Set<Link> links = new HashSet<>();
+    private final Set<USID> links = new HashSet<>();
 
-    private Set<Monitor> monitors = new HashSet<>();
+    private final Set<USID> monitors = new HashSet<>();
 
     private volatile boolean closed = false;
 
-    public ServiceMonitor(SID self, DefaultSIDFactory sidFactory) {
+    /**
+     * Constructor.
+     * @param self Service self reference.
+     * @param sidFactory Service id factory.
+     */
+    public ServiceMonitor(final SID self, final DefaultSIDFactory sidFactory) {
         this.self = self;
         this.sidFactory = sidFactory;
     }
 
-    public void addLink(Link link) {
-        if(!closed) {
-            if(!links.contains(link)) {
-                links.add(link);
-                SID ref = sidFactory.fromUSID(link.getUSID());
+    /**
+     * Adds a linked service.
+     * @param link linked service.
+     */
+    public void addLink(final Link link) {
+        if (!closed) {
+            if (!links.contains(link)) {
+                links.add(link.getUSID());
+                final SID ref = sidFactory.fromUSID(link.getUSID());
                 ref.tell(new Link(self.getUSID()), self);
             }
         } else {
-            SID ref = sidFactory.fromUSID(link.getUSID());
-            ref.tell(new ServiceExit(self.getUSID(), "already down"),self);
+            final SID ref = sidFactory.fromUSID(link.getUSID());
+            ref.tell(new ServiceExit(self.getUSID(), "already down"), self);
         }
     }
 
-    public void removeLink(Link link) {
-        if(!closed) {
-            if(links.remove(link)) {
-                SID ref = sidFactory.fromUSID(link.getUSID());
+    /**
+     * Removes a linked service.
+     * @param link linked service.
+     */
+    public void removeLink(final Link link) {
+        if (!closed) {
+            if (links.remove(link)) {
+                final SID ref = sidFactory.fromUSID(link.getUSID());
                 ref.tell(new Unlink(self.getUSID()), self);
             }
         }
     }
 
-    public void addMonitor(Monitor monitor) {
-        if(!closed) {
-            if(!monitors.contains(monitor)) {
-                monitors.add(monitor);
+    /**
+     * Adds a monitored service.
+     * @param monitor monitored service.
+     */
+    public void addMonitor(final Monitor monitor) {
+        if (!closed) {
+            if (!monitors.contains(monitor)) {
+                monitors.add(monitor.getSource());
             }
         } else {
-            SID ref = sidFactory.fromUSID(monitor.getUSID());
-            ref.tell(new ServiceDown(self.getUSID(), "already down"),self);
+            final SID ref = sidFactory.fromUSID(monitor.getSource());
+            ref.tell(new ServiceDown(self.getUSID(), ref.getUSID(), "already down"), self);
         }
     }
 
-    public void removeMonitor(Monitor monitor) {
-        if(!closed) {
+    /**
+     * Removes a monitored service.
+     * @param monitor monitored service.
+     */
+    public void removeMonitor(final USID monitor) {
+        if (!closed) {
             monitors.remove(monitor);
         }
     }
@@ -72,30 +93,36 @@ public class ServiceMonitor {
      * <p>
      * Registered monitors are notified by
      * {@link org.gethydrated.hydra.api.event.ServiceDown} messages.
-     * </p><p>
+     * </p>
+     * <p>
      * Registered linked services are notified by
      * {@link org.gethydrated.hydra.api.event.ServiceExit} messages.
      * </p>
+     * @param reason Reason for closing.
      */
-    public void close(String reason) {
-        if(!closed) {
+    public void close(final String reason) {
+        if (!closed) {
             closed = true;
-            ServiceExit exit = new ServiceExit(self.getUSID(), reason);
-            ServiceDown down = new ServiceDown(self.getUSID(), reason);
-            for(Link l : links) {
-                SID ref = sidFactory.fromUSID(l.getUSID());
+            final ServiceExit exit = new ServiceExit(self.getUSID(), reason);
+            for (final USID l : links) {
+                final SID ref = sidFactory.fromUSID(l);
                 ref.tell(exit, self);
             }
-            for(Monitor m : monitors) {
-                SID ref = sidFactory.fromUSID(m.getUSID());
-                ref.tell(down, self);
+            for (final USID m : monitors) {
+                final SID ref = sidFactory.fromUSID(m);
+                ref.tell(new ServiceDown(self.getUSID(), ref.getUSID(), reason), self);
             }
         }
     }
 
-    public boolean isLinked(USID usid) {
-        for (Link l : links) {
-            if (l.getUSID().equals(usid)) {
+    /**
+     * Returns if the given usid is a linked service.
+     * @param usid service usid.
+     * @return true if linked.
+     */
+    public boolean isLinked(final USID usid) {
+        for (final USID l : links) {
+            if (l.equals(usid)) {
                 return true;
             }
         }

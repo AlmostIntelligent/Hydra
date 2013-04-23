@@ -1,5 +1,8 @@
 package org.gethydrated.hydra.actors.actors;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.gethydrated.hydra.actors.ActorCreator;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -11,10 +14,14 @@ import org.gethydrated.hydra.actors.refs.InternalRef;
 import org.gethydrated.hydra.actors.refs.NullRef;
 import org.slf4j.Logger;
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class RootGuardian extends AbstractMinimalRef {
+/**
+ * Root guardian.
+ * 
+ * @author Christian Kulpa
+ * @author Hanno Sternberg
+ * @since 0.1.0
+ */
+public final class RootGuardian extends AbstractMinimalRef {
 
     private final Logger logger;
 
@@ -26,7 +33,11 @@ public class RootGuardian extends AbstractMinimalRef {
 
     private volatile boolean running = true;
 
-    public RootGuardian(ActorSystem system) {
+    /**
+     * Constructor.
+     * @param system parent actor system.
+     */
+    public RootGuardian(final ActorSystem system) {
         logger = new LoggingAdapter(RootGuardian.class, system);
         logger.info("RootGuardian created.");
     }
@@ -37,9 +48,9 @@ public class RootGuardian extends AbstractMinimalRef {
     }
 
     @Override
-    public synchronized void tellSystem(Object o, ActorRef sender) {
-        if(o instanceof Stopped) {
-            if(sysGuardian.equals(sender)) {
+    public synchronized void tellSystem(final Object o, final ActorRef sender) {
+        if (o instanceof Stopped) {
+            if (sysGuardian.equals(sender)) {
                 running = false;
                 logger.info("Root guardian stopped.");
                 runTerminationHooks();
@@ -48,17 +59,25 @@ public class RootGuardian extends AbstractMinimalRef {
         }
     }
 
-    public void setAppGuardian(InternalRef appGuardian) {
+    /**
+     * Sets the application guardian.
+     * @param appGuardian application guardian.
+     */
+    public void setAppGuardian(final InternalRef appGuardian) {
         this.appGuardian = appGuardian;
     }
 
-    public void setSysGuardian(InternalRef sysGuardian) {
+    /**
+     * Sets the system guardian.
+     * @param sysGuardian system guardian.
+     */
+    public void setSysGuardian(final InternalRef sysGuardian) {
         this.sysGuardian = sysGuardian;
     }
 
     @Override
-    public InternalRef getChild(String name) {
-        if(name.equals("sys")) {
+    public InternalRef getChild(final String name) {
+        if (name.equals("sys")) {
             return sysGuardian;
         } else if (name.equals("app")) {
             return appGuardian;
@@ -67,14 +86,15 @@ public class RootGuardian extends AbstractMinimalRef {
     }
 
     @Override
-    public InternalRef findActor(List<String> names) {
-        if(names.isEmpty()) {
+    public InternalRef findActor(final List<String> names) {
+        if (names.isEmpty()) {
             return this;
         }
-        InternalRef ref = getChild(names.remove(0));
+        final InternalRef ref = getChild(names.remove(0));
         return ref.findActor(names);
     }
 
+    @Override
     public boolean isTerminated() {
         return !running;
     }
@@ -94,23 +114,23 @@ public class RootGuardian extends AbstractMinimalRef {
         return null;
     }
 
-    public void addTerminationHook(Runnable hook) {
-        if(running) {
+    /**
+     * Adds a new termination hook.
+     * @param hook termination hook.
+     */
+    public void addTerminationHook(final Runnable hook) {
+        if (running) {
             synchronized (terminationHooks) {
                 terminationHooks.add(hook);
             }
         }
     }
 
-    public void runTerminationHooks() {
+    private void runTerminationHooks() {
         synchronized (terminationHooks) {
-            for(Runnable r : terminationHooks) {
+            for (final Runnable r : terminationHooks) {
                 r.run();
             }
         }
-    }
-
-    private void initGuardians() {
-
     }
 }

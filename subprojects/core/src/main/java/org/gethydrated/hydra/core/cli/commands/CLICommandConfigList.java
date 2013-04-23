@@ -1,10 +1,10 @@
 package org.gethydrated.hydra.core.cli.commands;
 
+import java.util.List;
+
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-
-import java.util.List;
 
 /**
  * 
@@ -15,12 +15,13 @@ import java.util.List;
 public class CLICommandConfigList extends CLICommand {
 
     /**
-     *
+     * Constructor.
      * @param ctx
-     *            Service Context.
+     *              Service context.
      * @param root
+     *              root command.
      */
-    public CLICommandConfigList(final InternalHydra ctx, CLICommand root) {
+    public CLICommandConfigList(final InternalHydra ctx, final CLICommand root) {
         super(ctx, root);
     }
 
@@ -36,7 +37,7 @@ public class CLICommandConfigList extends CLICommand {
 
     @Override
     protected final String generateHelpText() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Aspects one parameter:");
         sb.append(System.getProperty("line.separator"));
         sb.append("The parameter is the key for the configuration value");
@@ -51,7 +52,7 @@ public class CLICommandConfigList extends CLICommand {
 
     @Override
     public final CLIResponse execute(final String[] args) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         String elem = null;
         if (args.length >= 1) {
             elem = args[0];
@@ -62,20 +63,20 @@ public class CLICommandConfigList extends CLICommand {
         try {
             l = getHydra().getConfiguration().list(elem);
             if (l.size() > 0) {
-                for (String s : l) {
+                for (final String s : l) {
                     sb.append(s);
                     sb.append(System.getProperty("line.separator"));
                 }
-		sb.append(System.getProperty("line.separator"));
+                sb.append(System.getProperty("line.separator"));
             } else {
                 sb.append(args[0]);
                 sb.append(" has no children");
                 sb.append(System.getProperty("line.separator"));
             }
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             sb.append(String.format("Configuration item %s not found", args[0]));
             sb.append(System.getProperty("line.separator"));
-        } catch (NullPointerException e) {
+        } catch (final NullPointerException e) {
             sb.append("Caught Nullpointer exception. No Context defined?");
             sb.append(System.getProperty("line.separator"));
         }

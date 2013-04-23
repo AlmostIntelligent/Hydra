@@ -1,25 +1,30 @@
 package org.gethydrated.hydra.actors.timer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Timer queue backed by a sorted list. The {@link TimerTask}s are sorted
- * by due date. If tasks have the same timestamp, the new tasks timestamp will be
+ * Timer queue backed by a sorted list. The {@link TimerTask}s are sorted by due
+ * date. If tasks have the same timestamp, the new tasks timestamp will be
  * incremented until there are no collisions.
- *
- * The accuracy of Timers bases on this queue can be set by specifying the wanted
- * time slice size at creation. The default is 100ms.
- *
- * For more information, see George Varghese and Tony Lauck's paper at
- * <a href="http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf">
- *     http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf</a>
+ * 
+ * The accuracy of Timers bases on this queue can be set by specifying the
+ * wanted time slice size at creation. The default is 100ms.
+ * 
+ * For more information, see George Varghese and Tony Lauck's paper at <a href=
+ * "http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf">
+ * http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf</a>
  */
-public class SortListQueue implements TimerQueue, Runnable{
+public class SortListQueue implements TimerQueue, Runnable {
 
     private final long timeSlice;
 
@@ -27,20 +32,22 @@ public class SortListQueue implements TimerQueue, Runnable{
 
     private final Logger logger = LoggerFactory.getLogger(SortListQueue.class);
 
-    private final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("win");
+    private final boolean isWindows = System.getProperty("os.name")
+            .toLowerCase().contains("win");
 
     private Thread timerThread;
 
-    private final SortedSet<SortListTimeout> tasks = new ConcurrentSkipListSet<>(new Comparator<Timeout>() {
-        @Override
-        public int compare(Timeout o1, Timeout o2) {
-            return (int) (o1.getTask().getTimeStamp() - o2.getTask().getTimeStamp());
-        }
-    });
+    private final SortedSet<SortListTimeout> tasks = new ConcurrentSkipListSet<>(
+            new Comparator<Timeout>() {
+                @Override
+                public int compare(final Timeout o1, final Timeout o2) {
+                    return (int) (o1.getTask().getTimeStamp() - o2.getTask()
+                            .getTimeStamp());
+                }
+            });
 
     /**
-     * Creates a new SortListQueue with default time slice size of
-     * 100ms.
+     * Creates a new SortListQueue with default time slice size of 100ms.
      */
     public SortListQueue() {
         this(100);
@@ -48,9 +55,11 @@ public class SortListQueue implements TimerQueue, Runnable{
 
     /**
      * Creates a new SortListQueue with the given time slice size.
-     * @param timeSlice the time slice size.
+     * 
+     * @param timeSlice
+     *            the time slice size.
      */
-    public SortListQueue(long timeSlice) {
+    public SortListQueue(final long timeSlice) {
         this.timeSlice = timeSlice;
     }
 
@@ -62,16 +71,19 @@ public class SortListQueue implements TimerQueue, Runnable{
     /**
      * Enqueue a new task in the {@link TimerQueue}. If the queue is already
      * stopped this must throw an {@link IllegalStateException}.
-     *
-     * !!! Never enqueue the same {@link TimerTask} twice. This will result in an endless loop !!!
-     *
-     * @param task new task
+     * 
+     * !!! Never enqueue the same {@link TimerTask} twice. This will result in
+     * an endless loop !!!
+     * 
+     * @param task
+     *            new task
      * @return a {@link Timeout} object as handle to the scheduled task
      */
     @Override
-    public Timeout enqueue(TimerTask task) {
-        SortListTimeout timeout = new SortListTimeout(Objects.requireNonNull(task));
-        while(!tasks.add(timeout)) {
+    public Timeout enqueue(final TimerTask task) {
+        final SortListTimeout timeout = new SortListTimeout(
+                Objects.requireNonNull(task));
+        while (!tasks.add(timeout)) {
             timeout.getTask().incTimeStamp();
         }
         return timeout;
@@ -80,10 +92,10 @@ public class SortListQueue implements TimerQueue, Runnable{
     @Override
     public Set<Timeout> stop() {
         stopped.set(true);
-        if(timerThread!=null) {
+        if (timerThread != null) {
             try {
                 timerThread.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 logger.warn("Interrupted exception on timer queue.", e);
             }
         }
@@ -93,17 +105,17 @@ public class SortListQueue implements TimerQueue, Runnable{
     @Override
     public void run() {
         timerThread = Thread.currentThread();
-        while(!stopped.get()) {
-            long startTime = System.currentTimeMillis();
+        while (!stopped.get()) {
+            final long startTime = System.currentTimeMillis();
             expireTimeouts(startTime);
-            long currentTime = System.currentTimeMillis();
+            final long currentTime = System.currentTimeMillis();
             long sleepTime = timeSlice - (startTime - currentTime);
-            if(sleepTime > 0) {
-                if(isWindows) {
-                    sleepTime = (sleepTime / 10 ) * 10;
-                    try{
+            if (sleepTime > 0) {
+                if (isWindows) {
+                    sleepTime = (sleepTime / 10) * 10;
+                    try {
                         Thread.sleep(sleepTime);
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         logger.warn("Interrupted exception on timer queue.", e);
                     }
                 }
@@ -111,24 +123,24 @@ public class SortListQueue implements TimerQueue, Runnable{
         }
     }
 
-    private void expireTimeouts(long startTime) {
-        Iterator<SortListTimeout> iterator = tasks.iterator();
+    private void expireTimeouts(final long startTime) {
+        final Iterator<SortListTimeout> iterator = tasks.iterator();
 
-        Set<TimerTask> repeatables = new HashSet<>();
+        final Set<TimerTask> repeatables = new HashSet<>();
 
         while (iterator.hasNext()) {
-            SortListTimeout timeout = iterator.next();
-            if(startTime > timeout.getTask().getTimeStamp()) {
+            final SortListTimeout timeout = iterator.next();
+            if (startTime > timeout.getTask().getTimeStamp()) {
                 iterator.remove();
-                if(timeout.isCancelled()) {
+                if (timeout.isCancelled()) {
                     continue;
                 }
                 try {
                     timeout.getTask().execute();
-                } catch (Throwable t) {
-                    logger.error("Error while executing timer task:",t);
+                } catch (final Throwable t) {
+                    logger.error("Error while executing timer task:", t);
                 }
-                if(timeout.getTask().isRepeatable()) {
+                if (timeout.getTask().isRepeatable()) {
                     timeout.getTask().incRepeat();
                     repeatables.add(timeout.getTask());
                 }
@@ -137,16 +149,16 @@ public class SortListQueue implements TimerQueue, Runnable{
                 break;
             }
         }
-        for(TimerTask t : repeatables) {
+        for (final TimerTask t : repeatables) {
             enqueue(t);
         }
     }
 
-    private static class SortListTimeout implements Timeout {
+    private static final class SortListTimeout implements Timeout {
 
-        private TimerTask task;
+        private final TimerTask task;
 
-        private SortListTimeout(TimerTask task) {
+        private SortListTimeout(final TimerTask task) {
             this.task = task;
         }
 

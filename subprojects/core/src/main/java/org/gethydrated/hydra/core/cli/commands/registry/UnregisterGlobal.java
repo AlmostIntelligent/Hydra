@@ -1,24 +1,26 @@
 package org.gethydrated.hydra.core.cli.commands.registry;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.cli.commands.CLICommand;
 import org.gethydrated.hydra.core.registry.UnregisterService;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
- *
+ * Global service unregister command.
  */
 public class UnregisterGlobal extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra parent Hydra.
+     * @param root Root command.
      */
-    public UnregisterGlobal(InternalHydra hydra, CLICommand root) {
+    public UnregisterGlobal(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -43,18 +45,23 @@ public class UnregisterGlobal extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
-        if(args.length == 1) {
-            ActorRef ref = getHydra().getActorSystem().getActor("/app/globalregistry");
-            Future f = ref.ask(new UnregisterService(args[0]));
+    public CLIResponse execute(final String[] args) {
+        if (args.length == 1) {
+            final ActorRef ref = getHydra().getActorSystem().getActor(
+                    "/app/globalregistry");
+            @SuppressWarnings("rawtypes")
+            final Future f = ref.ask(new UnregisterService(args[0]));
             try {
-                String s = (String) f.get(15, TimeUnit.SECONDS);
+                final String s = (String) f.get(15, TimeUnit.SECONDS);
                 return new CLIResponse(s + "\n");
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                return new CLIResponse("An error occurred: " + e.getMessage() + "\n");
+            } catch (InterruptedException | ExecutionException
+                    | TimeoutException e) {
+                return new CLIResponse("An error occurred: " + e.getMessage()
+                        + "\n");
             }
         } else {
-            return new CLIResponse("Wrong parameter count. Usage: unregister global [name]\n");
+            return new CLIResponse(
+                    "Wrong parameter count. Usage: unregister global [name]\n");
         }
     }
 

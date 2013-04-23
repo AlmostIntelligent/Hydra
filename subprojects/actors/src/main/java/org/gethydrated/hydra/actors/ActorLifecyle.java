@@ -29,8 +29,8 @@ public enum ActorLifecyle {
      */
     STOPPING,
     /**
-     * Actor is stopped. If an actor is in the stopped state,
-     * there cannot be any more state changes.
+     * Actor is stopped. If an actor is in the stopped state, there cannot be
+     * any more state changes.
      */
     STOPPED,
     /**

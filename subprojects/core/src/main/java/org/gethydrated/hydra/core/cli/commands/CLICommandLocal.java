@@ -8,9 +8,13 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
  */
 public class CLICommandLocal extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandLocal(InternalHydra hydra, CLICommand root) {
+    public CLICommandLocal(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -35,7 +39,7 @@ public class CLICommandLocal extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         getRootCommand().setCurrentNodeId(0);
         return new CLIResponse("You are now on your local node.\n");
     }

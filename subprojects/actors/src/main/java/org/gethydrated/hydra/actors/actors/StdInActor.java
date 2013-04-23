@@ -1,59 +1,68 @@
 package org.gethydrated.hydra.actors.actors;
 
-import org.gethydrated.hydra.actors.Actor;
-import org.gethydrated.hydra.api.event.InputEvent;
-import org.slf4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.gethydrated.hydra.actors.Actor;
+import org.gethydrated.hydra.api.event.InputEvent;
+import org.slf4j.Logger;
+
+/**
+ * Standard input actor.
+ * 
+ * @author Christian Kulpa
+ * @author Hanno Sternberg
+ * @since 0.1.0
+ */
 public class StdInActor extends Actor {
 
-	private volatile boolean running = true;
-	
-	private final Logger logger = getLogger(StdInActor.class);
+    private volatile boolean running = true;
 
-	@Override
-	public void onReceive(Object message) throws Exception {
-		if(message instanceof String) {
-			getSystem().getEventStream().publish(new InputEvent((String) message, getSelf().toString()));
-		}
-	}
+    private final Logger logger = getLogger(StdInActor.class);
 
-	@Override
-	public void onStart() {
-		Runnable r = new Runnable() {
+    @Override
+    public void onReceive(final Object message) throws Exception {
+        if (message instanceof String) {
+            getSystem().getEventStream().publish(
+                    new InputEvent((String) message, getSelf().toString()));
+        }
+    }
 
-			@Override
-			public void run() {
-			    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-				while (running) {
-					String line;
+    @Override
+    public void onStart() {
+        final Runnable r = new Runnable() {
+
+            @Override
+            public void run() {
+                final BufferedReader in = new BufferedReader(
+                        new InputStreamReader(System.in));
+                while (running) {
+                    String line;
                     try {
                         line = in.readLine();
-                        if(line == null) {
+                        if (line == null) {
                             running = false;
                         } else {
-                            if(!line.isEmpty()) {
+                            if (!line.isEmpty()) {
                                 getSelf().tell(line, null);
                             }
                         }
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         logger.warn("Error reading system.in.", e);
                         running = false;
                     }
-				}
-			}
-			
-		};
-		Thread t = new Thread(r);
-		t.setDaemon(true);
-		t.start();
-	}
-	
-	@Override
-	public void onStop() {
-		running = false;
-	}
+                }
+            }
+
+        };
+        final Thread t = new Thread(r);
+        t.setDaemon(true);
+        t.start();
+    }
+
+    @Override
+    public void onStop() {
+        running = false;
+    }
 }

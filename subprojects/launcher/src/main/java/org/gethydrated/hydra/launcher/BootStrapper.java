@@ -15,7 +15,6 @@ import java.util.List;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- * 
  */
 public final class BootStrapper {
 
@@ -37,32 +36,35 @@ public final class BootStrapper {
      */
     public static void bootstrap(final String[] args, final File hydraHome)
             throws Exception {
-        List<File> systemJars = new ArrayList<>();
+        final List<File> systemJars = new ArrayList<>();
 
         addFileSet(systemJars, new File(hydraHome, "lib"), ".jar");
 
         systemJars.add(new File(hydraHome, "conf"));
-        
-        List<URL> hydra = new LinkedList<>();
-        List<URL> commons = new LinkedList<>();
-        
-        for (File file : systemJars) {
-            if (file.getName().contains("hydra-api") || !file.getName().contains("hydra")) {
+
+        final List<URL> hydra = new LinkedList<>();
+        final List<URL> commons = new LinkedList<>();
+
+        for (final File file : systemJars) {
+            if (file.getName().contains("hydra-api")
+                    || !file.getName().contains("hydra")) {
                 commons.add(file.toURI().toURL());
             } else {
                 hydra.add(file.toURI().toURL());
             }
         }
 
-        URLClassLoader commonsLoader = new URLClassLoader(convertList(commons), ClassLoader
-                .getSystemClassLoader().getParent());
-        URLClassLoader rootLoader = new URLClassLoader(convertList(hydra), commonsLoader);
-        
-        Class<?> mainClass = rootLoader
+        final URLClassLoader commonsLoader = new URLClassLoader(
+                convertList(commons), ClassLoader.getSystemClassLoader()
+                        .getParent());
+        final URLClassLoader rootLoader = new URLClassLoader(
+                convertList(hydra), commonsLoader);
+
+        final Class<?> mainClass = rootLoader
                 .loadClass("org.gethydrated.hydra.launcher.HydraStarter");
-        Method mainMethod = mainClass.getMethod("start", String[].class);
+        final Method mainMethod = mainClass.getMethod("start", String[].class);
         Thread.currentThread().setContextClassLoader(rootLoader);
-        mainMethod.invoke(null, new Object[] {args });
+        mainMethod.invoke(null, new Object[] {args});
     }
 
     /**
@@ -77,9 +79,10 @@ public final class BootStrapper {
      */
     private static void addFileSet(final List<File> fileSet, final File target,
             final String... endings) {
-        File[] files = target.listFiles(new FileFilter() {
+        final File[] files = target.listFiles(new FileFilter() {
+            @Override
             public boolean accept(final File file) {
-                for (String s : endings) {
+                for (final String s : endings) {
                     if (file.getAbsolutePath().endsWith(s)) {
                         return true;
                     }
@@ -90,16 +93,18 @@ public final class BootStrapper {
 
         Collections.addAll(fileSet, files);
     }
-    
+
     /**
      * Converts a list of URL to an arry.
-     * @param list URL list.
+     * 
+     * @param list
+     *            URL list.
      * @return URL array.
      */
     private static URL[] convertList(final List<URL> list) {
-        URL[] array = new URL[list.size()];
+        final URL[] array = new URL[list.size()];
         int i = 0;
-        for (URL u : list) {
+        for (final URL u : list) {
             array[i++] = u;
         }
         return array;

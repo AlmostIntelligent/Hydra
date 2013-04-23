@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.internal;
 
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -13,21 +11,24 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.concurrent.LockRelease;
 import org.gethydrated.hydra.core.concurrent.LockReply;
 import org.gethydrated.hydra.core.concurrent.LockRequest;
-import org.gethydrated.hydra.core.io.network.NodeController;
 import org.gethydrated.hydra.core.io.network.Connection;
-import org.gethydrated.hydra.core.messages.StopService;
+import org.gethydrated.hydra.core.io.network.NodeController;
+import org.gethydrated.hydra.core.io.transport.Envelope;
+import org.gethydrated.hydra.core.io.transport.MessageType;
+import org.gethydrated.hydra.core.io.transport.RelayRef;
+import org.gethydrated.hydra.core.io.transport.RelayRef.RelayedMessage;
+import org.gethydrated.hydra.core.io.transport.SerializedObject;
 import org.gethydrated.hydra.core.registry.RegistryState;
 import org.gethydrated.hydra.core.registry.Sync;
+import org.gethydrated.hydra.core.service.StopService;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.InternalSID;
-import org.gethydrated.hydra.core.io.transport.*;
-import org.gethydrated.hydra.core.io.transport.RelayRef.RelayedMessage;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 
 /**
- *
+ * Node actor for io between nodes.
  */
 public class Node extends Actor {
 
@@ -36,64 +37,73 @@ public class Node extends Actor {
     private final NodeController nodeController;
     private final DefaultSIDFactory sidFactory;
 
-    public Node(Connection connection, NodeController nodeController, DefaultSIDFactory sidFactory) {
+    /**
+     * Constructor.
+     * @param connection node connection.
+     * @param nodeController node controller.
+     * @param sidFactory service id factory.
+     */
+    public Node(final Connection connection,
+            final NodeController nodeController,
+            final DefaultSIDFactory sidFactory) {
+
         this.connection = connection;
         this.nodeController = nodeController;
         this.sidFactory = sidFactory;
-        connection.channel().closeFuture().addListener(new ChannelFutureListener() {
+        connection.addCloseListener(new Runnable() {
             @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
+            public void run() {
                 getContext().stopActor(getSelf());
             }
         });
     }
 
     @Override
-    public void onReceive(Object message) throws Exception {
+    public void onReceive(final Object message) throws Exception {
         try {
-        if (message instanceof SystemEvent) {
-            Envelope env = makeSystemEnvelope(message);
-            connection.send(env);
-        } else if (message instanceof SerializedObject) {
-            Envelope env = makeEnvelope((SerializedObject) message);
-            connection.send(env);
-        } else if (message instanceof RelayedMessage) {
-            handleRelayed((RelayedMessage) message);
-        } else if (message instanceof Envelope) {
-            if(((Envelope) message).getType() == MessageType.SYSTEM) {
-                handleSystemEnvelope((Envelope) message);
-            } else if (((Envelope) message).getType() == MessageType.USER) {
-                try {
-                    SerializedObject so = ((Envelope) message).getSObject();
-                    SID sid = sidFactory.fromUSID(so.getTarget());
-                    if (((InternalSID) sid).getRef().equals(getSelf())) {
-                        throw new RuntimeException("send to self");
+            if (message instanceof SystemEvent) {
+                final Envelope env = makeSystemEnvelope(message);
+                connection.send(env);
+            } else if (message instanceof SerializedObject) {
+                final Envelope env = makeEnvelope((SerializedObject) message);
+                connection.send(env);
+            } else if (message instanceof RelayedMessage) {
+                handleRelayed((RelayedMessage) message);
+            } else if (message instanceof Envelope) {
+                if (((Envelope) message).getType() == MessageType.SYSTEM) {
+                    handleSystemEnvelope((Envelope) message);
+                } else if (((Envelope) message).getType() == MessageType.USER) {
+                    try {
+                        final SerializedObject so = ((Envelope) message)
+                                .getSObject();
+                        final SID sid = sidFactory.fromUSID(so.getTarget());
+                        if (((InternalSID) sid).getRef().equals(getSelf())) {
+                            throw new RuntimeException("send to self");
+                        }
+                        sid.tell(so, sidFactory.fromUSID(so.getSender()));
+                    } catch (final Exception e) {
+                        e.printStackTrace();
                     }
-                    sid.tell(so, sidFactory.fromUSID(so.getSender()));
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } else {
+                logger.debug("discarded message: {}", message.getClass()
+                        .getName());
             }
-        } else {
-            logger.debug("discarded message: {}", message.getClass().getName());
-        }
-        }
-        catch (Exception t) {
+        } catch (final Exception t) {
             logger.error("Error in node actor: {}", getSelf().getName(), t);
         }
     }
 
-    private void handleRelayed(RelayedMessage message) {
-        if(message.isSystemRelay()) {
+    private void handleRelayed(final RelayedMessage message) {
+        if (message.isSystemRelay()) {
             try {
-                Envelope env = makeSystemEnvelope(message.getMessage());
+                final Envelope env = makeSystemEnvelope(message.getMessage());
                 env.getSObject().setTarget(message.getRelay());
                 connection.send(env);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.warn("{}", e.getMessage(), e);
             }
         }
-
     }
 
     @Override
@@ -103,82 +113,115 @@ public class Node extends Actor {
 
     @Override
     public void onStop() throws IOException {
+        if (connection.channel() != null) {
+            Envelope env = new Envelope(MessageType.DISCONNECT);
+            env.setTarget(connection.uuid());
+            env.setSender(nodeController.getLocal());
+            connection.send(env);
+            connection.channel().close();
+        }
         getSystem().getEventStream().publish(new NodeDown(connection.uuid()));
     }
 
-    private void handleSystemEnvelope(Envelope envelope) throws ClassNotFoundException, IOException {
+    private void handleSystemEnvelope(final Envelope envelope)
+            throws ClassNotFoundException, IOException {
         getSystem().getClock().sync(envelope.getTimestamp());
-        SerializedObject so = envelope.getSObject();
-        Class<?> clazz = getClass().getClassLoader().loadClass(so.getClassName());
-        Object o = nodeController.defaultMapper().readValue(so.getData(), clazz);
-        if(o instanceof InputEvent) {
-            InputEvent i = (InputEvent)o;
+        final SerializedObject so = envelope.getSObject();
+        final Class<?> clazz = getClass().getClassLoader().loadClass(
+                so.getClassName());
+        final Object o = nodeController.defaultMapper().readValue(so.getData(),
+                clazz);
+        if (o instanceof InputEvent) {
+            final InputEvent i = (InputEvent) o;
             i.setSource(getSelf().toString());
             getSystem().getEventStream().publish(i);
         } else {
-            ActorPath target = DefaultSIDFactory.usidToActorPath(so.getTarget());
-            if(target != null) {
+            final ActorPath target = DefaultSIDFactory.usidToActorPath(so
+                    .getTarget());
+            if (target != null) {
                 try {
-                    ActorRef ref = getContext().getActor(target);
-                    if(so.getSender() == null || so.getSender().getTypeId() != 2) {
+                    final ActorRef ref = getContext().getActor(target);
+                    if (so.getSender() == null
+                            || so.getSender().getTypeId() != 2) {
                         ref.tell(o, getSelf());
                     } else {
-                        //The sender usid tells us, that the source of this request is a temp actor.
-                        //Install a relay temp actor that will notify us, if an answer has been send.
-                        //This is part of the ask functionality between nodes.
-                        ActorRef relay = new RelayRef(getSelf(), so.getSender(), true);
+                        // The sender usid tells us, that the source of this
+                        // request is a temp actor.
+                        // Install a relay temp actor that will notify us, if an
+                        // answer has been send.
+                        // This is part of the ask functionality between nodes.
+                        final ActorRef relay = new RelayRef(getSelf(),
+                                so.getSender(), true);
                         ref.tell(o, relay);
                     }
-                } catch (Exception e ) {
-                    logger.warn("An error occurred while processing received system message: {}", e.getMessage(), e);
+                } catch (final Exception e) {
+                    logger.warn(
+                            "An error occurred while processing received system message: {}",
+                            e.getMessage(), e);
                 }
             } else {
-                logger.debug("discarded received message: {}", o.getClass().getName());
+                logger.debug("discarded received message: {}", o.getClass()
+                        .getName());
             }
 
         }
     }
 
-    private ActorRef getRecipient(Object o) {
-        if(o instanceof CLIResponse) {
+    private ActorRef getRecipient(final Object o) {
+        if (o instanceof CLIResponse) {
             return getContext().getActor("/app/cli");
         }
-        if(o instanceof LockRelease || o instanceof LockRequest || o instanceof LockReply) {
+        if (o instanceof LockRelease || o instanceof LockRequest
+                || o instanceof LockReply) {
             return getContext().getActor("/app/locking");
         }
-        if(o instanceof RegistryState || o instanceof Sync) {
+        if (o instanceof RegistryState || o instanceof Sync) {
             return getContext().getActor("/app/globalregistry");
         }
-        if(o instanceof StopService) {
+        if (o instanceof StopService) {
             return getContext().getActor("/app/services");
         }
         return new NullRef();
     }
 
-    private Envelope makeSystemEnvelope(Object systemEvent) throws IOException {
-        Envelope env = new Envelope(MessageType.SYSTEM);
+    private Envelope makeSystemEnvelope(final Object systemEvent)
+            throws IOException {
+        final Envelope env = new Envelope(MessageType.SYSTEM);
         env.setTarget(connection.uuid());
         env.setSender(nodeController.getLocal());
         env.setTimestamp(getSystem().getClock().getCurrentTime());
-        SerializedObject so = new SerializedObject();
+        final SerializedObject so = new SerializedObject();
         so.setClassName(systemEvent.getClass().getName());
         so.setFormat("json");
-        so.setData(nodeController.defaultMapper().writeValueAsBytes(systemEvent));
+        so.setData(nodeController.defaultMapper()
+                .writeValueAsBytes(systemEvent));
         if (getSender() != null) {
-            so.setSender(DefaultSIDFactory.actorPathToUSID(getSender().getPath(), connection.uuid()));
+            so.setSender(DefaultSIDFactory.actorPathToUSID(getSender()
+                    .getPath(), connection.uuid()));
         }
-        if (systemEvent instanceof Monitor || systemEvent instanceof UnMonitor || systemEvent instanceof Link
-                || systemEvent instanceof Unlink || systemEvent instanceof ServiceDown || systemEvent instanceof ServiceExit) {
+        if (systemEvent instanceof Monitor) {
+            so.setSender(((Monitor) systemEvent).getSource());
+            so.setTarget(((Monitor) systemEvent).getTarget());
+        } else if (systemEvent instanceof ServiceDown) {
+            so.setSender(((ServiceDown) systemEvent).getSource());
+            so.setTarget(((ServiceDown) systemEvent).getTarget());
+        } else if (systemEvent instanceof UnMonitor
+                || systemEvent instanceof Link || systemEvent instanceof Unlink
+                || systemEvent instanceof ServiceExit) {
             so.setTarget(((USIDAware) systemEvent).getUSID());
         } else {
-            so.setTarget(DefaultSIDFactory.actorPathToUSID(getRecipient(systemEvent).getPath(), connection.uuid()));
+            so.setTarget(DefaultSIDFactory.actorPathToUSID(
+                    getRecipient(systemEvent).getPath(), connection.uuid()));
         }
         env.setSObject(so);
+        if (systemEvent instanceof ServiceDown) {
+            System.out.println(env);
+        }
         return env;
     }
 
-    private Envelope makeEnvelope(SerializedObject so) {
-        Envelope env = new Envelope(MessageType.USER);
+    private Envelope makeEnvelope(final SerializedObject so) {
+        final Envelope env = new Envelope(MessageType.USER);
         env.setTarget(connection.uuid());
         env.setSender(nodeController.getLocal());
         env.setTimestamp(getSystem().getClock().getCurrentTime());

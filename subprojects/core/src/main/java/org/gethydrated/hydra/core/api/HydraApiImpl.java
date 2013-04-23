@@ -11,7 +11,7 @@ import org.gethydrated.hydra.api.service.USID;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public class HydraApiImpl implements HydraApi {
 
@@ -19,24 +19,25 @@ public class HydraApiImpl implements HydraApi {
 
     /**
      * Constructor.
-     * @param hydra
+     * 
+     * @param hydra Hydra instance.
      */
-    public HydraApiImpl(Hydra hydra) {
+    public HydraApiImpl(final Hydra hydra) {
         this.hydra = hydra;
     }
-    
+
     @Override
     public final SID startService(final String name) throws HydraException {
         return hydra.startService(name);
     }
 
     @Override
-    public SID getService(String name) {
+    public SID getService(final String name) {
         return hydra.getService(name);
     }
 
     @Override
-    public SID getService(USID usid) {
+    public SID getService(final USID usid) {
         return hydra.getService(usid);
     }
 

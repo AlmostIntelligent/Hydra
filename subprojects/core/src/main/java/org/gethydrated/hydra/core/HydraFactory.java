@@ -12,7 +12,7 @@ import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
  * @since 0.1.0
  */
 public final class HydraFactory {
-    
+
     /**
      * Default configuration.
      */
@@ -28,10 +28,12 @@ public final class HydraFactory {
      */
     private HydraFactory() {
     }
-    
+
     /**
      * Creates new Hydra instance.
+     * 
      * @return Hydra instance.
+     * @throws HydraException on failure.
      */
     public static Hydra getHydra() throws HydraException {
         if (!initialized) {
@@ -45,10 +47,9 @@ public final class HydraFactory {
      */
     private static void init() {
         try {
-            // TODO: Add default configuration file
             new ConfigurationInitializer(DEFAULTCFG).configure("");
             initialized = true;
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             throw new IllegalStateException(
                     "Could not create hydra configuration.", e);
         }

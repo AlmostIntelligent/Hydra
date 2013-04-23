@@ -25,78 +25,89 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServiceApiImpl extends HydraApiImpl implements ServiceApi {
 
-    InternalHydra hydra;
+    private InternalHydra hydra;
 
     /**
      * Constructor.
+     * @param hydra Internal Hydra representation.
      */
-    public ServiceApiImpl(InternalHydra hydra) {
+    public ServiceApiImpl(final InternalHydra hydra) {
         super(hydra);
         this.hydra = hydra;
     }
 
     @Override
-    public void registerLocal(String name, SID id) throws HydraException {
-        ActorRef ref = hydra.getActorSystem().getActor("/app/localregistry");
+    public void registerLocal(final String name, final SID id)
+            throws HydraException {
+        final ActorRef ref = hydra.getActorSystem().getActor(
+                "/app/localregistry");
         try {
-            Future f = ref.ask(new RegisterService(id, name));
+            @SuppressWarnings("rawtypes")
+            final Future f = ref.ask(new RegisterService(id, name));
             f.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public void registerGlobal(String name, SID id) throws HydraException {
-        ActorRef ref = hydra.getActorSystem().getActor("/app/globalregistry");
+    public void registerGlobal(final String name, final SID id)
+            throws HydraException {
+        final ActorRef ref = hydra.getActorSystem().getActor(
+                "/app/globalregistry");
         try {
-            Future f = ref.ask(new RegisterService(id, name));
+            @SuppressWarnings("rawtypes")
+            final Future f = ref.ask(new RegisterService(id, name));
             f.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public void unregisterLocal(String name) throws HydraException {
-        ActorRef ref = hydra.getActorSystem().getActor("/app/localregistry");
+    public void unregisterLocal(final String name) throws HydraException {
+        final ActorRef ref = hydra.getActorSystem().getActor(
+                "/app/localregistry");
         try {
-            Future f = ref.ask(new UnregisterService(name));
+            final Future<?> f = ref.ask(new UnregisterService(name));
             f.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public void unregisterGlobal(String name) throws HydraException {
-        ActorRef ref = hydra.getActorSystem().getActor("/app/globalregistry");
+    public void unregisterGlobal(final String name) throws HydraException {
+        final ActorRef ref = hydra.getActorSystem().getActor(
+                "/app/globalregistry");
         try {
-            Future f = ref.ask(new UnregisterService(name));
+            final Future<?> f = ref.ask(new UnregisterService(name));
             f.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public SID getLocalService(String name) throws HydraException {
-        ActorRef ref = hydra.getActorSystem().getActor("/app/localregistry");
+    public SID getLocalService(final String name) throws HydraException {
+        final ActorRef ref = hydra.getActorSystem().getActor(
+                "/app/localregistry");
         try {
-            Future f = ref.ask(name);
+            final Future<?> f = ref.ask(name);
             return (SID) f.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public SID getGlobalService(String name) throws HydraException {
-        ActorRef ref = hydra.getActorSystem().getActor("/app/globalregistry");
+    public SID getGlobalService(final String name) throws HydraException {
+        final ActorRef ref = hydra.getActorSystem().getActor(
+                "/app/globalregistry");
         try {
-            Future f = ref.ask(name);
+            final Future<?> f = ref.ask(name);
             return (SID) f.get(10, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HydraException(e);
         }
     }
@@ -107,22 +118,22 @@ public class ServiceApiImpl extends HydraApiImpl implements ServiceApi {
     }
 
     @Override
-    public void link(SID sid1, SID sid2) {
+    public void link(final SID sid1, final SID sid2) {
         sid1.tell(new Link(sid2.getUSID()), sid2);
     }
 
     @Override
-    public void unlink(SID sid1, SID sid2) {
+    public void unlink(final SID sid1, final SID sid2) {
         sid1.tell(new Unlink(sid2.getUSID()), sid2);
     }
 
     @Override
-    public void monitor(SID sid1, SID sid2) {
-        sid2.tell(new Monitor(sid1.getUSID()), sid1);
+    public void monitor(final SID sid1, final SID sid2) {
+        sid2.tell(new Monitor(sid1.getUSID(), sid2.getUSID()), sid1);
     }
 
     @Override
-    public void unmonitor(SID sid1, SID sid2) {
+    public void unmonitor(final SID sid1, final SID sid2) {
         sid2.tell(new UnMonitor(sid1.getUSID()), sid1);
     }
 

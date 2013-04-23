@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Default {@link TimerTask} implementation.
  */
-public class DefaultTimerTask implements TimerTask{
+public class DefaultTimerTask implements TimerTask {
 
     private final Timer timer;
 
@@ -25,24 +25,37 @@ public class DefaultTimerTask implements TimerTask{
 
     /**
      * Creates a new non repeating TimerTask.
-     * @param timer the {@link Timer} that created this task.
-     * @param action the actual action that is executed on expiration.
-     * @param executor the executor that will handle task execution. Can be null.
-     * @param timestamp the scheduled time
+     * 
+     * @param timer
+     *            the {@link Timer} that created this task.
+     * @param action
+     *            the actual action that is executed on expiration.
+     * @param executor
+     *            the executor that will handle task execution. Can be null.
+     * @param timestamp
+     *            the scheduled time
      */
-    public DefaultTimerTask(Timer timer, Runnable action, Executor executor, long timestamp) {
+    public DefaultTimerTask(final Timer timer, final Runnable action,
+            final Executor executor, final long timestamp) {
         this(timer, action, executor, timestamp, 0);
     }
 
     /**
      * Creates a new repeating TimerTask.
-     * @param timer the {@link Timer} that created this task.
-     * @param action the actual action that is executed on expiration.
-     * @param executor the executor that will handle task execution. Can be null.
-     * @param timestamp the scheduled time
-     * @param repeat repetition delay
+     * 
+     * @param timer
+     *            the {@link Timer} that created this task.
+     * @param action
+     *            the actual action that is executed on expiration.
+     * @param executor
+     *            the executor that will handle task execution. Can be null.
+     * @param timestamp
+     *            the scheduled time
+     * @param repeat
+     *            repetition delay
      */
-    public DefaultTimerTask(Timer timer, Runnable action, Executor executor, long timestamp, long repeat) {
+    public DefaultTimerTask(final Timer timer, final Runnable action,
+            final Executor executor, final long timestamp, final long repeat) {
         this.timer = Objects.requireNonNull(timer);
         this.action = Objects.requireNonNull(action);
         this.executor = executor;
@@ -67,7 +80,7 @@ public class DefaultTimerTask implements TimerTask{
 
     @Override
     public void incRepeat() {
-        if(repeat > 0) {
+        if (repeat > 0) {
             timestamp += repeat;
         }
     }
@@ -79,13 +92,13 @@ public class DefaultTimerTask implements TimerTask{
 
     @Override
     public void execute() throws Exception {
-        if(!cancelled.get() && !expired.get()) {
-            if(executor!= null) {
+        if (!cancelled.get() && !expired.get()) {
+            if (executor != null) {
                 executor.execute(action);
             } else {
                 action.run();
             }
-            if(!isRepeatable()) {
+            if (!isRepeatable()) {
                 expired.set(true);
             }
         }
@@ -98,7 +111,7 @@ public class DefaultTimerTask implements TimerTask{
 
     @Override
     public boolean cancel() {
-        if(expired.get()) {
+        if (expired.get()) {
             return false;
         }
         cancelled.set(true);

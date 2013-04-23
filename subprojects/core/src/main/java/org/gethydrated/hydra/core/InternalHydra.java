@@ -11,11 +11,27 @@ import org.gethydrated.hydra.core.io.network.NetKernel;
  */
 public interface InternalHydra extends Hydra {
 
+    /**
+     * Returns the actor system used by Hydra.
+     * @return actor system.
+     */
     ActorSystem getActorSystem();
 
+    /**
+     * Returns Hydras root configuration entry.
+     * @return root configuration entry.
+     */
     Configuration getConfiguration();
 
+    /**
+     * Returns a service id factory.
+     * @return service id factory.
+     */
     SIDFactory getDefaultSIDFactory();
 
+    /**
+     * Returns the network kernel.
+     * @return network kernel.
+     */
     NetKernel getNetKernel();
 }

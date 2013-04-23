@@ -12,13 +12,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- *
+ * Global service lookup command.
  */
 public class WhereIsGlobal extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra parent Hydra.
+     * @param root Root command.
      */
-    public WhereIsGlobal(InternalHydra hydra, CLICommand root) {
+    public WhereIsGlobal(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -43,18 +45,23 @@ public class WhereIsGlobal extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
-        if(args.length == 1) {
-            ActorRef ref = getHydra().getActorSystem().getActor("/app/globalregistry");
-            Future f = ref.ask(args[0]);
+    public CLIResponse execute(final String[] args) {
+        if (args.length == 1) {
+            final ActorRef ref = getHydra().getActorSystem().getActor(
+                    "/app/globalregistry");
+            @SuppressWarnings("rawtypes")
+            final Future f = ref.ask(args[0]);
             try {
-                SID s = (SID) f.get(15, TimeUnit.SECONDS);
-                return new CLIResponse(s.toString()+ "\n");
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                return new CLIResponse("An error occurred: " + e.getMessage()+ "\n");
+                final SID s = (SID) f.get(15, TimeUnit.SECONDS);
+                return new CLIResponse(s.toString() + "\n");
+            } catch (InterruptedException | ExecutionException
+                    | TimeoutException e) {
+                return new CLIResponse("An error occurred: " + e.getMessage()
+                        + "\n");
             }
         } else {
-            return new CLIResponse("Wrong parameter count. Usage: unregister global [name]\n");
+            return new CLIResponse(
+                    "Wrong parameter count. Usage: unregister global [name]\n");
         }
     }
 

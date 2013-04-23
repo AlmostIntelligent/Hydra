@@ -1,20 +1,23 @@
 package org.gethydrated.hydra.core.cli.commands;
 
-import org.gethydrated.hydra.actors.ActorRef;
+import java.io.IOException;
+
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.cli.CLIResponse;
-
-import java.io.IOException;
 
 /**
  *
  */
 public class CLICommandPort extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandPort(InternalHydra hydra, CLICommand root) {
+    public CLICommandPort(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -30,9 +33,9 @@ public class CLICommandPort extends CLICommand {
 
     @Override
     protected String generateHelpText() {
-        return "Shows the current port used for hydra node connections.\n" +
-                "If used with an integer parameter, this will set a new port.\n" +
-                "If the port is set to 0, no new connections will be established.\n";
+        return "Shows the current port used for hydra node connections.\n"
+                + "If used with an integer parameter, this will set a new port.\n"
+                + "If the port is set to 0, no new connections will be established.\n";
     }
 
     @Override
@@ -41,22 +44,26 @@ public class CLICommandPort extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
 
-        if(args.length == 0) {
+        if (args.length == 0) {
             try {
-                int port = getHydra().getConfiguration().getInteger("network.port");
-                return new CLIResponse(String.format("Current port: %d\n", port));
-            } catch (ConfigItemNotFoundException e) {
-                return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
+                final int port = getHydra().getConfiguration().getInteger(
+                        "network.port");
+                return new CLIResponse(
+                        String.format("Current port: %d\n", port));
+            } catch (final ConfigItemNotFoundException e) {
+                return new CLIResponse(String.format("An error occured: %s\n",
+                        e.getMessage()));
             }
-        } else if(args.length == 1) {
-            int port = Integer.parseInt(args[0]);
+        } else if (args.length == 1) {
+            final int port = Integer.parseInt(args[0]);
             getHydra().getConfiguration().setInteger("network.port", port);
             try {
                 getHydra().getNetKernel().bind(port);
-            } catch (IOException e) {
-                return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
+            } catch (final IOException e) {
+                return new CLIResponse(String.format("An error occured: %s\n",
+                        e.getMessage()));
             }
             return new CLIResponse(String.format("Port set to: %d\n", port));
         } else {

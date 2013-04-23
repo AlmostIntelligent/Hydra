@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -19,6 +17,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.eclipse.jetty.util.ConcurrentHashSet;
+import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.io.transport.Envelope;
 import org.gethydrated.hydra.core.io.transport.EnvelopeModule;
@@ -30,11 +29,18 @@ import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class NetKernelImpl implements NetKernel {
+/**
+ * Net kernel implementation.
+ * @author Christian Kulpa
+ * @since 0.2.0
+ */
+public final class NetKernelImpl implements NetKernel {
 
     private boolean running = false;
 
@@ -42,23 +48,30 @@ public class NetKernelImpl implements NetKernel {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private ChannelGroup channels = new DefaultChannelGroup("hydra-channels");
+    private final ChannelGroup channels = new DefaultChannelGroup(
+            "hydra-channels");
     private ServerBootstrap serverBootstrap;
 
-    private InternalHydra hydra;
+    private final InternalHydra hydra;
 
     private final Lock lock = new ReentrantLock();
 
     private final UUID localNode = UUID.randomUUID();
     private NodeAddress localNodeAddress;
-    private ConcurrentHashMap<UUID, Connection> knownNodes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<UUID, Connection> knownNodes = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, UUID> idMatches = new ConcurrentHashMap<>();
 
-    private ConcurrentHashSet<UUID> connectingNodes = new ConcurrentHashSet<>();
-    private BiMap<UUID, Integer> connectedNodes = HashBiMap.create();
-    private AtomicInteger nodeId = new AtomicInteger(0);
+    private final ConcurrentHashSet<UUID> connectingNodes = new ConcurrentHashSet<>();
+
+    private final AtomicInteger nodeId = new AtomicInteger(0);
     private final ChannelInitializerFactory initializerFactory;
 
-    public NetKernelImpl(InternalHydra hydra) throws Exception {
+    /**
+     * Constructor.
+     * @param hydra Internal Hydra representation. 
+     * @throws Exception on failure.
+     */
+    public NetKernelImpl(final InternalHydra hydra) throws Exception {
         this.hydra = hydra;
         this.objectMapper = new ObjectMapper();
         objectMapper.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
@@ -73,7 +86,7 @@ public class NetKernelImpl implements NetKernel {
     }
 
     @Override
-    public synchronized void bind(int port) throws IOException {
+    public synchronized void bind(final int port) throws IOException {
         if (!running) {
             bossGroup = new NioEventLoopGroup();
             workerGroup = new NioEventLoopGroup();
@@ -82,11 +95,14 @@ public class NetKernelImpl implements NetKernel {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(initializerFactory.createServerInitializer());
             try {
-                ChannelFuture f = serverBootstrap.bind(port).syncUninterruptibly();
-                InetSocketAddress addr = (InetSocketAddress) f.channel().localAddress();
-                localNodeAddress = new NodeAddress(addr.getAddress().getHostAddress(), addr.getPort());
+                final ChannelFuture f = serverBootstrap.bind(port)
+                        .syncUninterruptibly();
+                final InetSocketAddress addr = (InetSocketAddress) f.channel()
+                        .localAddress();
+                localNodeAddress = new NodeAddress(addr.getAddress()
+                        .getHostAddress(), addr.getPort());
                 running = true;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 bossGroup.shutdown();
                 workerGroup.shutdown();
                 throw new IOException(e);
@@ -100,9 +116,9 @@ public class NetKernelImpl implements NetKernel {
             try {
                 running = false;
                 channels.close();
-                ChannelGroupFuture f = channels.close();
+                final ChannelGroupFuture f = channels.close();
                 f.await();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 e.printStackTrace();
             } finally {
                 bossGroup.shutdown();
@@ -114,18 +130,19 @@ public class NetKernelImpl implements NetKernel {
     @Override
     public void connect(final String ip, final int port) {
         if (running) {
-            Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(workerGroup)
-                    .channel(NioSocketChannel.class)
+            final Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(workerGroup).channel(NioSocketChannel.class)
                     .handler(initializerFactory.createClientInitializer());
 
             bootstrap.remoteAddress(ip, port);
-            ChannelFuture f = bootstrap.connect().syncUninterruptibly();
+            final ChannelFuture f = bootstrap.connect().syncUninterruptibly();
             channels.add(f.channel());
-            ChannelFuture handshakeFuture = f.channel().pipeline().get( ClientHandshakeHandler.class ).handshake();
+            final ChannelFuture handshakeFuture = f.channel().pipeline()
+                    .get(ClientHandshakeHandler.class).handshake();
             handshakeFuture.syncUninterruptibly();
         } else {
-            throw new RuntimeException("Node not active. Please set a connection port via port command.");
+            throw new RuntimeException(
+                    "Node not active. Please set a connection port via port command.");
         }
     }
 
@@ -140,15 +157,15 @@ public class NetKernelImpl implements NetKernel {
     }
 
     @Override
-    public UUID getUUID(int id) {
+    public UUID getUUID(final int id) {
         if (id == 0) {
             return localNode;
         }
-        return connectedNodes.inverse().get(id);
+        return idMatches.get(id);
     }
 
     @Override
-    public int getID(UUID nodeid) {
+    public int getID(final UUID nodeid) {
         if (!knownNodes.containsKey(nodeid)) {
             return -1;
         }
@@ -162,28 +179,29 @@ public class NetKernelImpl implements NetKernel {
 
     @Override
     public Map<UUID, NodeAddress> getNodesWithAddress() {
-        Map <UUID, NodeAddress> n = new HashMap<>();
-        for (Entry<UUID, Connection> e : knownNodes.entrySet()) {
+        final Map<UUID, NodeAddress> n = new HashMap<>();
+        for (final Entry<UUID, Connection> e : knownNodes.entrySet()) {
             n.put(e.getKey(), e.getValue().connector());
         }
         return n;
     }
 
-    public boolean isConnected(UUID node) {
-        Connection c = knownNodes.get(node);
+    @Override
+    public boolean isConnected(final UUID node) {
+        final Connection c = knownNodes.get(node);
         return (c != null && c.isConnected());
     }
 
     @Override
-    public boolean isConnected(int id) {
+    public boolean isConnected(final int id) {
         return false;
     }
 
     @Override
-    public boolean addConnectingNode(UUID node) {
+    public boolean addConnectingNode(final UUID node) {
         lock.lock();
         try {
-            boolean b = isConnected(node);
+            final boolean b = isConnected(node);
             if (connectingNodes.contains(node) || b) {
                 return false;
             } else {
@@ -196,27 +214,27 @@ public class NetKernelImpl implements NetKernel {
     }
 
     @Override
-    public void removeConnectingNode(UUID node) {
-       connectingNodes.remove(node);
+    public void removeConnectingNode(final UUID node) {
+        connectingNodes.remove(node);
     }
 
     @Override
-    public boolean addConnectedNode(final UUID node, final Channel channel, boolean force) {
+    public boolean addConnectedNode(final UUID node, final Channel channel,
+            final boolean force) {
         lock.lock();
         try {
-            if (!force && connectingNodes.contains(node) && (node.compareTo(localNode) < 0)) {
+            if (!force && connectingNodes.contains(node)
+                    && (node.compareTo(localNode) < 0)) {
                 return false;
             }
             connectingNodes.remove(node);
-            Connection con = knownNodes.get(node);
+            final Connection con = knownNodes.get(node);
             con.channel(channel);
-            //ActorRef ref = hydra.getActorSystem().getActor("/app/nodes");
-            //Future f = ref.ask(new Connection(node, id, channel));
-            //ActorRef nodeActorRef = (ActorRef) f.get(10, TimeUnit.SECONDS);
-            //channel.pipeline().addLast(new ActorHandler(nodeActorRef));
-            //connectedNodes.put(node, id);
+            EnvelopeHandler eh = channel.pipeline().get(EnvelopeHandler.class);
+            ActorRef ref = hydra.getActorSystem().getActor("/app/nodes/" + con.id());
+            eh.setActorRef(ref);
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
             return false;
         } finally {
@@ -225,22 +243,39 @@ public class NetKernelImpl implements NetKernel {
     }
 
     @Override
-    public boolean addKnownNode(UUID uuid, NodeAddress nodeAddress) {
-        if (!uuid.equals(localNode) && !knownNodes.containsKey(uuid)) {
-            knownNodes.put(uuid, new LazyConnection(nodeAddress, nodeId.incrementAndGet(), uuid));
-            return true;
+    public synchronized boolean addKnownNode(final UUID uuid, final NodeAddress nodeAddress) {
+        try {
+            if (!uuid.equals(localNode) && !knownNodes.containsKey(uuid)) {
+                LazyConnection lc = new LazyConnection(nodeAddress, nodeId.incrementAndGet(), uuid, this);
+                knownNodes.put(uuid, lc);
+                idMatches.put(nodeId.get(), uuid);
+                ActorRef ref = hydra.getActorSystem().getActor("/app/nodes");
+                Future<?> f = ref.ask(lc);
+                f.get(10, TimeUnit.SECONDS);
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     @Override
-    public void addKnownNodes(Map<UUID, NodeAddress> nodes, boolean flag) {
-        for (Entry<UUID, NodeAddress> e : nodes.entrySet()) {
+    public void addKnownNodes(final Map<UUID, NodeAddress> nodes, final boolean force) {
+        boolean flag = false;
+        for (final Entry<UUID, NodeAddress> e : nodes.entrySet()) {
             flag |= addKnownNode(e.getKey(), e.getValue());
         }
-        if (flag) {
+        if (flag || force) {
             updateNodes();
         }
+    }
+
+    @Override
+    public void removeNode(UUID node) {
+        knownNodes.remove(node);
+        idMatches.values().remove(node);
     }
 
     @Override
@@ -249,10 +284,10 @@ public class NetKernelImpl implements NetKernel {
     }
 
     private void updateNodes() {
-        Map<UUID, NodeAddress> n = getNodesWithAddress();
-        for (Connection c : knownNodes.values()) {
+        final Map<UUID, NodeAddress> n = getNodesWithAddress();
+        for (final Connection c : knownNodes.values()) {
             if (c.isConnected()) {
-                Envelope env = new Envelope(MessageType.NODES);
+                final Envelope env = new Envelope(MessageType.NODES);
                 env.setSender(localNode);
                 env.setTarget(c.uuid());
                 env.setNodes(n);

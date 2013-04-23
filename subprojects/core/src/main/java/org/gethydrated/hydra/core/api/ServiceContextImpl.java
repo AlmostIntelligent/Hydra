@@ -11,13 +11,14 @@ import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 
 /**
  * Service context api implementation.
+ * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public class ServiceContextImpl extends ServiceApiImpl implements
         ServiceContext {
-    
+
     /**
      * Configuration.
      */
@@ -26,11 +27,15 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     private final ServiceImpl service;
 
     private final DefaultSIDFactory sidFactory;
+
     /**
      * Constructor.
-     * @param hydra
+     * 
+     * @param service service implementation.
+     * @param hydra Internal Hydra representation.
      */
-    public ServiceContextImpl(final ServiceImpl service, InternalHydra hydra) {
+    public ServiceContextImpl(final ServiceImpl service,
+            final InternalHydra hydra) {
         super(hydra);
         this.sidFactory = (DefaultSIDFactory) hydra.getDefaultSIDFactory();
         this.cfg = new ConfigurationSecurityWrapper(hydra.getConfiguration());
@@ -44,7 +49,8 @@ public class ServiceContextImpl extends ServiceApiImpl implements
 
     @Override
     public SID getOutput() {
-        return sidFactory.fromActorRef(service.getContext().getActor("/sys/out"));
+        return sidFactory.fromActorRef(service.getContext()
+                .getActor("/sys/out"));
     }
 
     @Override
@@ -53,13 +59,14 @@ public class ServiceContextImpl extends ServiceApiImpl implements
     }
 
     @Override
-    public <T> void registerMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler) {
+    public <T> void registerMessageHandler(final Class<T> classifier,
+            final MessageHandler<T> messageHandler) {
         service.addMessageHandler(classifier, messageHandler);
     }
 
     @Override
-    public void subscribeEvent(Class<?> classifier) {
-        service.getSystem().getEventStream().subscribe(service.getSelf(), classifier);
+    public void subscribeEvent(final Class<?> classifier) {
+        service.getSystem().getEventStream()
+                .subscribe(service.getSelf(), classifier);
     }
 }
-

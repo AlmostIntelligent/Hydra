@@ -5,17 +5,19 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * Created with IntelliJ IDEA.
- *
- * @author hanno
- *         Date: 08.01.13
- *         Time: 19:08
- *         To change this template use File | Settings | File Templates.
+ * 
+ * @author hanno Date: 08.01.13 Time: 19:08 To change this template use File |
+ *         Settings | File Templates.
  */
 public class CLICommandService extends CLICommand {
     /**
-     * @param hydra Service context.
+     * Constructor.
+     * @param hydra
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandService(final InternalHydra hydra, CLICommand root) {
+    public CLICommandService(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
         addSubCommand(new CLICommandServiceStart(hydra, root));
         addSubCommand(new CLICommandServiceStop(hydra, root));
@@ -42,7 +44,7 @@ public class CLICommandService extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         return new CLIResponse(displayHelp());
     }
 

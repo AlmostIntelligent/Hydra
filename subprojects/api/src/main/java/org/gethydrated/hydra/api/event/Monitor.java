@@ -1,22 +1,37 @@
 package org.gethydrated.hydra.api.event;
 
 import org.gethydrated.hydra.api.service.USID;
-import org.gethydrated.hydra.api.service.USIDAware;
 
 /**
- *
+ * Monitor event.
+ * 
+ * @author Christian Kulpa
+ * @since 0.2.0
  */
-public class Monitor implements SystemEvent, USIDAware {
-    private USID usid;
+public class Monitor implements SystemEvent {
+    private USID source;
+    private USID target;
 
-    public Monitor(USID usid) {
-        this.usid = usid;
+    /**
+     * Constructor.
+     * @param target target service usid.
+     * @param source source service usid.
+     */
+    public Monitor(final USID source, final USID target) {
+        this.source = source;
+        this.target = target;
     }
 
-    private Monitor() {}
+    @SuppressWarnings("unused")
+    private Monitor() {
+    }
 
-    public USID getUSID() {
-        return usid;
+    public USID getSource() {
+        return source;
+    }
+
+    public USID getTarget() {
+        return target;
     }
 
     @Override
@@ -26,20 +41,24 @@ public class Monitor implements SystemEvent, USIDAware {
 
         Monitor monitor = (Monitor) o;
 
-        return !(usid != null ? !usid.equals(monitor.usid) : monitor.usid != null);
+        if (source != null ? !source.equals(monitor.source) : monitor.source != null) return false;
+        if (target != null ? !target.equals(monitor.target) : monitor.target != null) return false;
 
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return usid != null ? usid.hashCode() : 0;
+        int result = source != null ? source.hashCode() : 0;
+        result = 31 * result + (target != null ? target.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
         return "Monitor{" +
-                "usid=" + usid +
+                "source=" + source +
+                ", target=" + target +
                 '}';
     }
-
 }

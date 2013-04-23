@@ -1,13 +1,13 @@
 package org.gethydrated.hydra.test.core.cli;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.core.cli.CLIService;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 /**
  * 
@@ -50,7 +50,8 @@ public class CLIServiceTest {
          */
     @Test
     public final void testEcho() {
-        assertEquals("Hallo", dut.handleInputString("echo Hallo").getOutput().trim());
+        assertEquals("Hallo", dut.handleInputString("echo Hallo").getOutput()
+                .trim());
     }
 
     /**
@@ -61,10 +62,20 @@ public class CLIServiceTest {
         String str = null;
         str = dut.handleInputString("echo \"Hallo Welt\"").getOutput();
         assertEquals("Hallo Welt", str.trim());
-        str = dut.handleInputString("echo Some String, \"more Strings\" and even more \"Strings here with content\"").getOutput();
-        assertEquals("Some String, more Strings and even more Strings here with content", str.trim());
-        str = dut.handleInputString("echo Some String, \"more Strings\" and even more \"Strings here with content\" all done").getOutput();
-        assertEquals("Some String, more Strings and even more Strings here with content all done", str.trim());
+        str = dut
+                .handleInputString(
+                        "echo Some String, \"more Strings\" and even more \"Strings here with content\"")
+                .getOutput();
+        assertEquals(
+                "Some String, more Strings and even more Strings here with content",
+                str.trim());
+        str = dut
+                .handleInputString(
+                        "echo Some String, \"more Strings\" and even more \"Strings here with content\" all done")
+                .getOutput();
+        assertEquals(
+                "Some String, more Strings and even more Strings here with content all done",
+                str.trim());
     }
 
     /**
@@ -74,25 +85,29 @@ public class CLIServiceTest {
     public final void testEchoEmpty() {
         assertEquals("", dut.handleInputString("echo").getOutput().trim());
     }
-    
+
     /**
      * 
      */
     @Test
     public final void testEchoBlank() {
         assertEquals("", dut.handleInputString("echo ").getOutput().trim());
-    }   
+    }
 
     /**
          * 
          */
     @Test
     public final void testConfigSet() {
-        assertEquals("Network.Host = localhost", dut.handleInputString("configuration set Network.Host localhost").getOutput().trim());
+        assertEquals(
+                "Network.Host = localhost",
+                dut.handleInputString(
+                        "configuration set Network.Host localhost").getOutput()
+                        .trim());
         try {
             assertEquals("localhost",
                     ctx.getConfiguration().getString("Network.Host"));
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             fail("Configuration Item not found");
         }
     }
@@ -102,7 +117,9 @@ public class CLIServiceTest {
          */
     @Test
     public final void testConfigGet() {
-        assertEquals("1337", dut.handleInputString("configuration get Network.Port").getOutput().trim());
+        assertEquals("1337",
+                dut.handleInputString("configuration get Network.Port")
+                        .getOutput().trim());
     }
 
     /**
@@ -111,17 +128,18 @@ public class CLIServiceTest {
     @Test
     public final void testList() {
         assertEquals("Port" + System.getProperty("line.separator") + "Host"
-                + System.getProperty("line.separator"), dut.handleInputString("configuration list Network"));
+                + System.getProperty("line.separator"),
+                dut.handleInputString("configuration list Network"));
     }
 
     @Test
     public final void testVariables() {
 
-        assertEquals("hallo", dut.handleInputString("$var = echo hallo").getOutput().trim());
-        assertEquals("hallo", dut.handleInputString("echo $var").getOutput().trim());
+        assertEquals("hallo", dut.handleInputString("$var = echo hallo")
+                .getOutput().trim());
+        assertEquals("hallo", dut.handleInputString("echo $var").getOutput()
+                .trim());
 
     }
-
-
 
 }

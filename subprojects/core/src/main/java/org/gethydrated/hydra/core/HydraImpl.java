@@ -1,5 +1,8 @@
 package org.gethydrated.hydra.core;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.actors.ActorFactory;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -16,20 +19,17 @@ import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.Nodes;
 import org.gethydrated.hydra.core.io.network.NetKernel;
 import org.gethydrated.hydra.core.io.network.NetKernelImpl;
-import org.gethydrated.hydra.core.messages.StartService;
-import org.gethydrated.hydra.core.messages.StopService;
 import org.gethydrated.hydra.core.registry.GlobalRegistry;
 import org.gethydrated.hydra.core.registry.LocalRegistry;
 import org.gethydrated.hydra.core.service.Services;
+import org.gethydrated.hydra.core.service.StartService;
+import org.gethydrated.hydra.core.service.StopService;
 import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.ForeignSID;
 import org.gethydrated.hydra.core.sid.InternalSID;
 import org.gethydrated.hydra.core.sid.LocalSID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Hydra implementation.
@@ -54,12 +54,12 @@ public final class HydraImpl implements InternalHydra {
      * Hydra configuration.
      */
     private final ConfigurationImpl cfg;
-    
+
     private ActorSystem actorSystem;
 
     private ActorRef services;
 
-    private Archives archives;
+    private final Archives archives;
 
     private DefaultSIDFactory sidFactory;
 
@@ -70,6 +70,7 @@ public final class HydraImpl implements InternalHydra {
      * 
      * @param cfg
      *            Hydra configuration.
+     * @throws HydraException on failure.
      */
     public HydraImpl(final ConfigurationImpl cfg) throws HydraException {
         logger.info("Starting Hydra.");
@@ -81,7 +82,7 @@ public final class HydraImpl implements InternalHydra {
             netKernel = new NetKernelImpl(this);
             sidFactory = new DefaultSIDFactory(actorSystem, netKernel);
             initSystemActors();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.error("Invalid configuration.", e);
             throw new HydraException(e);
         }
@@ -92,7 +93,7 @@ public final class HydraImpl implements InternalHydra {
         services = actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
-                return new Services(cfg, archives, hydra);
+                return new Services(archives, hydra);
             }
         }, "services");
         actorSystem.spawnActor(new ActorFactory() {
@@ -131,7 +132,7 @@ public final class HydraImpl implements InternalHydra {
     public void shutdown() {
         logger.info("Stopping Hydra.");
         shutdownhook.unregister();
-        if(actorSystem != null) {
+        if (actorSystem != null) {
             actorSystem.shutdown();
         }
         netKernel.close();
@@ -143,49 +144,50 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.await();
     }
 
-
     @Override
     public SID startService(final String name) throws HydraException {
-        if(actorSystem.isTerminated()) {
+        if (actorSystem.isTerminated()) {
             throw new HydraException("Hydra already shut down.");
         }
-        Future f = services.ask(new StartService(name));
+        final Future<?> f = services.ask(new StartService(name));
         try {
-            return (SID)f.get();
-        } catch (InterruptedException|ExecutionException e) {
+            return (SID) f.get();
+        } catch (InterruptedException | ExecutionException e) {
             throw new HydraException(e);
         }
     }
 
     @Override
-    public SID getService(String name) {
+    public SID getService(final String name) {
         return sidFactory.fromString(name);
     }
 
     @Override
-    public SID getService(USID usid) {
+    public SID getService(final USID usid) {
         return sidFactory.fromUSID(usid);
     }
 
     @Override
     public void stopService(final SID id) throws HydraException {
-        if(actorSystem.isTerminated()) {
+        if (actorSystem.isTerminated()) {
             throw new HydraException("Hydra already shut down.");
         }
-        if(id == null) {
+        if (id == null) {
             return;
         }
-        if(id.getUSID().getTypeId() != 0) {
-            throw new IllegalArgumentException("Cannot stop system services. Try hydra.shutdown() instead.");
+        if (id.getUSID().getTypeId() != 0) {
+            throw new IllegalArgumentException(
+                    "Cannot stop system services. Try hydra.shutdown() instead.");
         }
         if (((InternalSID) id).getRef().isTerminated()) {
             return;
         }
-        if(id instanceof LocalSID) {
+        if (id instanceof LocalSID) {
             services.tell(new StopService(id.getUSID()), null);
         }
-        if(id instanceof ForeignSID) {
-            ActorRef ref = actorSystem.getActor("/app/nodes/" + netKernel.getID(id.getUSID().getNodeId()));
+        if (id instanceof ForeignSID) {
+            final ActorRef ref = actorSystem.getActor("/app/nodes/"
+                    + netKernel.getID(id.getUSID().getNodeId()));
             ref.tell(new StopService(id.getUSID()), null);
         }
     }

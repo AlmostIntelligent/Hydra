@@ -8,7 +8,6 @@ import org.gethydrated.hydra.actors.ActorPath;
  */
 public class NullRef extends AbstractMinimalRef {
 
-
     @Override
     public ActorPath getPath() {
         return new ActorPath().createChild("null");
@@ -25,7 +24,7 @@ public class NullRef extends AbstractMinimalRef {
     }
 
     @Override
-    public boolean isTerminated() {
+    public final boolean isTerminated() {
         return true;
     }
 }

@@ -3,46 +3,79 @@ package org.gethydrated.hydra.core.internal;
 import java.net.URLClassLoader;
 
 /**
- *
+ * Service holder.
  */
 public class Service {
     private String name;
     private String activator;
     private Archive parent;
 
-    public void setName(String name) {
+    /**
+     * Sets the service name.
+     * @param name service name.
+     */
+    public void setName(final String name) {
         this.name = name;
     }
 
+    /**
+     * Returns the service name.
+     * @return service name.
+     */
     public String getName() {
         return name;
     }
 
-    public void setVersion(String version) {
+    /**
+     * Sets the service version.
+     * @param version service version.
+     */
+    public void setVersion(final String version) {
     }
 
-    public void addDependency(Dependency dep) {
+    /**
+     * Adds a dependency to the service.
+     * @param dep service depencency.
+     */
+    public void addDependency(final Dependency dep) {
 
     }
 
-    public void setActivator(String activator) {
+    /**
+     * Sets the service activator.
+     * @param activator service activator.
+     */
+    public void setActivator(final String activator) {
         this.activator = activator;
     }
 
+    /**
+     * Returns the service activator.
+     * @return service activator.
+     */
     public String getActivator() {
         return activator;
     }
 
+    @Override
     public String toString() {
-        return "<Service:"+name+">";
+        return "<Service:" + name + ">";
     }
 
-    public void setArchive(Archive archive) {
+    /**
+     * Sets the service archive.
+     * @param archive serice archive.
+     */
+    public void setArchive(final Archive archive) {
         parent = archive;
     }
 
+    /**
+     * Creates a classloader for this service.
+     * @return service classloader.
+     */
     public ClassLoader getClassLoader() {
-        return new URLClassLoader(parent.getArchiveURLs(),
-                this.getClass().getClassLoader().getParent());
+        return new URLClassLoader(parent.getArchiveURLs(), this.getClass()
+                .getClassLoader().getParent());
     }
 }

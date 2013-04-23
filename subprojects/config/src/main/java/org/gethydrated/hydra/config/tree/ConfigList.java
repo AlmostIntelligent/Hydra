@@ -34,6 +34,7 @@ public class ConfigList extends ConfigItemBase {
      * 
      * @return Child items.
      */
+    @Override
     public final List<ConfigurationItem> getChildren() {
         return children;
     }
@@ -48,7 +49,7 @@ public class ConfigList extends ConfigItemBase {
     public final ConfigurationItem getChild(final String name)
             throws ConfigItemNotFoundException {
 
-        for (ConfigurationItem c : children) {
+        for (final ConfigurationItem c : children) {
             if (c.getName().equals(name)) {
                 return c;
             }
@@ -73,15 +74,24 @@ public class ConfigList extends ConfigItemBase {
 
     @Override
     public final ConfigurationItem copy() {
-        ConfigList l = new ConfigList(getName());
-        for (ConfigurationItem i : children) {
+        final ConfigList l = new ConfigList(getName());
+        for (final ConfigurationItem i : children) {
             l.getChildren().add(i.copy());
         }
         return l;
     }
 
-    public final ConfigList getSubItem(final String prefix, final String separator)
-            throws ConfigItemNotFoundException, ConfigItemTypeException {
+    /**
+     * 
+     * @param prefix .
+     * @param separator .
+     * @return .
+     * @throws ConfigItemNotFoundException .
+     * @throws ConfigItemTypeException .
+     */
+    public final ConfigList getSubItem(final String prefix,
+            final String separator) throws ConfigItemNotFoundException,
+            ConfigItemTypeException {
         String pre = prefix;
         if (!pre.startsWith(getName())) {
             pre = getName() + separator + pre;
@@ -89,6 +99,13 @@ public class ConfigList extends ConfigItemBase {
         return getSubItem(pre.split("\\" + separator));
     }
 
+    /**
+     * 
+     * @param prefix .
+     * @return .
+     * @throws ConfigItemNotFoundException .
+     * @throws ConfigItemTypeException .
+     */
     public final ConfigList getSubItem(final String[] prefix)
             throws ConfigItemNotFoundException, ConfigItemTypeException {
         if (prefix.length == 0) {
@@ -97,12 +114,13 @@ public class ConfigList extends ConfigItemBase {
             if (prefix.length == 1) {
                 return this;
             } else {
-                for (ConfigurationItem i : getChildren()) {
+                for (final ConfigurationItem i : getChildren()) {
                     if (prefix[1].equalsIgnoreCase(i.getName())) {
                         if (i.hasChildren()) {
-                            String[] newPrefix = new String[prefix.length-1];
-                            System.arraycopy(prefix, 1, newPrefix, 0, prefix.length-1);
-                            return ((ConfigList)i).getSubItem(newPrefix);
+                            final String[] newPrefix = new String[prefix.length - 1];
+                            System.arraycopy(prefix, 1, newPrefix, 0,
+                                    prefix.length - 1);
+                            return ((ConfigList) i).getSubItem(newPrefix);
                         } else {
                             throw new ConfigItemTypeException();
                         }
@@ -134,7 +152,7 @@ public class ConfigList extends ConfigItemBase {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        ConfigList other = (ConfigList) obj;
+        final ConfigList other = (ConfigList) obj;
         if (!children.equals(other.getChildren())) {
             return false;
         }

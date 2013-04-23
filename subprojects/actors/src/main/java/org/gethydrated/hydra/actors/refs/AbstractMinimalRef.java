@@ -1,12 +1,12 @@
 package org.gethydrated.hydra.actors.refs;
 
+import java.util.List;
+import java.util.concurrent.Future;
+
 import org.gethydrated.hydra.actors.ActorCreator;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.node.ActorNode;
-
-import java.util.List;
-import java.util.concurrent.Future;
 
 /**
  *
@@ -23,31 +23,37 @@ public abstract class AbstractMinimalRef implements InternalRef {
     public abstract ActorCreator getCreator();
 
     @Override
-    public void start() { }
+    public void start() {
+    }
 
     @Override
-    public void stop() { }
+    public void stop() {
+    }
 
     @Override
-    public void suspend() { }
+    public void suspend() {
+    }
 
     @Override
-    public void restart(Throwable cause) { }
+    public void restart(final Throwable cause) {
+    }
 
     @Override
-    public void resume(Throwable cause) { }
+    public void resume(final Throwable cause) {
+    }
 
     @Override
-    public void tellSystem(Object o, ActorRef sender) { }
+    public void tellSystem(final Object o, final ActorRef sender) {
+    }
 
     @Override
-    public InternalRef getChild(String name) {
+    public InternalRef getChild(final String name) {
         return new NullRef();
     }
 
     @Override
-    public InternalRef findActor(List<String> names) {
-        if(names.isEmpty()) {
+    public InternalRef findActor(final List<String> names) {
+        if (names.isEmpty()) {
             return this;
         }
         return new NullRef();
@@ -59,10 +65,11 @@ public abstract class AbstractMinimalRef implements InternalRef {
     }
 
     @Override
-    public void tell(Object o, ActorRef sender) { }
+    public void tell(final Object o, final ActorRef sender) {
+    }
 
     @Override
-    public Future<?> ask(Object o) {
+    public Future<?> ask(final Object o) {
         throw new RuntimeException("Ask is not supported by this ref.");
     }
 

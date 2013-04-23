@@ -7,23 +7,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 
  * @author Hanno Sternberg
  */
-public class ConfigMerger {
+public final class ConfigMerger {
 
-    public static Configuration merge(final Configuration left, final Configuration right) {
-        Configuration cfg = new ConfigurationImpl();
+    private ConfigMerger() { }
+    
+    /**
+     * Merges two configurations.
+     * @param left config one.
+     * @param right config two.
+     * @return resulting config.
+     */
+    public static Configuration merge(final Configuration left,
+            final Configuration right) {
+        final Configuration cfg = new ConfigurationImpl();
         cfg.setRoot(left.getRoot().copy());
-        try{
-            for (String itm : right.list()) {
-                Object val = right.get(itm);
+        try {
+            for (final String itm : right.list()) {
+                final Object val = right.get(itm);
                 if (!cfg.has(itm) || !left.get(itm).equals(val)) {
                     cfg.set(itm, val);
                 }
             }
-        } catch (ConfigItemNotFoundException e) {
-            Logger logger = LoggerFactory.getLogger(ConfigMerger.class);
+        } catch (final ConfigItemNotFoundException e) {
+            final Logger logger = LoggerFactory.getLogger(ConfigMerger.class);
             logger.error(e.getMessage(), e);
         }
         return cfg;

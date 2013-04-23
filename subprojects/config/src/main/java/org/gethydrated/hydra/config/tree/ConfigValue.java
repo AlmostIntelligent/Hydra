@@ -1,9 +1,9 @@
 package org.gethydrated.hydra.config.tree;
 
+import java.util.List;
+
 import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.ConfigurationItem;
-
-import java.util.List;
 
 /**
  * 
@@ -57,7 +57,8 @@ public class ConfigValue<T> extends ConfigItemBase {
     }
 
     @Override
-    public final List<ConfigurationItem> getChildren() throws ConfigItemTypeException {
+    public final List<ConfigurationItem> getChildren()
+            throws ConfigItemTypeException {
         throw new ConfigItemTypeException();
     }
 
@@ -112,7 +113,7 @@ public class ConfigValue<T> extends ConfigItemBase {
             return false;
         }
         @SuppressWarnings("unchecked")
-        ConfigValue<T> other = (ConfigValue<T>) obj;
+        final ConfigValue<T> other = (ConfigValue<T>) obj;
         return (value.equals(other.value()));
     }
 

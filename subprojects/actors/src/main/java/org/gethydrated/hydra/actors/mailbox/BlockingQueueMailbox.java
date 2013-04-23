@@ -1,17 +1,18 @@
 package org.gethydrated.hydra.actors.mailbox;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.node.ActorNode;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-
 /**
+ * Mailbox queue implementation using a blocking queue.
  * 
  * @author Christian Kulpa
- *
+ * @author Hanno Sternberg
+ * @since 0.2.0
  */
 public class BlockingQueueMailbox implements Mailbox {
 
@@ -32,25 +33,32 @@ public class BlockingQueueMailbox implements Mailbox {
 
     private volatile boolean suspended = false;
 
-    public BlockingQueueMailbox(final Dispatcher dispatcher, final  ActorNode actorNode) {
+    /**
+     * Constructor.
+     * @param dispatcher Dispatcher.
+     * @param actorNode Actor node.
+     */
+    public BlockingQueueMailbox(final Dispatcher dispatcher,
+            final ActorNode actorNode) {
         this.dispatcher = dispatcher;
         this.actorNode = actorNode;
     }
 
     @Override
-    public void enqueue(ActorRef self, Message m) {
+    public void enqueue(final ActorRef self, final Message m) {
         synchronized (messages) {
             messages.offer(m);
         }
     }
 
     @Override
-    public void enqueueSystem(ActorRef self, Message m) {
+    public void enqueueSystem(final ActorRef self, final Message m) {
         synchronized (systemMessages) {
             systemMessages.offer(m);
         }
     }
 
+    @Override
     public final boolean hasMessages() {
         return !messages.isEmpty();
     }
@@ -67,7 +75,7 @@ public class BlockingQueueMailbox implements Mailbox {
 
     @Override
     public boolean setScheduled() {
-        if(closed || scheduled) {
+        if (closed || scheduled) {
             return false;
         }
         scheduled = true;
@@ -86,12 +94,14 @@ public class BlockingQueueMailbox implements Mailbox {
     }
 
     @Override
-    public boolean isSchedulable(boolean hasMessages, boolean hasSystemMessages) {
+    public boolean isSchedulable(final boolean hasMessages,
+            final boolean hasSystemMessages) {
         if (closed) {
             return false;
         }
         if (!suspended) {
-            return hasMessages || hasSystemMessages || hasMessages() || hasSystemMessages();
+            return hasMessages || hasSystemMessages || hasMessages()
+                    || hasSystemMessages();
         }
         return hasSystemMessages || hasSystemMessages();
     }
@@ -123,7 +133,8 @@ public class BlockingQueueMailbox implements Mailbox {
             }
             actorNode.handleSystemMessage(m);
             if (Thread.interrupted()) {
-                interrupted = new InterruptedException("Interrupted while processing system messages.");
+                interrupted = new InterruptedException(
+                        "Interrupted while processing system messages.");
             }
         }
         if (interrupted != null) {
@@ -140,7 +151,8 @@ public class BlockingQueueMailbox implements Mailbox {
             }
             actorNode.handleMessage(m);
             if (Thread.interrupted()) {
-                throw new RuntimeException(new InterruptedException("Interrupted while processing messages."));
+                throw new RuntimeException(new InterruptedException(
+                        "Interrupted while processing messages."));
             }
         }
     }

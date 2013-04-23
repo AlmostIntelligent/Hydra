@@ -1,20 +1,26 @@
 package org.gethydrated.hydra.core.sid;
 
+import java.util.concurrent.Future;
+
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.refs.NullRef;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
 
-import java.util.concurrent.Future;
-
 /**
- *
+ * Dead Service Identifier. Can be used as
+ * return value on failed service lookups.
  */
-public class DeadSID implements InternalSID {
+public final class DeadSID implements InternalSID {
 
     private final USID usid;
 
-    public DeadSID(USID usid) {
+    /**
+     * Default constructor.
+     * @param usid
+     *          Dead USID.
+     */
+    public DeadSID(final USID usid) {
         this.usid = usid;
     }
 
@@ -29,22 +35,27 @@ public class DeadSID implements InternalSID {
     }
 
     @Override
-    public void tell(Object message, SID sender) {
+    public void tell(final Object message, final SID sender) {
     }
 
     @Override
-    public Future<?> ask(Object message) {
+    public Future<?> ask(final Object message) {
         throw new RuntimeException("Actor not found for usid: " + usid);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof InternalSID)) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || !(o instanceof InternalSID)) {
+            return false;
+        }
 
-        InternalSID localSID = (InternalSID) o;
+        final InternalSID localSID = (InternalSID) o;
 
-        return !(usid != null ? !usid.equals(localSID.getUSID()) : localSID.getUSID() != null);
+        return !(usid != null ? !usid.equals(localSID.getUSID()) : localSID
+                .getUSID() != null);
 
     }
 

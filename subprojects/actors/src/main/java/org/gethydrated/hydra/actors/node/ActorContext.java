@@ -1,14 +1,14 @@
 package org.gethydrated.hydra.actors.node;
 
+import java.util.List;
+
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.actors.ActorSource;
 
-import java.util.List;
-
 public interface ActorContext extends ActorSource {
 
-	String getName();
+    String getName();
 
     ActorRef getSender();
 
@@ -18,6 +18,7 @@ public interface ActorContext extends ActorSource {
 
     void unwatch(ActorRef target);
 
+    @Override
     ActorRef getActor(ActorPath path);
 
     List<String> getChildren();

@@ -5,7 +5,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- *
+ * Synchronization variable for ask requests. 
+ * 
+ * @author Chris
+ * @since 0.2.0
+ * @param <V> Result type.
  */
 public class SyncVar<V> implements java.util.concurrent.Future<V> {
 
@@ -15,18 +19,21 @@ public class SyncVar<V> implements java.util.concurrent.Future<V> {
     private final Object lock = new Object();
 
     /**
-     * We don't support removing messages from actor mailboxes (yet).
-     * Cancel request always fails.
-     * @param mayInterruptIfRunning don't care.
+     * We don't support removing messages from actor mailboxes (yet). Cancel
+     * request always fails.
+     * 
+     * @param mayInterruptIfRunning
+     *            don't care.
      * @return always false.
      */
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
+    public boolean cancel(final boolean mayInterruptIfRunning) {
         return false;
     }
 
     /**
      * Cancellation not supported.
+     * 
      * @return always false.
      */
     @Override
@@ -44,10 +51,10 @@ public class SyncVar<V> implements java.util.concurrent.Future<V> {
     @Override
     public V get() throws InterruptedException, ExecutionException {
         synchronized (lock) {
-            while(!done) {
+            while (!done) {
                 lock.wait();
             }
-            if(error!=null) {
+            if (error != null) {
                 throw new ExecutionException(error);
             }
             return value;
@@ -55,24 +62,29 @@ public class SyncVar<V> implements java.util.concurrent.Future<V> {
     }
 
     @Override
-    public V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+    public V get(final long timeout, final TimeUnit unit)
+            throws InterruptedException, ExecutionException, TimeoutException {
         synchronized (lock) {
-            if(!done) {
+            if (!done) {
                 unit.timedWait(lock, timeout);
             }
-            if(!done){
+            if (!done) {
                 throw new TimeoutException("Timeout while waiting for result.");
             }
-            if(error!=null) {
+            if (error != null) {
                 throw new ExecutionException(error);
             }
             return value;
         }
     }
 
-    public void put(V value) {
+    /**
+     * Sets the result to success.
+     * @param value result.
+     */
+    public void put(final V value) {
         synchronized (lock) {
-            if(!done) {
+            if (!done) {
                 this.value = value;
                 done = true;
                 lock.notifyAll();
@@ -80,9 +92,13 @@ public class SyncVar<V> implements java.util.concurrent.Future<V> {
         }
     }
 
-    public void fail(Throwable t) {
+    /**
+     * Sets the result to failure.
+     * @param t Cause of failure.
+     */
+    public void fail(final Throwable t) {
         synchronized (lock) {
-            if(!done) {
+            if (!done) {
                 error = t;
                 done = true;
                 lock.notifyAll();

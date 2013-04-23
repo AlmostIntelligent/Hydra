@@ -4,27 +4,41 @@ import org.gethydrated.hydra.api.service.USID;
 import org.gethydrated.hydra.api.service.USIDAware;
 
 /**
- *
+ * Link event. Links two services together.
+ * 
+ * @author Christian Kulpa
+ * @since 0.2.0
  */
 public class Link implements SystemEvent, USIDAware {
     private USID usid;
 
-    public Link(USID usid) {
+    /**
+     * Constructor.
+     * @param usid service usid.
+     */
+    public Link(final USID usid) {
         this.usid = usid;
     }
 
-    private Link() {}
+    @SuppressWarnings("unused")
+    private Link() {
+    }
 
+    @Override
     public USID getUSID() {
         return usid;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-        Link link = (Link) o;
+        final Link link = (Link) o;
 
         return !(usid != null ? !usid.equals(link.usid) : link.usid != null);
 

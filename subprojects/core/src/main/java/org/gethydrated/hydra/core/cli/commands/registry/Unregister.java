@@ -5,13 +5,15 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
 import org.gethydrated.hydra.core.cli.commands.CLICommand;
 
 /**
- *
+ * Service unregister command.
  */
 public class Unregister extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra parent Hydra.
+     * @param root Root command.
      */
-    public Unregister(InternalHydra hydra, CLICommand root) {
+    public Unregister(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
         addSubCommand(new UnregisterLocal(hydra, root));
         addSubCommand(new UnregisterGlobal(hydra, root));
@@ -38,7 +40,7 @@ public class Unregister extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         return new CLIResponse(displayHelp());
     }
 

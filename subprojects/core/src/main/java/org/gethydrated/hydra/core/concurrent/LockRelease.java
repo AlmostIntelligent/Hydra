@@ -1,30 +1,38 @@
 package org.gethydrated.hydra.core.concurrent;
 
-import org.gethydrated.hydra.api.event.SystemEvent;
-
 import java.util.UUID;
 
+import org.gethydrated.hydra.api.event.SystemEvent;
+
 /**
- *
+ * LockRelease message.
  */
 public class LockRelease implements SystemEvent {
 
     private UUID nodeId;
 
-    public LockRelease(UUID nodeId) {
+    /**
+     * Constructor.
+     * @param nodeId node uuid.
+     */
+    public LockRelease(final UUID nodeId) {
         this.nodeId = nodeId;
     }
 
-    private LockRelease() {}
+    @SuppressWarnings("unused")
+    private LockRelease() {
+    }
 
+    /**
+     * Returns the node uuid.
+     * @return node uuid.
+     */
     public UUID getNodeId() {
         return nodeId;
     }
 
     @Override
     public String toString() {
-        return "LockRelease{" +
-                "nodeId=" + nodeId +
-                '}';
+        return "LockRelease{" + "nodeId=" + nodeId + '}';
     }
 }

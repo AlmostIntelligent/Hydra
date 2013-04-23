@@ -7,7 +7,6 @@ import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.config.tree.ConfigList;
 import org.gethydrated.hydra.config.tree.ConfigValue;
 
-
 /**
  * 
  * @author Hanno Sternberg
@@ -77,7 +76,7 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
             stream.print("<");
             stream.print(list.getName());
             stream.println(">");
-            for (ConfigurationItem i : list.getChildren()) {
+            for (final ConfigurationItem i : list.getChildren()) {
                 if (i.hasValue()) {
                     writeValue(stream, (ConfigValue<?>) i, indent + 1);
                 } else if (i.hasChildren()) {
@@ -95,9 +94,10 @@ public class XMLConfigurationWriter extends ConfigurationWriter {
      * @param stream
      *            .
      */
+    @Override
     public final void saveToStream(final PrintStream stream) {
         stream.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        writeList(stream, (ConfigList)getCfg().getRoot(), 0);
+        writeList(stream, (ConfigList) getCfg().getRoot(), 0);
 
     }
 

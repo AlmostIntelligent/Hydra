@@ -1,14 +1,19 @@
 package org.gethydrated.hydra.test.core.cli;
 
-import org.gethydrated.hydra.api.HydraException;
-import org.gethydrated.hydra.api.configuration.Configuration;
-import org.gethydrated.hydra.api.service.*;
-import org.gethydrated.hydra.config.ConfigurationImpl;
-import org.gethydrated.hydra.core.sid.LocalSID;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.Future;
+
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.HydraException;
+import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.service.MessageHandler;
+import org.gethydrated.hydra.api.service.SID;
+import org.gethydrated.hydra.api.service.SIDFactory;
+import org.gethydrated.hydra.api.service.ServiceContext;
+import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.config.ConfigurationImpl;
+import org.gethydrated.hydra.core.sid.InternalSID;
 
 /**
  * 
@@ -36,22 +41,39 @@ public class CLITestContext implements ServiceContext {
      * 
      * @return OutputStream.
      */
+    @Override
     public final SID getOutput() {
-        return new LocalSID(null,null, null) {
+        return new InternalSID() {
 
             @Override
-            public void tell(Object message, SID sender) {
+            public void tell(final Object message, final SID sender) {
                 ps.print(message.toString());
             }
 
             @Override
-            public Future<?> ask(Object message) {
+            public Future<?> ask(final Object message) {
+                return null;
+            }
+
+            @Override
+            public USID getUSID() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public ActorRef getRef() {
+                // TODO Auto-generated method stub
                 return null;
             }
         };
     }
 
-    public String getResult() {
+    /**
+     * 
+     * @return test result.
+     */
+    public final String getResult() {
         return output.toString();
     }
 
@@ -68,57 +90,59 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public void registerLocal(String name, SID id) throws HydraException {
+    public void registerLocal(final String name, final SID id)
+            throws HydraException {
 
     }
 
     @Override
-    public void registerGlobal(String name, SID id) throws HydraException {
+    public void registerGlobal(final String name, final SID id)
+            throws HydraException {
 
     }
 
     @Override
-    public void unregisterLocal(String name) throws HydraException {
+    public void unregisterLocal(final String name) throws HydraException {
 
     }
 
     @Override
-    public void unregisterGlobal(String name) throws HydraException {
+    public void unregisterGlobal(final String name) throws HydraException {
 
     }
 
     @Override
-    public SID getLocalService(String name) throws HydraException {
+    public final SID getLocalService(final String name) throws HydraException {
         return null;
     }
 
     @Override
-    public SID getGlobalService(String name) throws HydraException {
+    public final SID getGlobalService(final String name) throws HydraException {
         return null;
     }
 
     @Override
-    public SIDFactory getSIDFactory() {
+    public final SIDFactory getSIDFactory() {
         return null;
     }
 
     @Override
-    public void link(SID sid1, SID sid2) {
+    public void link(final SID sid1, final SID sid2) {
 
     }
 
     @Override
-    public void unlink(SID sid1, SID sid2) {
+    public void unlink(final SID sid1, final SID sid2) {
 
     }
 
     @Override
-    public void monitor(SID sid1, SID sid2) {
+    public void monitor(final SID sid1, final SID sid2) {
 
     }
 
     @Override
-    public void unmonitor(SID sid1, SID sid2) {
+    public void unmonitor(final SID sid1, final SID sid2) {
 
     }
 
@@ -128,12 +152,12 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public SID getService(String name) {
+    public final SID getService(final String name) {
         return null;
     }
 
     @Override
-    public SID getService(USID usid) {
+    public final SID getService(final USID usid) {
         return null;
     }
 
@@ -143,23 +167,24 @@ public class CLITestContext implements ServiceContext {
     }
 
     @Override
-    public SID getSelf() {
+    public final SID getSelf() {
         return null;
     }
 
     @Override
     public final Configuration getConfiguration() {
-        
+
         return testConfig;
     }
 
     @Override
-    public <T> void registerMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler) {
+    public <T> void registerMessageHandler(final Class<T> classifier,
+            final MessageHandler<T> messageHandler) {
 
     }
 
     @Override
-    public void subscribeEvent(Class<?> classifier) {
+    public void subscribeEvent(final Class<?> classifier) {
 
     }
 

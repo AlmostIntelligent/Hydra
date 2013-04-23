@@ -7,15 +7,18 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public class CLICommandShutdown extends CLICommand {
 
     /**
-     *
-     * @param ctx context.
+     * Constructor.
+     * @param ctx
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandShutdown(final InternalHydra ctx, CLICommand root) {
+    public CLICommandShutdown(final InternalHydra ctx, final CLICommand root) {
         super(ctx, root);
     }
 
@@ -51,4 +54,3 @@ public class CLICommandShutdown extends CLICommand {
     }
 
 }
-

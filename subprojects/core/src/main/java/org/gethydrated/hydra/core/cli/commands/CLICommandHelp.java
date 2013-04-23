@@ -17,7 +17,7 @@ public class CLICommandHelp extends CLICommand {
     private final CLICommand cmdRoot;
 
     /**
-     *
+     * 
      * @param ctx
      *            Service context.
      * @param root
@@ -75,13 +75,13 @@ public class CLICommandHelp extends CLICommand {
             try {
                 sub = root.isSubCommand(args[0]);
                 if (sub.hasSubCommand(args[0])) {
-                    String[] arg = new String[args.length - 1];
+                    final String[] arg = new String[args.length - 1];
                     System.arraycopy(args, 1, arg, 0, args.length - 1);
                     return findHelp(arg, sub);
                 } else {
                     return sub.displayHelp();
                 }
-            } catch (CLISubCommandDoesNotExistsException e) {
+            } catch (final CLISubCommandDoesNotExistsException e) {
                 return String.format("command %s does not exist.", args[0]);
             }
         } else {
@@ -90,4 +90,3 @@ public class CLICommandHelp extends CLICommand {
     }
 
 }
-

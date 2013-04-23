@@ -8,9 +8,13 @@ import org.gethydrated.hydra.core.cli.CLIResponse;
  */
 public class CLICommandConnect extends CLICommand {
     /**
-     * @param hydra Service hydra.
+     * Constructor.
+     * @param hydra
+     *              Service context.
+     * @param root
+     *              root command.
      */
-    public CLICommandConnect(InternalHydra hydra, CLICommand root) {
+    public CLICommandConnect(final InternalHydra hydra, final CLICommand root) {
         super(hydra, root);
     }
 
@@ -35,24 +39,29 @@ public class CLICommandConnect extends CLICommand {
     }
 
     @Override
-    public CLIResponse execute(String[] args) {
+    public CLIResponse execute(final String[] args) {
         String ip;
         int port;
         if (args.length == 1) {
-            String[] arr = args[0].split(":");
+            final String[] arr = args[0].split(":");
             ip = arr[0];
             port = Integer.parseInt(arr[1]);
-        } else if(args.length == 2) {
+        } else if (args.length == 2) {
             ip = args[0];
             port = Integer.parseInt(args[1]);
         } else {
-            return new CLIResponse("Invalid number of arguments. Please use 'connect ip:port' or 'connect ip port'.\n");
+            return new CLIResponse(
+                    "Invalid number of arguments. Please use 'connect ip:port' or 'connect ip port'.\n");
         }
         try {
             getHydra().getNetKernel().connect(ip, port);
-            return new CLIResponse("Connected to " + ip + ":" + port+ "\n");
-        } catch (Exception e) {
-            return new CLIResponse(String.format("An error occured: %s\n", e.getMessage()));
+            return new CLIResponse("Connected to " + ip + ":" + port + "\n");
+        } catch (final Exception e) {
+            if (e.getMessage().equals("Concurrent connection attempt.")) {
+                return new CLIResponse("Connected to " + ip + ":" + port + "\n");
+            }
+            return new CLIResponse(String.format("An error occured: %s\n",
+                    e.getMessage()));
 
         }
     }

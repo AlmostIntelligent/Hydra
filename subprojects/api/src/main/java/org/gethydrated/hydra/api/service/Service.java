@@ -9,6 +9,13 @@ package org.gethydrated.hydra.api.service;
  */
 public interface Service {
 
-    <T> void addMessageHandler(Class<T> classifier, MessageHandler<T> messageHandler);
+    /**
+     * Adds a message handler.
+     * @param classifier .
+     * @param messageHandler .
+     * @param <T> Result type.
+     */
+    <T> void addMessageHandler(Class<T> classifier,
+            MessageHandler<T> messageHandler);
 
 }

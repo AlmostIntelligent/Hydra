@@ -42,8 +42,8 @@ public final class Message {
     }
 
     /**
-     * Creates a new Message with a messages id for response mapping. The id must
-     * not be 0.
+     * Creates a new Message with a messages id for response mapping. The id
+     * must not be 0.
      * 
      * @param message
      *            Message object.

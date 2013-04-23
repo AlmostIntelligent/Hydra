@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public class ShutdownHook implements Runnable {
 
@@ -31,7 +31,9 @@ public class ShutdownHook implements Runnable {
 
     /**
      * Constructor.
-     * @param h Hydra instance.
+     * 
+     * @param h
+     *            Hydra instance.
      */
     public ShutdownHook(final Hydra h) {
         hydra = h;
@@ -43,7 +45,7 @@ public class ShutdownHook implements Runnable {
         hydra.shutdown();
         try {
             hydra.await();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOG.debug("Error while waiting for hydra shutdown:", e);
         }
     }
@@ -58,13 +60,14 @@ public class ShutdownHook implements Runnable {
 
     /**
      * Unregisters the hook.
+     * 
      * @return true when successfully unregistered.
      */
     public final boolean unregister() {
         LOG.debug("Unregistering shutdown hook.");
         try {
             return Runtime.getRuntime().removeShutdownHook(hook);
-        } catch (IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             return false;
         }
     }
