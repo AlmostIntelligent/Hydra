@@ -18,7 +18,7 @@ Overseen by:
 What is Hydra?
 --------------
 
-Hydra is a distributed computing network.
+Hydra is a distributed computing network, which acts as a service plattform.
 
 The name originates from the creature out of the greek mythology the *Lernaean Hydra*. 
 It was described as a creature with nine heads, one immortal in the center and eight mortal heads around. 
@@ -28,7 +28,6 @@ He could only overcome the creature, because of his nephew Iolaus,
 who cauterized the stumps of the heads after Hercules decapitated them.
 
 This distributed computing network with its nodes is like a hydra with its heads.
-Hydra acts as a distributed service-plattform. 
 
 
 The structure
