@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hydra:archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:hydra="http://www.gethydrated.org/schema/archive"
+               xsi:schemaLocation="http://www.gethydrated.org/schema/archive http://www.gethydrated.org/schema/archive.xsd">
+    <name>chat</name>
+    <version>1.0</version>
+
+    <services>
+        <service>
+            <name>chat</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.chat.ChatActivator</activator>
+        </service>
+        <service>
+            <name>broker</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.chat.BrokerActivator</activator>
+        </service>
+    </services>
+</hydra:archive>

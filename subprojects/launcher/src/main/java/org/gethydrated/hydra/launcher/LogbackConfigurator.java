@@ -18,7 +18,7 @@ import ch.qos.logback.core.util.StatusPrinter;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public final class LogbackConfigurator {
 
@@ -30,13 +30,16 @@ public final class LogbackConfigurator {
 
     /**
      * 
-     * @param confFile config file name.
-     * @param properties additional properties.
+     * @param confFile
+     *            config file name.
+     * @param properties
+     *            additional properties.
      */
-    public static void configure(final String confFile, final Map<String, String> properties) {
+    public static void configure(final String confFile,
+            final Map<String, String> properties) {
         try (FileInputStream input = new FileInputStream(confFile)) {
             configure(input, properties);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException(
                     "Could not load logback configuration: " + confFile, e);
         }
@@ -44,13 +47,16 @@ public final class LogbackConfigurator {
 
     /**
      * 
-     * @param file config file.
-     * @param properties additional properties.
+     * @param file
+     *            config file.
+     * @param properties
+     *            additional properties.
      */
-    public static void configure(final URL file, final Map<String, String> properties) {
+    public static void configure(final URL file,
+            final Map<String, String> properties) {
         try (InputStream input = file.openStream()) {
             configure(input, properties);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException(
                     "Could not load logback configuration: " + file, e);
         }
@@ -58,17 +64,20 @@ public final class LogbackConfigurator {
 
     /**
      * 
-     * @param input config data.
-     * @param properties additional properties.
+     * @param input
+     *            config data.
+     * @param properties
+     *            additional properties.
      */
     public static void configure(final InputStream input,
             final Map<String, String> properties) {
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        final LoggerContext lc = (LoggerContext) LoggerFactory
+                .getILoggerFactory();
         try {
-            JoranConfigurator configurator = new JoranConfigurator();
+            final JoranConfigurator configurator = new JoranConfigurator();
             configurator.setContext(configureContext(lc, properties));
             configurator.doConfigure(input);
-        } catch (JoranException e) {
+        } catch (final JoranException e) {
             // StatusPrinter will handle this
         }
         StatusPrinter.printInCaseOfErrorsOrWarnings(lc);
@@ -76,14 +85,16 @@ public final class LogbackConfigurator {
 
     /**
      * 
-     * @param context Initial logger context.
-     * @param properties additional properties.
+     * @param context
+     *            Initial logger context.
+     * @param properties
+     *            additional properties.
      * @return logger context.
      */
     private static LoggerContext configureContext(final LoggerContext context,
             final Map<String, String> properties) {
         context.reset();
-        for (Map.Entry<String, String> entry : properties.entrySet()) {
+        for (final Map.Entry<String, String> entry : properties.entrySet()) {
             context.putProperty(entry.getKey(), entry.getValue());
         }
         return context;

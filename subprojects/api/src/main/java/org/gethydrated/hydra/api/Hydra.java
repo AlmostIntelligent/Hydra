@@ -8,12 +8,13 @@ package org.gethydrated.hydra.api;
 public interface Hydra extends HydraApi {
 
     /**
-     * Starts the Hydra.
-     */
-    void start();
-
-    /**
      * Stops the Hydra.
      */
-    void stop();
+    void shutdown();
+
+    /**
+     * Awaits Hydra shutdown.
+     * @throws InterruptedException thrown if interrupted while waiting.
+     */
+    void await() throws InterruptedException;
 }
