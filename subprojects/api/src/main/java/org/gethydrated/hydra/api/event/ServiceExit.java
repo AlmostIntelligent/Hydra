@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.api.event;
 
 import org.gethydrated.hydra.api.service.USID;
-import org.gethydrated.hydra.api.service.USIDAware;
 
 /**
  * Service exit event.
@@ -9,18 +8,21 @@ import org.gethydrated.hydra.api.service.USIDAware;
  * @author Christian Kulpa
  * @since 0.2.0
  */
-public class ServiceExit implements SystemEvent, USIDAware {
-    private USID usid;
+public class ServiceExit implements SystemEvent {
+    private USID source;
+    private USID target;
 
     private String reason;
 
     /**
      * Constructor.
-     * @param usid service usid.
+     * @param source source service usid.
+     * @param target target service usid.
      * @param reason .
      */
-    public ServiceExit(final USID usid, final String reason) {
-        this.usid = usid;
+    public ServiceExit(final USID source, final USID target,  final String reason) {
+        this.source = source;
+        this.target = target;
         this.reason = reason;
     }
 
@@ -28,9 +30,12 @@ public class ServiceExit implements SystemEvent, USIDAware {
     private ServiceExit() {
     }
 
-    @Override
-    public USID getUSID() {
-        return usid;
+    public USID getSource() {
+        return source;
+    }
+
+    public USID getTarget() {
+        return target;
     }
 
     /**
