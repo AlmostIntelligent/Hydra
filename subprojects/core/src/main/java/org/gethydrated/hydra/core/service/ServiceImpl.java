@@ -125,7 +125,7 @@ public final class ServiceImpl extends Actor implements Service {
             monitor.addLink((Link) message);
             return null;
         } else if (message instanceof Unlink) {
-            monitor.removeLink(new Link(((Unlink) message).getUSID()));
+            monitor.removeLink(((Unlink) message).getUSID());
             return null;
         } else if (message instanceof Monitor) {
             monitor.addMonitor((Monitor) message);
@@ -137,7 +137,7 @@ public final class ServiceImpl extends Actor implements Service {
             monitor.removeMonitor(((ServiceDown) message).getSource());
             return message;
         } else if (message instanceof ServiceExit) {
-            if (monitor.isLinked(((ServiceExit) message).getUSID())) {
+            if (monitor.isLinked(((ServiceExit) message).getSource())) {
                 monitor.close(((ServiceExit) message).getReason());
                 getContext().stopActor(getSelf());
             }

@@ -104,6 +104,7 @@ project("core") {
         from("src/main/template")
         into("src/main/resources/org/gethydrated/hydra/core")
         filter(ReplaceTokens, tokens: [version: project.version])
+        outputs.upToDateWhen { false }
     }
 
     ideaModule.dependsOn(copyVersionTemplate)

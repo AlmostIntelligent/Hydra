@@ -40,13 +40,13 @@ public final class ServiceMonitor {
     public void addLink(final Link link) {
         if (!closed) {
             if (!links.contains(link)) {
-                links.add(link.getUSID());
-                final SID ref = sidFactory.fromUSID(link.getUSID());
-                ref.tell(new Link(self.getUSID()), self);
+                links.add(link.getSource());
+                final SID ref = sidFactory.fromUSID(link.getSource());
+                ref.tell(new Link(self.getUSID(), link.getSource()), self);
             }
         } else {
-            final SID ref = sidFactory.fromUSID(link.getUSID());
-            ref.tell(new ServiceExit(self.getUSID(), "already down"), self);
+            final SID ref = sidFactory.fromUSID(link.getSource());
+            ref.tell(new ServiceExit(self.getUSID(), link.getSource(), "already down"), self);
         }
     }
 
@@ -54,10 +54,10 @@ public final class ServiceMonitor {
      * Removes a linked service.
      * @param link linked service.
      */
-    public void removeLink(final Link link) {
+    public void removeLink(final USID link) {
         if (!closed) {
             if (links.remove(link)) {
-                final SID ref = sidFactory.fromUSID(link.getUSID());
+                final SID ref = sidFactory.fromUSID(link);
                 ref.tell(new Unlink(self.getUSID()), self);
             }
         }
@@ -103,10 +103,9 @@ public final class ServiceMonitor {
     public void close(final String reason) {
         if (!closed) {
             closed = true;
-            final ServiceExit exit = new ServiceExit(self.getUSID(), reason);
             for (final USID l : links) {
                 final SID ref = sidFactory.fromUSID(l);
-                ref.tell(exit, self);
+                ref.tell(new ServiceExit(self.getUSID(), ref.getUSID(), reason), self);
             }
             for (final USID m : monitors) {
                 final SID ref = sidFactory.fromUSID(m);
