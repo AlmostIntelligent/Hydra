@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	Hydra Configuration
+	XML Schema Defintion
+	
+	Version 1.0
+-->
+<xs:schema 
+	xmlns:cfg="http://www.gethydrated.org/schema/configuration" 
+	targetNamespace="http://www.gethydrated.org/schema/configuration" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	version="1.0" 
+	>
+	
+	<!-- 
+		A name starts with a letter followed by any sequence of letters and numbers 
+	-->
+	<xs:simpleType name="Name">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="[a-zA-Z][a-zA-Z0-9_]*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!--
+		Configuration List: A List of configuration items, can contain sub lists
+	-->
+	<xs:complexType name="ConfigList">
+		<!-- A List of sub items -->
+		<xs:sequence>
+			<xs:element name="configlist" type="cfg:ConfigList" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="configvalue" type="cfg:ConfigValue" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<!-- Required attribute: Configuration item name -->
+		<xs:attribute name="name" type="cfg:Name" use="required" />
+	</xs:complexType>
+	
+	<!--
+		Configuration Value: A single configuration value
+	-->
+	<xs:complexType name="ConfigValue">
+		<!-- Required attribute: Configuration item name -->
+		<xs:attribute name="name" type="cfg:Name" use="required" />
+		<!-- Configuration item type -->
+		<xs:attribute name="value" type="xs:string" use="required" />
+	</xs:complexType>
+	
+	<!-- 
+		A configuration element requires a name. 
+		It has a value or a list of sub items
+	-->
+	<xs:element name="configuration" type="cfg:ConfigList" />
+</xs:schema>

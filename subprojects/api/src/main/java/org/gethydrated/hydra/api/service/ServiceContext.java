@@ -1,8 +1,5 @@
 package org.gethydrated.hydra.api.service;
 
-import java.io.InputStream;
-import java.io.PrintStream;
-
 import org.gethydrated.hydra.api.configuration.Configuration;
 
 /**
@@ -14,28 +11,36 @@ import org.gethydrated.hydra.api.configuration.Configuration;
 public interface ServiceContext extends ServiceApi {
 
     /**
-     * Returns the corresponding service instance.
-     * 
-     * @return service instance
+     * Returns the own service id.
+     * @return own service id.
      */
-    Service getService();
+    SID getSelf();
 
     /**
-     * Returns system output stream.
-     * @return PrintStream.
+     * Returns a service id to the standard output
+     * actor.
+     * @return output actor id.
      */
-    PrintStream getOutputStream();
-
-    /**
-     * Returns system input stream.
-     * @return InputStream.
-     */
-    InputStream getInputStream();
+    SID getOutput();
 
     /**
      * 
      * @return Configurations
      */
     Configuration getConfiguration();
-}
 
+    /**
+     * Registers a message handler.
+     * @param classifier message classifier.
+     * @param messageHandler message handler.
+     * @param <T> Result type.
+     */
+    <T> void registerMessageHandler(Class<T> classifier,
+            MessageHandler<T> messageHandler);
+
+    /**
+     * Subscribes the classifier to eventstream.
+     * @param classifier .
+     */
+    void subscribeEvent(Class<?> classifier);
+}

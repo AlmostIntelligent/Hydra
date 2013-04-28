@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hydra:archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:hydra="http://www.gethydrated.org/schema/archive"
+	xsi:schemaLocation="http://www.gethydrated.org/schema/archive.xsd">
+
+	<name>Webserver</name>
+	<version>1.0nightly</version>
+	<services>
+		<service>
+			<name>www</name>
+			<version>1.0alpha</version>
+			<dependencies>
+				<dependency name="network" />
+			</dependencies>
+			<configuration name="hostname" value="localhost" />
+		</service>
+		<service>
+			<name>db</name>
+			<version>1.0</version>
+			<dependencies>
+				<dependency name="network" />
+			</dependencies>
+		</service>
+	</services>
+</hydra:archive>

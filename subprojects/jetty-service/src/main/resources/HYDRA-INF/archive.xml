@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<hydra:archive xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:hydra="http://www.gethydrated.org/schema/archive"
+               xsi:schemaLocation="http://www.gethydrated.org/schema/archive http://www.gethydrated.org/schema/archive.xsd">
+    <name>http</name>
+    <version>1.0</version>
+
+    <services>
+        <service>
+            <name>jetty</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.http.JettyActivator</activator>
+        </service>
+        <service>
+            <name>broker</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.http.BrokerActivator</activator>
+        </service>
+        <service>
+            <name>sample</name>
+            <version>1.0</version>
+            <activator>org.gethydrated.hydra.http.SampleActivator</activator>
+        </service>
+    </services>
+</hydra:archive>

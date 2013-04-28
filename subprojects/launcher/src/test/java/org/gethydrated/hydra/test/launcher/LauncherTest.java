@@ -12,9 +12,10 @@ import org.junit.Test;
 
 /**
  * Launcher tests.
+ * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public class LauncherTest {
 

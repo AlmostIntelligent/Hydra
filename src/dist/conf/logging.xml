@@ -24,16 +24,24 @@
 	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-    <!-- encoders are assigned the type
-         ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
 		<encoder>
 			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
     	</encoder>
 	</appender>
 
-	<root level="debug">
-		<appender-ref ref="FILE" />
+    <logger name="org.gethydrated" level="TRACE">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <logger name="org.eclipse.jetty" level="WARN">
+        <appender-ref ref="FILE" />
+    </logger>
+
+	<root level="WARN">
 		<appender-ref ref="ERRORS" />
-		<appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT" />
 	</root>
 </configuration>
