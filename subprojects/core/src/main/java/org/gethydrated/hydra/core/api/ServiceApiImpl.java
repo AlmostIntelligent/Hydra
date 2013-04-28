@@ -119,7 +119,7 @@ public class ServiceApiImpl extends HydraApiImpl implements ServiceApi {
 
     @Override
     public void link(final SID sid1, final SID sid2) {
-        sid1.tell(new Link(sid2.getUSID()), sid2);
+        sid1.tell(new Link(sid1.getUSID(), sid2.getUSID()), sid2);
     }
 
     @Override
