@@ -1,18 +1,19 @@
 package org.gethydrated.hydra.core.configuration;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 
 /**
  * Configures basic settings.
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public final class BasicConfigurator {
-    
+
     /**
-     * Hide constructor to prevent instanciation.
+     * Hidden constructor to prevent instantiation.
      */
     private BasicConfigurator() {
     }
@@ -25,7 +26,17 @@ public final class BasicConfigurator {
      */
     public static void configure(final ConfigurationImpl cfg)
             throws ConfigItemNotFoundException {
-        // TO-DO: initialize standard config values
-        cfg.setString("test", "test");
+
+        /* Actor configuration */
+        cfg.setString("actors.test", "test");
+
+        /* Network configuration */
+        // Set standard to local only.
+        cfg.setInteger("network.port", 0);
+        cfg.setInteger("network.timeout-connect", 10000);
+        cfg.setInteger("network.timeout-read", 0);
+        cfg.setBoolean("network.keep-alive", true);
+
+        cfg.setInteger("cli.distributed-timeout", 20);
     }
 }

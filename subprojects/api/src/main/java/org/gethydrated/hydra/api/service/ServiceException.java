@@ -7,13 +7,15 @@ import org.gethydrated.hydra.api.HydraException;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public class ServiceException extends HydraException {
 
     /**
      * Constructor.
-     * @param e Throwable e.
+     * 
+     * @param e
+     *            Throwable e.
      */
     public ServiceException(final Throwable e) {
         super(e);
@@ -21,7 +23,9 @@ public class ServiceException extends HydraException {
 
     /**
      * Constructor.
-     * @param m Message m.
+     * 
+     * @param m
+     *            Message m.
      */
     public ServiceException(final String m) {
         super(m);

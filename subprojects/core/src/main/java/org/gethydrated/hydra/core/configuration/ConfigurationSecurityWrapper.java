@@ -3,7 +3,9 @@ package org.gethydrated.hydra.core.configuration;
 import java.util.List;
 
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.configuration.ConfigItemTypeException;
 import org.gethydrated.hydra.api.configuration.Configuration;
+import org.gethydrated.hydra.api.configuration.ConfigurationItem;
 
 /**
  * 
@@ -15,13 +17,13 @@ public class ConfigurationSecurityWrapper implements Configuration {
     /**
      * @var Reference to the core configuration.
      */
-    private ConfigurationImpl coreConfiguration;
+    private Configuration coreConfiguration;
 
     /**
      * 
      * @return core Configuration
      */
-    private ConfigurationImpl getCoreConfiguration() {
+    private Configuration getCoreConfiguration() {
         return coreConfiguration;
     }
 
@@ -30,7 +32,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
      * @param coreConfig
      *            Core Configuration.
      */
-    private void setCoreConfiguration(final ConfigurationImpl coreConfig) {
+    private void setCoreConfiguration(final Configuration coreConfig) {
         this.coreConfiguration = coreConfig;
     }
 
@@ -39,7 +41,7 @@ public class ConfigurationSecurityWrapper implements Configuration {
      * @param coreConfig
      *            core Configuration
      */
-    public ConfigurationSecurityWrapper(final ConfigurationImpl coreConfig) {
+    public ConfigurationSecurityWrapper(final Configuration coreConfig) {
         setCoreConfiguration(coreConfig);
     }
 
@@ -96,6 +98,11 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
+    public final List<String> list() throws ConfigItemNotFoundException {
+        return getCoreConfiguration().list();
+    }
+
+    @Override
     public final List<String> list(final String name)
             throws ConfigItemNotFoundException {
         // TODO Auto-generated method stub
@@ -103,9 +110,30 @@ public class ConfigurationSecurityWrapper implements Configuration {
     }
 
     @Override
+    public Configuration getSubItems(final String base)
+            throws ConfigItemNotFoundException, ConfigItemTypeException {
+        return getCoreConfiguration().getSubItems(base);
+    }
+
+    @Override
     public final Object get(final String name)
             throws ConfigItemNotFoundException {
         return getCoreConfiguration().get(name);
+    }
+
+    @Override
+    public Boolean has(final String name) {
+        return getCoreConfiguration().has(name);
+    }
+
+    @Override
+    public ConfigurationItem getRoot() {
+        return getCoreConfiguration().getRoot();
+    }
+
+    @Override
+    public void setRoot(final ConfigurationItem root) {
+        getCoreConfiguration().setRoot(root);
     }
 
     @Override

@@ -3,5 +3,13 @@
 .project
 .gradle
 .settings
+.idea
+*.iml
+*.ipr
+*.iws
 bin
 build
+out
+/subprojects/core/src/main/resources/org/gethydrated/hydra/core/version.properties
+
+/tools/typhon/*.pyc

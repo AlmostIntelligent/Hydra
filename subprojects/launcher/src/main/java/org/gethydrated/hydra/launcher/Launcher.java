@@ -8,10 +8,10 @@ import java.net.URISyntaxException;
  * 
  * @author Christian Kulpa
  * @since 0.1.0
- *
+ * 
  */
 public final class Launcher {
-    
+
     /**
      * Hide constructor to prevent instanciation.
      */
@@ -19,25 +19,28 @@ public final class Launcher {
     }
 
     /**
-     * @param args arguments
-     * @throws Exception on failure.
+     * @param args
+     *            arguments
+     * @throws Exception
+     *             on failure.
      */
     public static void main(final String[] args) throws Exception {
-        File hydraHome = getWorkingDirectory();
+        final File hydraHome = getWorkingDirectory();
         System.setProperty("hydra.home", hydraHome.getPath());
         BootStrapper.bootstrap(args, hydraHome);
     }
 
     /**
      * Detects Hydra home directory.
+     * 
      * @return Hydra home directory.
      */
     private static File getWorkingDirectory() {
         try {
-            File path = new File(Launcher.class.getProtectionDomain()
+            final File path = new File(Launcher.class.getProtectionDomain()
                     .getCodeSource().getLocation().toURI());
             return path.getParentFile().getParentFile();
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             throw new IllegalStateException("Could not detect Hydra directory",
                     e);
         }

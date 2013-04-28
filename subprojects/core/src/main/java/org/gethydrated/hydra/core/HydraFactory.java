@@ -1,8 +1,9 @@
 package org.gethydrated.hydra.core;
 
 import org.gethydrated.hydra.api.Hydra;
+import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
-import org.gethydrated.hydra.core.configuration.ConfigurationImpl;
+import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
 
 /**
@@ -11,7 +12,7 @@ import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
  * @since 0.1.0
  */
 public final class HydraFactory {
-    
+
     /**
      * Default configuration.
      */
@@ -23,16 +24,18 @@ public final class HydraFactory {
     private static boolean initialized = false;
 
     /**
-     * Hide constructor to prevent instanciation.
+     * Hide constructor to prevent instantiation.
      */
     private HydraFactory() {
     }
-    
+
     /**
      * Creates new Hydra instance.
+     * 
      * @return Hydra instance.
+     * @throws HydraException on failure.
      */
-    public static Hydra getHydra() {
+    public static Hydra getHydra() throws HydraException {
         if (!initialized) {
             init();
         }
@@ -44,9 +47,9 @@ public final class HydraFactory {
      */
     private static void init() {
         try {
-            new ConfigurationInitializer(DEFAULTCFG).configure();
+            new ConfigurationInitializer(DEFAULTCFG).configure("");
             initialized = true;
-        } catch (ConfigItemNotFoundException e) {
+        } catch (final ConfigItemNotFoundException e) {
             throw new IllegalStateException(
                     "Could not create hydra configuration.", e);
         }
