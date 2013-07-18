@@ -1,17 +1,17 @@
 package org.gethydrated.hydra.util.xml;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 /**
  * XML schema resolver. 
@@ -24,10 +24,13 @@ public class LocalSchemaResolver implements EntityResolver {
 
     private final Map<String, String> mappings;
 
+    private final ClassLoader source;
+
     /**
      * Constructor.
      */
-    public LocalSchemaResolver() {
+    public LocalSchemaResolver(ClassLoader source) {
+        this.source = source;
         mappings = readSchemaMappingFile();
     }
 
@@ -35,7 +38,7 @@ public class LocalSchemaResolver implements EntityResolver {
     public InputSource resolveEntity(final String publicId,
             final String systemId) throws SAXException, IOException {
         if (systemId != null) {
-            final InputStream inputStream = this.getClass()
+            final InputStream inputStream = source
                     .getResourceAsStream("/" + mappings.get(systemId));
             if (inputStream != null) {
                 logger.debug("found mapping: {} - {}", systemId,
@@ -48,7 +51,7 @@ public class LocalSchemaResolver implements EntityResolver {
 
     private Map<String, String> readSchemaMappingFile() {
         final Map<String, String> map = new HashMap<>();
-        try (InputStream inputStream = this.getClass().getResourceAsStream(
+        try (InputStream inputStream = source.getResourceAsStream(
                 DEFAULT_SCHEMA_MAPPING)) {
             final BufferedReader input = new BufferedReader(
                     new InputStreamReader(inputStream));

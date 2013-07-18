@@ -1,12 +1,16 @@
 package org.gethydrated.hydra.core.io.network;
 
-import io.netty.channel.*;
-import org.eclipse.jetty.util.ArrayQueue;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
+import io.netty.handler.codec.MessageToMessageDecoder;
 import org.gethydrated.hydra.core.io.transport.Envelope;
 import org.gethydrated.hydra.core.io.transport.MessageType;
 import org.gethydrated.hydra.core.io.transport.NodeAddress;
 
 import java.net.InetSocketAddress;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -16,8 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Kulpa
  * @since 0.2.0
  */
-public class ClientHandshakeHandler extends
-        ChannelInboundMessageHandlerAdapter<Envelope> {
+public class ClientHandshakeHandler extends MessageToMessageDecoder<Envelope> {
 
     private ChannelHandlerContext ctx;
     private volatile boolean handshakeSuccess = false;
@@ -26,7 +29,7 @@ public class ClientHandshakeHandler extends
     private ScheduledFuture<?> timeout;
 
     private final NodeController nodeController;
-    private final Queue<ChannelPromise> handshakeFutures = new ArrayQueue<>();
+    private final Queue<ChannelPromise> handshakeFutures = new LinkedList<>();
     private final Object lock = new Object();
 
     /**
@@ -79,18 +82,16 @@ public class ClientHandshakeHandler extends
         env.setSender(nodeController.getLocal());
         env.setCookie("nocookie");
         env.setConnector(nodeController.getConnector());
-        ctx.write(env).syncUninterruptibly();
+        ctx.writeAndFlush(env).syncUninterruptibly();
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx,
-            final Envelope msg) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, Envelope msg, List<Object> out) throws Exception {
         if (handshakeFailure) {
             return;
         }
         if (handshakeSuccess) {
-            ChannelHandlerUtil.addToNextInboundBuffer(ctx, msg);
-            ctx.fireInboundBufferUpdated();
+            out.add(msg);
             return;
         }
         synchronized (lock) {
@@ -98,8 +99,7 @@ public class ClientHandshakeHandler extends
                 return;
             }
             if (handshakeSuccess) {
-                ChannelHandlerUtil.addToNextInboundBuffer(ctx, msg);
-                ctx.fireInboundBufferUpdated();
+                out.add(msg);
                 return;
             }
             if (msg.getType() == MessageType.DECLINE) {
@@ -118,7 +118,7 @@ public class ClientHandshakeHandler extends
                     env.setSender(nodeController.getLocal());
                     env.setTarget(msg.getSender());
                     env.setNodes(nodeController.getNodesWithAddress());
-                    ctx.write(env).syncUninterruptibly();
+                    ctx.writeAndFlush(env);
                     nodeController.addKnownNodes(msg.getNodes(), false);
                     setSuccess();
                 } else {
@@ -126,7 +126,7 @@ public class ClientHandshakeHandler extends
                     env.setSender(nodeController.getLocal());
                     env.setTarget(msg.getSender());
                     env.setReason("Concurrent connection attempt.");
-                    ctx.write(env).syncUninterruptibly();
+                    ctx.writeAndFlush(env);
                     setFailure(new RuntimeException(
                             "Concurrent connection attempt."));
                 }

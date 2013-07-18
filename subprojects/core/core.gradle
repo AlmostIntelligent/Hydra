@@ -1,0 +1,15 @@
+apply from: "$rootDir/gradle/provided.gradle"
+
+dependencies {
+    compile project(':api')
+    compile project(':actors')
+    compile project(':config')
+    compile libraries.jackson_core
+    compile libraries.jackson_databind
+    compile libraries.jackson_jaxb
+    compile libraries.jackson_annotations
+    compile libraries.netty
+    compile libraries.javassist
+    testCompile libraries.junit
+    testCompile libraries.logback_classic
+}

@@ -1,0 +1,274 @@
+#!/bin/sh
+
+SERVER_OPTS=""
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+      *)
+          SERVER_OPTS="$SERVER_OPTS \"$1\""
+          ;;
+    esac
+    shift
+done
+
+DIRNAME=`dirname "$0"`
+PROGNAME=`basename "$0"`
+GREP="grep"
+
+# Use the maximum available, or set MAX_FD != -1 to use that
+MAX_FD="maximum"
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false;
+darwin=false;
+linux=false;
+solaris=false;
+freebsd=false;
+
+case "`uname`" in
+    CYGWIN*)
+        cygwin=true
+        ;;
+
+    Darwin*)
+        darwin=true
+        ;;
+    FreeBSD)
+        freebsd=true
+        ;;
+    Linux)
+        linux=true
+        ;;
+    SunOS*)
+        solaris=true
+        ;;
+esac
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if $cygwin ; then
+    [ -n "$HYDRA_HOME" ] &&
+        HYDRA_HOME =`cygpath --unix "$HYDRA_HOME"`
+    [ -n "$JAVA_HOME" ] &&
+        JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
+    [ -n "$JAVAC_JAR" ] &&
+        JAVAC_JAR=`cygpath --unix "$JAVAC_JAR"`
+fi
+
+# Setup HYDRA_HOME
+RESOLVED_HYDRA_HOME=`cd "$DIRNAME/.."; pwd`
+if [ "x$HYDRA_HOME" = "x" ]; then
+    # get the full path (without any relative bits)
+    HYDRA_HOME=$RESOLVED_HYDRA_HOME
+else
+ SANITIZED_HYDRA_HOME =`cd "$HYDRA_HOME"; pwd`
+ if [ "$RESOLVED_HYDRA_HOME" != "$SANITIZED_HYDRA_HOME" ]; then
+   echo ""
+   echo "   WARNING:  HYDRA_HOME may be pointing to a different installation - unpredictable results may occur."
+   echo ""
+   echo "             HYDRA_HOME: $HYDRA_HOME"
+   echo ""
+   sleep 2s
+ fi
+fi
+export $SWARM_HOME
+
+# Setup the JVM
+if [ "x$JAVA" = "x" ]; then
+    if [ "x$JAVA_HOME" != "x" ]; then
+        JAVA="$JAVA_HOME/bin/java"
+    else
+        JAVA="java"
+    fi
+fi
+
+if [ "$PRESERVE_JAVA_OPTS" != "true" ]; then
+    # Check for -d32/-d64 in JAVA_OPTS
+    JVM_D64_OPTION=`echo $JAVA_OPTS | $GREP "\-d64"`
+    JVM_D32_OPTION=`echo $JAVA_OPTS | $GREP "\-d32"`
+
+    # Check If server or client is specified
+    SERVER_SET=`echo $JAVA_OPTS | $GREP "\-server"`
+    CLIENT_SET=`echo $JAVA_OPTS | $GREP "\-client"`
+
+    if [ "x$JVM_D32_OPTION" != "x" ]; then
+        JVM_OPTVERSION="-d32"
+    elif [ "x$JVM_D64_OPTION" != "x" ]; then
+        JVM_OPTVERSION="-d64"
+    elif $darwin && [ "x$SERVER_SET" = "x" ]; then
+        # Use 32-bit on Mac, unless server has been specified or the user opts are incompatible
+        "$JAVA" -d32 $JAVA_OPTS -version > /dev/null 2>&1 && PREPEND_JAVA_OPTS="-d32" && JVM_OPTVERSION="-d32"
+    fi
+
+    CLIENT_VM=false
+    if [ "x$CLIENT_SET" != "x" ]; then
+        CLIENT_VM=true
+    elif [ "x$SERVER_SET" = "x" ]; then
+        if $darwin && [ "$JVM_OPTVERSION" = "-d32" ]; then
+            # Prefer client for Macs, since they are primarily used for development
+            CLIENT_VM=true
+            PREPEND_JAVA_OPTS="$PREPEND_JAVA_OPTS -client"
+        else
+            PREPEND_JAVA_OPTS="$PREPEND_JAVA_OPTS -server"
+        fi
+    fi
+
+    if [ $CLIENT_VM = false ]; then
+        NO_COMPRESSED_OOPS=`echo $JAVA_OPTS | $GREP "\-XX:\-UseCompressedOops"`
+        if [ "x$NO_COMPRESSED_OOPS" = "x" ]; then
+            "$JAVA" $JVM_OPTVERSION -server -XX:+UseCompressedOops -version >/dev/null 2>&1 && PREPEND_JAVA_OPTS="$PREPEND_JAVA_OPTS -XX:+UseCompressedOops"
+        fi
+    fi
+
+    JAVA_OPTS="$PREPEND_JAVA_OPTS $JAVA_OPTS"
+fi
+
+if [ "x$HYDRA_MODULEPATH" = "x" ]; then
+    HYDRA_MODULEPATH="$SWARM_HOME/modules"
+fi
+
+if $linux || $solaris; then
+    # consolidate the server and command line opts
+    CONSOLIDATED_OPTS="$JAVA_OPTS $SERVER_OPTS"
+    # process the standalone options
+    for var in $CONSOLIDATED_OPTS
+    do
+       # Remove quotes
+       p=`echo $var | tr -d '"'`
+       case $p in
+         -Dhydra.server.base.dir=*)
+              HYDRA_BASE_DIR=`readlink -m ${p#*=}`
+              ;;
+         -Dhydra.server.log.dir=*)
+              HYDRA_LOG_DIR=`readlink -m ${p#*=}`
+              ;;
+         -Dhydra.server.conf.dir=*)
+              HYDRA_CONFIG_DIR=`readlink -m ${p#*=}`
+              ;;
+       esac
+    done
+fi
+
+# No readlink -m on BSD
+if $darwin || $freebsd; then
+    # consolidate the server and command line opts
+    CONSOLIDATED_OPTS="$JAVA_OPTS $SERVER_OPTS"
+    # process the standalone options
+    for var in $CONSOLIDATED_OPTS
+    do
+       # Remove quotes
+       p=`echo $var | tr -d '"'`
+       case $p in
+         -Dhydra.server.base.dir=*)
+              HYDRA_BASE_DIR=`cd ${p#*=} ; pwd -P`
+              ;;
+         -Dhydra.server.log.dir=*)
+              HYDRA_LOG_DIR=`cd ${p#*=} ; pwd -P`
+              ;;
+         -Dhydra.server.conf.dir=*)
+              HYDRA_CONFIG_DIR=`cd ${p#*=} ; pwd -P`
+              ;;
+       esac
+    done
+fi
+
+# determine the default base dir, if not set
+if [ "x$HYDRA_BASE_DIR" = "x" ]; then
+   HYDRA_BASE_DIR="$HYDRA_HOME/deploy"
+fi
+# determine the default log dir, if not set
+if [ "x$HYDRA_LOG_DIR" = "x" ]; then
+   HYDRA_LOG_DIR="$HYDRA_HOME/log"
+fi
+# determine the default configuration dir, if not set
+if [ "x$HYDRA_CONFIG_DIR" = "x" ]; then
+   HYDRA_CONFIG_DIR="$HYDRA_HOME/conf"
+fi
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin; then
+    HYDRA_HOME=`cygpath --path --windows "$HYDRA_HOME"`
+    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
+    HYDRA_MODULEPATH=`cygpath --path --windows "$HYDRA_MODULEPATH"`
+    HYDRA_BASE_DIR=`cygpath --path --windows "$HYDRA_BASE_DIR"`
+    HYDRA_LOG_DIR=`cygpath --path --windows "$HYDRA_LOG_DIR"`
+    HYDRA_CONFIG_DIR=`cygpath --path --windows "$HYDRA_CONFIG_DIR"`
+fi
+
+# Display our environment
+echo "========================================================================="
+echo ""
+echo "  Hydra Bootstrap Environment"
+echo ""
+echo "  HYDRA_HOME: $HYDRA_HOME"
+echo ""
+echo "  JAVA: $JAVA"
+echo ""
+echo "  JAVA_OPTS: $JAVA_OPTS"
+echo ""
+echo "========================================================================="
+echo ""
+
+while true; do
+   if [ "x$LAUNCH_SWARM_IN_BACKGROUND" = "x" ]; then
+      # Execute the JVM in the foreground
+      eval \"$JAVA\" $JAVA_OPTS \
+         \"-Dhydra.home.dir=$HYDRA_HOME\" \
+	 \"-Dhydra.log.dir=$HYDRA_LOG_DIR\" \
+	 \"-Dhydra.conf.dir=$HYDRA_CONFIG_DIR\" \
+         \"-Djava.util.logging.config.file=file:$HYDRA_CONFIG_DIR/logging.properties\" \
+         -jar \"$HYDRA_HOME/jboss-modules.jar\" \
+         -mp \"${HYDRA_MODULEPATH}\" \
+         org.gethydrated.hydra.launcher \
+         "$SERVER_OPTS"
+      JBOSS_STATUS=$?
+   else
+      # Execute the JVM in the background
+      eval \"$JAVA\" $JAVA_OPTS \
+         \"-Dhydra.home.dir=$HYDRA_HOME\" \
+	 \"-Dhydra.log.dir=$HYDRA_LOG_DIR\" \
+	 \"-Dhydra.conf.dir=$HYDRA_CONFIG_DIR\" \
+         \"-Djava.util.logging.config.file=file:$HYDRA_CONFIG_DIR/logging.properties\" \
+         -jar \"$HYDRA_HOME/jboss-modules.jar\" \
+         -mp \"${HYDRA_MODULEPATH}\" \
+         org.gethydrated.hydra.launcher \
+         "$SERVER_OPTS" "&"
+      HYDRA_PID=$!
+      # Trap common signals and relay them to the jboss process
+      trap "kill -HUP  $HYDRA_PID" HUP
+      trap "kill -TERM $HYDRA_PID" INT
+      trap "kill -QUIT $HYDRA_PID" QUIT
+      trap "kill -PIPE $HYDRA_PID" PIPE
+      trap "kill -TERM $HYDRA_PID" TERM
+      if [ "x$HYDRA_PIDFILE" != "x" ]; then
+        echo $HYDRA_PID > $HYDRA_PIDFILE
+      fi
+      # Wait until the background process exits
+      WAIT_STATUS=128
+      while [ "$WAIT_STATUS" -ge 128 ]; do
+         wait $HYDRA_PID 2>/dev/null
+         WAIT_STATUS=$?
+         if [ "$WAIT_STATUS" -gt 128 ]; then
+            SIGNAL=`expr $WAIT_STATUS - 128`
+            SIGNAL_NAME=`kill -l $SIGNAL`
+            echo "*** Swarm process ($HYDRA_PID) received $SIGNAL_NAME signal ***" >&2
+         fi
+      done
+      if [ "$WAIT_STATUS" -lt 127 ]; then
+         HYDRA_STATUS=$WAIT_STATUS
+      else
+         HYDRA_STATUS=0
+      fi
+      if [ "$HYDRA_STATUS" -ne 10 ]; then
+            # Wait for a complete shudown
+            wait $HYDRA_PID 2>/dev/null
+      fi
+      if [ "x$HYDRA_PIDFILE" != "x" ]; then
+            grep "$HYDRA_PID" $HYDRA_PIDFILE && rm $HYDRA_PIDFILE
+      fi
+   fi
+   if [ "$HYDRA_STATUS" -eq 1 ]; then
+      echo "Restarting Swarm..."
+   else
+      exit $HYDRA_STATUS
+   fi
+done

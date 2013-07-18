@@ -1,0 +1,17 @@
+apply from: "$rootDir/gradle/provided.gradle"
+
+dependencies {
+    compile project(":core")
+    compile libraries.logback_core
+    compile libraries.logback_classic
+    provided libraries.modules
+    provided libraries.vfs
+    testCompile libraries.junit
+    testCompile libraries.logback_classic
+}
+
+jar {
+    manifest {
+        attributes['Main-Class'] = 'org.gethydrated.hydra.Launcher'
+    }
+}

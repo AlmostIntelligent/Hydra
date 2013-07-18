@@ -57,9 +57,10 @@ public class CLICommandConnect extends CLICommand {
             getHydra().getNetKernel().connect(ip, port);
             return new CLIResponse("Connected to " + ip + ":" + port + "\n");
         } catch (final Exception e) {
-            if (e.getMessage().equals("Concurrent connection attempt.")) {
+            if (e.getMessage() != null && e.getMessage().equals("Concurrent connection attempt.")) {
                 return new CLIResponse("Connected to " + ip + ":" + port + "\n");
             }
+            e.printStackTrace();
             return new CLIResponse(String.format("An error occured: %s\n",
                     e.getMessage()));
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="org.gethydrated.hydra.launcher">
+    <properties>
+        <property name="hydra.api" value="private"/>
+    </properties>
+
+    <main-class name="org.gethydrated.hydra.launcher.Launcher"/>
+
+    <resources>
+        <resource-root path="launcher-1.0.0.jar"/>
+    </resources>
+
+    <dependencies>
+		<module name="org.slf4j.slf4j-api"/>
+        <module name="ch.qos.logback.logback-core"/>
+        <module name="ch.qos.logback.logback-classic"/>
+        <module name="org.jboss.modules"/>
+		<module name="javax.api"/>
+		<module name="org.gethydrated.hydra.api"/>
+		<module name="org.gethydrated.hydra.core"/>
+    </dependencies>
+</module>

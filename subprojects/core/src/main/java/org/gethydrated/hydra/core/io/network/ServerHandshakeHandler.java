@@ -1,13 +1,13 @@
 package org.gethydrated.hydra.core.io.network;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelHandlerUtil;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.handler.codec.MessageToMessageDecoder;
 import org.gethydrated.hydra.core.io.transport.Envelope;
 import org.gethydrated.hydra.core.io.transport.MessageType;
 import org.gethydrated.hydra.core.io.transport.NodeAddress;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -16,8 +16,7 @@ import java.util.concurrent.TimeUnit;
  * @author Christian Kulpa
  * @since 0.2.0
  */
-public class ServerHandshakeHandler extends
-        ChannelInboundMessageHandlerAdapter<Envelope> {
+public class ServerHandshakeHandler extends MessageToMessageDecoder<Envelope> {
 
     private ChannelHandlerContext ctx;
     private volatile boolean handshakeSuccess = false;
@@ -37,11 +36,9 @@ public class ServerHandshakeHandler extends
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx,
-            final Envelope msg) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, Envelope msg, List<Object> out) throws Exception {
         if (handshakeSuccess) {
-            ChannelHandlerUtil.addToNextInboundBuffer(ctx, msg);
-            ctx.fireInboundBufferUpdated();
+            out.add(msg);
             return;
         }
         if (handshakeFailure) {
@@ -49,8 +46,7 @@ public class ServerHandshakeHandler extends
         }
         synchronized (lock) {
             if (handshakeSuccess) {
-                ChannelHandlerUtil.addToNextInboundBuffer(ctx, msg);
-                ctx.fireInboundBufferUpdated();
+                out.add(msg);
                 return;
             }
             if (handshakeFailure) {
@@ -105,13 +101,13 @@ public class ServerHandshakeHandler extends
                         new NodeAddress(addr.getAddress().getHostAddress(),
                                 envelope.getConnector().getPort()));
                 state++;
-                ctx.write(env).syncUninterruptibly();
+                ctx.writeAndFlush(env);
             } else {
                 final Envelope env = new Envelope(MessageType.DECLINE);
                 env.setSender(nodeController.getLocal());
                 env.setTarget(envelope.getSender());
                 env.setReason("Concurrent connection attempt.");
-                ctx.write(env).syncUninterruptibly();
+                ctx.writeAndFlush(env);
                 setFailure();
             }
         }

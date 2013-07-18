@@ -4,8 +4,8 @@ include 'api'
 include 'actors'
 include 'core'
 include 'config'
+include 'dist'
 include 'launcher'
-include 'jetty-service'
 include 'sample-chat-service'
 include 'util'
 
@@ -14,5 +14,7 @@ rootProject.children.each { project ->
 	String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
 	String projectDirName = "subprojects/$fileBaseName"
 	project.projectDir = new File(settingsDir, projectDirName)
+    project.buildFileName = "${fileBaseName}.gradle"
 	assert project.projectDir.isDirectory()
+    assert project.buildFile.isFile()
 }

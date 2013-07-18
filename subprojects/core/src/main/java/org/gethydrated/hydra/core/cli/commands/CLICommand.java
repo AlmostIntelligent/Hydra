@@ -1,15 +1,15 @@
 package org.gethydrated.hydra.core.cli.commands;
 
+import org.gethydrated.hydra.actors.ActorRef;
+import org.gethydrated.hydra.api.event.InputEvent;
+import org.gethydrated.hydra.core.InternalHydra;
+import org.gethydrated.hydra.core.cli.CLIResponse;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.gethydrated.hydra.actors.ActorRef;
-import org.gethydrated.hydra.api.event.InputEvent;
-import org.gethydrated.hydra.core.InternalHydra;
-import org.gethydrated.hydra.core.cli.CLIResponse;
 
 /**
  * 
@@ -167,6 +167,7 @@ public abstract class CLICommand {
         try {
             return execute(args);
         } catch (final Exception e) {
+            e.printStackTrace();
             return new CLIResponse("Caught exception in command execution! "
                     + e);
         }

@@ -1,7 +1,7 @@
 package org.gethydrated.hydra.core.io.network;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.io.transport.Envelope;
 import org.gethydrated.hydra.core.io.transport.MessageType;
@@ -15,8 +15,7 @@ import org.slf4j.LoggerFactory;
  * @author Christian Kulpa
  * @since 0.2.0
  */
-public class EnvelopeHandler extends
-        ChannelInboundMessageHandlerAdapter<Envelope> {
+public class EnvelopeHandler extends ChannelInboundHandlerAdapter {
 
     private final NodeController nodeController;
 
@@ -43,14 +42,17 @@ public class EnvelopeHandler extends
     }
 
     @Override
-    public void messageReceived(final ChannelHandlerContext ctx,
-            final Envelope msg) throws Exception {
-        if (msg.getType() == MessageType.NODES) {
-            nodeController.addKnownNodes(msg.getNodes(), false);
-        } else if (msg.getType() == MessageType.DISCONNECT) {
-            nodeController.removeNode(msg.getSender());
-        } else {
-            ioActor.tell(msg, null);
+    public void channelRead(final ChannelHandlerContext ctx,
+            final Object msg) throws Exception {
+        if (msg instanceof Envelope) {
+            Envelope env = (Envelope) msg;
+            if (env.getType() == MessageType.NODES) {
+                nodeController.addKnownNodes(env.getNodes(), false);
+            } else if (env.getType() == MessageType.DISCONNECT) {
+                nodeController.removeNode(env.getSender());
+            } else {
+                ioActor.tell(msg, null);
+            }
         }
     }
 

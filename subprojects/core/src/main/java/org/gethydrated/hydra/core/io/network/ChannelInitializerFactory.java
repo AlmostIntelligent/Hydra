@@ -1,10 +1,9 @@
 package org.gethydrated.hydra.core.io.network;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Channel pipeline factory.
@@ -43,12 +42,12 @@ public class ChannelInitializerFactory {
 
     private ChannelInitializer<SocketChannel> createInitializer(
             final boolean isServerChannel) {
+
         return new ChannelInitializer<SocketChannel>() {
             @Override
             public void initChannel(final SocketChannel ch) throws Exception {
                 final ChannelPipeline pipeline = ch.pipeline();
-                pipeline.addLast(new JSONDecoder(mapper));
-                pipeline.addLast(new JSONEncoder(mapper));
+                pipeline.addLast(new JSONCodec(mapper));
                 if (isServerChannel) {
                     pipeline.addLast(new ServerHandshakeHandler(nodeController));
                 } else {

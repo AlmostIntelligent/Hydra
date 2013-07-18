@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="org.jboss.jboss-vfs">
+    <properties>
+        <property name="swarm.api" value="private"/>
+    </properties>
+
+    <resources>
+        <resource-root path="jboss-vfs-3.2.0.Beta1.jar"/>
+        <!-- Insert resources here -->
+    </resources>
+
+    <dependencies>
+		<module name="org.jboss.logging.jboss-logging"/>
+    </dependencies>
+</module>

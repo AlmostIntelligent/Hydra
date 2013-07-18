@@ -107,7 +107,7 @@ public class LazyConnection implements Connection {
                     }
                 }
             }
-            channel.write(envelope);
+            channel.writeAndFlush(envelope);
         }
     }
 

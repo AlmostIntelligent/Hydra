@@ -1,15 +1,15 @@
 package org.gethydrated.hydra.core.configuration;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.config.files.XMLConfigurationReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * 
@@ -85,6 +85,7 @@ public class ConfigurationInitializer {
             throws ConfigItemNotFoundException {
         configureBasic();
         final XMLConfigurationReader rdr = new XMLConfigurationReader();
+        System.out.println(configurationFile);
         final InputStream inputStream = this.getClass().getClassLoader()
                 .getResourceAsStream(configurationFile);
         final Configuration usrCfg = rdr.parse(inputStream);

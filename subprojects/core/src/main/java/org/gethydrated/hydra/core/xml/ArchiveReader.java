@@ -9,6 +9,10 @@ import org.gethydrated.hydra.util.xml.XMLParser;
  */
 public class ArchiveReader extends AbstractXMLReader<Archive> {
 
+    public ArchiveReader() {
+        super(ArchiveReader.class.getClassLoader());
+    }
+
     @Override
     protected XMLParser<Archive> getParser() {
         return new ArchiveParser();

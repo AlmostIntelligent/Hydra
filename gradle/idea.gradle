@@ -22,8 +22,8 @@ idea {
     }
 
     project {
+        wildcards += ['?*.gradle']
 
         languageLevel = '1.7'
-
     }
 }

@@ -47,7 +47,7 @@ public final class HydraFactory {
      */
     private static void init() {
         try {
-            new ConfigurationInitializer(DEFAULTCFG).configure("");
+            new ConfigurationInitializer(DEFAULTCFG).configure();
             initialized = true;
         } catch (final ConfigItemNotFoundException e) {
             throw new IllegalStateException(

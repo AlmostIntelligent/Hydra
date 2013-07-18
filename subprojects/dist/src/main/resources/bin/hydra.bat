@@ -1,0 +1,213 @@
+@echo off
+rem -------------------------------------------------------------------------
+rem Hydra startup Script for Windows
+rem -------------------------------------------------------------------------
+
+rem Set to all parameters by default
+set SERVER_OPTS=%*
+
+rem Get the program name before using shift as the command modify the variable ~nx0
+if "%OS%" == "Windows_NT" (
+  set "PROGNAME=%~nx0%"
+) else (
+  set "PROGNAME=swarm.bat"
+)
+
+@if not "%ECHO%" == ""  echo %ECHO%
+@if "%OS%" == "Windows_NT" setlocal
+
+if "%OS%" == "Windows_NT" (
+  set "DIRNAME=%~dp0%"
+) else (
+  set DIRNAME=.\
+)
+
+rem Read command-line args.
+:READ-ARGS
+if "%1" == "" (
+   goto MAIN
+) else if "%1" == "--debug" (
+   goto READ-DEBUG-PORT
+) else (
+   rem This doesn't work as Windows splits on = and spaces by default
+   rem set SERVER_OPTS=%SERVER_OPTS% %1
+   shift
+   goto READ-ARGS
+)
+
+:MAIN
+rem $Id$
+)
+
+pushd %DIRNAME%..
+set "RESOLVED_HYDRA_HOME=%CD%"
+popd
+set UNQUOTED_HYDRA_HOME=%SWARM_HOME:"=%
+rem attempt to unquote again to remove quote if envvar was not set
+set UNQUOTED_HYDRA_HOME=%UNQUOTED_HYDRA_HOME:"=%
+set QUOTED_HYDRA_HOME="%UNQUOTED_HYDRA_HOME%"
+rem should only a = if envvar was not set
+if "%UNQUOTED_HYDRA_HOME%" == "=" (
+  set "UNQUOTED_HYDRA_HOME=%RESOLVED_HYDRA_HOME%"
+  set QUOTED_HYDRA_HOME="%RESOLVED_HYDRA_HOME%"
+)
+pushd %QUOTED_HYDRA_HOME%
+set "SANITIZED_HYDRA_HOME=%CD%"
+popd
+
+if /i "%RESOLVED_HYDRA_HOME%" NEQ "%SANITIZED_HYDRA_HOME%" (
+   echo.
+   echo   WARNING:  HYDRA_HOME may be pointing to a different installation - unpredictable results may occur.
+   echo.
+   echo       HYDRA_HOME: %QUOTED_HYDRA_HOME%
+   echo.
+)
+
+rem Set debug settings if not already set
+if "%DEBUG_MODE%" == "true" (
+   echo "%JAVA_OPTS%" | findstr /I "\-agentlib:jdwp" > nul
+  if errorlevel == 1 (
+     set "JAVA_OPTS=%JAVA_OPTS% -agentlib:jdwp=transport=dt_socket,address=%DEBUG_PORT%,server=y,suspend=n"
+  ) else (
+     echo Debug already enabled in JAVA_OPTS, ignoring --debug argument
+  )
+)
+
+set DIRNAME=
+
+set JAVA_OPTS=-Dprogram.name=%PROGNAME% %JAVA_OPTS%
+
+if "x%JAVA_HOME%" == "x" (
+  set  JAVA=java
+  echo JAVA_HOME is not set. Unexpected results may occur.
+  echo Set JAVA_HOME to the directory of your local JDK to avoid this message.
+) else (
+  set "JAVA=%JAVA_HOME%\bin\java"
+)
+
+if not "%PRESERVE_JAVA_OPTS%" == "true" (
+  rem Add -client to the JVM options, if supported (32 bit VM), and not overriden
+  echo "%JAVA_OPTS%" | findstr /I \-server > nul
+  if errorlevel == 1 (
+    "%JAVA%" -client -version 2>&1 | findstr /I /C:"Client VM" > nul
+    if not errorlevel == 1 (
+      set "JAVA_OPTS=-client %JAVA_OPTS%"
+    )
+  )
+)
+
+if not "%PRESERVE_JAVA_OPTS%" == "true" (
+  rem Add compressed oops, if supported (64 bit VM), and not overriden
+  echo "%JAVA_OPTS%" | findstr /I "\-XX:\-UseCompressedOops \-client" > nul
+  if errorlevel == 1 (
+    "%JAVA%" -XX:+UseCompressedOops -version > nul 2>&1
+    if not errorlevel == 1 (
+      set "JAVA_OPTS=-XX:+UseCompressedOops %JAVA_OPTS%"
+    )
+  )
+)
+
+if not "%PRESERVE_JAVA_OPTS%" == "true" (
+  rem Add tiered compilation, if supported (64 bit VM), and not overriden
+  echo "%JAVA_OPTS%" | findstr /I "\-XX:\-TieredCompilation \-client" > nul
+  if errorlevel == 1 (
+    "%JAVA%" -XX:+TieredCompilation -version > nul 2>&1
+    if not errorlevel == 1 (
+      set "JAVA_OPTS=-XX:+TieredCompilation %JAVA_OPTS%"
+    )
+  )
+)
+
+rem Find jboss-modules.jar, or we can't continue
+if exist "%UNQUOTED_HYDRA_HOME%\jboss-modules.jar" (
+    set RUNJAR="%UNQUOTED_HYDRA_HOME%\jboss-modules.jar"
+) else (
+  echo Could not locate "%UNQUOTED_HYDRA_HOME%\jboss-modules.jar".
+  echo Please check that you are in the bin directory when running this script.
+  goto END
+)
+
+rem Setup JBoss specific properties
+
+rem Setup directories, note directories with spaces do not work
+set "CONSOLIDATED_OPTS=%JAVA_OPTS% %SERVER_OPTS%"
+:DIRLOOP
+echo(%CONSOLIDATED_OPTS% | findstr /r /c:"^-Djboss.server.base.dir" > nul && (
+  for /f "tokens=1,2* delims==" %%a IN ("%CONSOLIDATED_OPTS%") DO (
+    for /f %%i IN ("%%b") DO set "HYDRA_BASE_DIR=%%~fi"
+  )
+)
+echo(%CONSOLIDATED_OPTS% | findstr /r /c:"^-Djboss.server.config.dir" > nul && (
+  for /f "tokens=1,2* delims==" %%a IN ("%CONSOLIDATED_OPTS%") DO (
+    for /f %%i IN ("%%b") DO set "HYDRA_CONFIG_DIR=%%~fi"
+  )
+)
+echo(%CONSOLIDATED_OPTS% | findstr /r /c:"^-Djboss.server.log.dir" > nul && (
+  for /f "tokens=1,2* delims==" %%a IN ("%CONSOLIDATED_OPTS%") DO (
+    for /f %%i IN ("%%b") DO set "HYDRA_LOG_DIR=%%~fi"
+  )
+)
+
+for /f "tokens=1* delims= " %%i IN ("%CONSOLIDATED_OPTS%") DO (
+  if %%i == "" (
+    goto ENDDIRLOOP
+  ) else (
+    set CONSOLIDATED_OPTS=%%j
+    GOTO DIRLOOP
+  )
+)
+
+:ENDDIRLOOP
+
+rem Set default module root paths
+if "x%HYDRA_MODULEPATH%" == "x" (
+  set  "HYDRA_MODULEPATH=%UNQUOTED_HYDRA_HOME%\modules"
+)
+
+rem Set the deployment base dir
+if "x%HYDRA_BASE_DIR%" == "x" (
+  set  "HYDRA_BASE_DIR=%UNQUOTED_HYDRA_HOME%\deploy"
+)
+rem Set the standalone log dir
+if "x%HYDRA_LOG_DIR%" == "x" (
+  set  "HYDRA_LOG_DIR=%UNQUOTED_HYDRA_HOME%\log"
+)
+rem Set the standalone configuration dir
+if "x%HYDRA_CONFIG_DIR%" == "x" (
+  set  "HYDRA_CONFIG_DIR=%UNQUOTED_HYDRA_HOME%\conf"
+)
+
+echo ===============================================================================
+echo.
+echo   Hydra startup Environment
+echo.
+echo   HYDRA_HOME: %UNQUOTED_HYDRA_HOME%
+echo.
+echo   JAVA: %JAVA%
+echo.
+echo   JAVA_OPTS: %JAVA_OPTS%
+echo.
+echo   CONFIG_DIR: %HYDRA_CONFIG_DIR%
+echo.
+echo ===============================================================================
+echo.
+
+:RESTART
+"%JAVA%" %JAVA_OPTS% ^
+    -Dhydra.home.dir="%UNQUOTED_HYDRA_HOME%" ^
+    -Dhydra.log.dir="%HYDRA_LOG_DIR%" ^
+    -Dhydra.conf.dir="%HYDRA_CONFIG_DIR%" ^
+	-Djava.util.logging.config.file="%HYDRA_CONFIG_DIR%\logging.properties" ^
+    -jar "%UNQUOTED_HYDRA_HOME%\jboss-modules.jar" ^
+    -mp "%HYDRA_MODULEPATH%" ^
+     org.gethydrated.hydra.launcher ^
+     %SERVER_OPTS%
+
+if ERRORLEVEL 1 goto RESTART
+
+:END
+rem if "x%NOPAUSE%" == "x" pause
+
+:END_NO_PAUSE
+
+EXIT ERRORLEVEL

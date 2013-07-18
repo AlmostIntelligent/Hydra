@@ -1,0 +1,9 @@
+dependencies {
+    compile libraries.slf4j_api
+    compile libraries.guava
+    compile project(':api')
+    compile project(':config')
+    testCompile libraries.junit
+    testCompile libraries.jmockit
+    testCompile libraries.logback_classic
+}

@@ -1,7 +1,6 @@
 package org.gethydrated.hydra.launcher;
 
 import java.io.File;
-import java.net.URISyntaxException;
 
 /**
  * Simple Hydra launch application.
@@ -25,9 +24,14 @@ public final class Launcher {
      *             on failure.
      */
     public static void main(final String[] args) throws Exception {
-        final File hydraHome = getWorkingDirectory();
-        System.setProperty("hydra.home", hydraHome.getPath());
-        BootStrapper.bootstrap(args, hydraHome);
+        try {
+            final File hydraHome = getWorkingDirectory();
+            System.setProperty("hydra.home", hydraHome.getPath());
+            BootStrapper.bootstrap(args, hydraHome);
+        } catch (Throwable t) {
+            t.printStackTrace(System.err);
+            System.exit(-1);
+        }
     }
 
     /**
@@ -36,14 +40,8 @@ public final class Launcher {
      * @return Hydra home directory.
      */
     private static File getWorkingDirectory() {
-        try {
-            final File path = new File(Launcher.class.getProtectionDomain()
-                    .getCodeSource().getLocation().toURI());
-            return path.getParentFile().getParentFile();
-        } catch (final URISyntaxException e) {
-            throw new IllegalStateException("Could not detect Hydra directory",
-                    e);
-        }
+        String s = System.getProperty("hydra.home.dir");
+        return new File(s);
     }
 
     /**

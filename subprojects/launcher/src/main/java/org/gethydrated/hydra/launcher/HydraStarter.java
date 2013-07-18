@@ -1,13 +1,14 @@
 package org.gethydrated.hydra.launcher;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.core.HydraFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Starts Hydra.
@@ -55,7 +56,7 @@ public final class HydraStarter {
             throws Exception {
         final Map<String, String> properties = new HashMap<>();
         properties.put("HYDRA_HOME", hydraHome);
-        final URL file = HydraStarter.class.getResource("/logging.xml");
+        final URL file = new File(System.getProperty("hydra.conf.dir")+"/logging.xml").toURI().toURL();
         if (file != null) {
             LogbackConfigurator.configure(file, properties);
         } else {

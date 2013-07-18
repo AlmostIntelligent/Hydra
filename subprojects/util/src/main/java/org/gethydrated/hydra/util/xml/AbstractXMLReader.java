@@ -1,10 +1,10 @@
 package org.gethydrated.hydra.util.xml;
 
-import java.io.InputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+
+import java.io.InputStream;
 
 /**
  * Base XMLReader class.
@@ -15,10 +15,14 @@ import org.w3c.dom.Document;
  */
 public abstract class AbstractXMLReader<T> implements XMLReader<T> {
 
-    private final DocumentLoader docLoader = new DefaultDocumentLoader();
+    private final DocumentLoader docLoader;
 
     private final Logger logger = LoggerFactory
             .getLogger(AbstractXMLReader.class);
+
+    public AbstractXMLReader(ClassLoader source) {
+        docLoader = new DefaultDocumentLoader(source);
+    }
 
     @Override
     public final T parse(final InputStream inputStream) {
@@ -29,7 +33,7 @@ public abstract class AbstractXMLReader<T> implements XMLReader<T> {
             runner.traverse(parser);
             return parser.getResult();
         } catch (final Exception e) {
-            logger.error("An error occured while parsing: {}", e.getMessage());
+            logger.error("An error occured while parsing: {}", e);
         }
         return null;
     }

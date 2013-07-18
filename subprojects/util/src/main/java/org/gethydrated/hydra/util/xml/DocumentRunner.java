@@ -1,12 +1,12 @@
 package org.gethydrated.hydra.util.xml;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * 

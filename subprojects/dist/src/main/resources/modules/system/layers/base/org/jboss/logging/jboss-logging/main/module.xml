@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="org.jboss.logging.jboss-logging">
+    <properties>
+        <property name="swarm.api" value="private"/>
+    </properties>
+
+    <resources>
+        <resource-root path="jboss-logging-3.1.3.GA.jar"/>
+        <!-- Insert resources here -->
+    </resources>
+
+    <dependencies>
+    </dependencies>
+</module>

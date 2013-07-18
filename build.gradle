@@ -1,46 +1,71 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply from: "gradle/dist.gradle"
-apply from: "gradle/coverage.gradle"
-apply from: "gradle/codequality.gradle"
-apply from: "gradle/idea.gradle"
-
 import org.apache.tools.ant.filters.*
+import org.gradle.ext.BuildTypes
+
+defaultTasks 'assemble'
+apply plugin: 'java-base'
+archivesBaseName = 'hydra'
 
 project.sourceCompatibility = 1.7
 project.targetCompatibility = 1.7
 
-defaultTasks 'tasks'
+extensions.buildTypes = new BuildTypes(project)
 
-ext {
-    jvm = org.gradle.internal.jvm.Jvm.current()
-    javaVersion = JavaVersion.current()
-    javaProjects = subprojects.findAll { !(it.name in ["doc"])}
+buildTypes {
+    testBuild "assemble", "test"
+    packageBuild "clean", "assemble", "buildDists"
+    promotionBuild "clean", "assemble", "test", "buildDists", "uploadArchives"
 }
 
-configure(allprojects) {
+apply from: 'gradle/dependencies.gradle'
+apply from: 'gradle/idea.gradle'
 
-	group = 'org.gethydrated'
+allprojects {
 
-	[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+	group = 'org.gethydrated.hydra'
 
-    [compileJava, compileTestJava]*.options*.compilerArgs = [
-        "-Xlint:unchecked"
-    ]
-
-	repositories { mavenCentral() }
-
-	dependencies {
-		compile 	"org.slf4j:slf4j-api:1.6.6"
-		testCompile "junit:junit:4.10"
-		testCompile "ch.qos.logback:logback-classic:1.0.7"
-		testCompile "com.googlecode.jmockit:jmockit:0.999.18"
-	}
-
-	clean.dependsOn subprojects.collect { "$it.path:clean" }
-	build.dependsOn subprojects.collect { "$it.path:build" }
+	repositories {
+        mavenCentral()
+        mavenLocal()
+    }
 }
 
+subprojects { subproject ->
+    version = rootProject.version
+    apply plugin: 'java'
+
+    test {
+        ignoreFailures = true
+        beforeTest { descriptor ->
+            logger.lifecycle("Running test: " + descriptor)
+        }
+    }
+}
+
+configurations {
+    runtime
+    modules
+}
+
+dependencies {
+    runtime project(':launcher')
+    runtime libraries.vfs
+    modules libraries.modules
+}
+
+evaluationDependsOn ':dist'
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 configure(subprojects) { subproject ->	
 	jar {
 		manifest.attributes['Implementation-Title'] = subproject.name
@@ -61,7 +86,10 @@ configure(subprojects) { subproject ->
 	archivesBaseName = 'hydra-' + subproject.name
 }
 
-project("api") { description = 'Hydra API' }
+project("api") {
+    apply plugin: 'maven'
+    description = 'Hydra API'
+}
 
 project("launcher") {
 	description = 'Hydra Launcher'
@@ -76,6 +104,7 @@ project("launcher") {
 }
 
 project("actors") {
+    apply plugin: 'maven'
 	description = 'Hydra Actor implementation'
 	
 	dependencies {
@@ -86,6 +115,7 @@ project("actors") {
 }
 
 project("core") {
+    apply plugin: 'maven'
 	description = 'Hydra Core'
 
 	dependencies { 
@@ -112,6 +142,7 @@ project("core") {
 }
 
 project("config") {
+    apply plugin: 'maven'
     description = 'Hydra configurations'
 
     dependencies {
@@ -138,6 +169,7 @@ project("sample-chat-service") {
 }
 
 project("util") {
+    apply plugin: 'maven'
     description = 'Hydra support classes'
 }
 
@@ -151,3 +183,4 @@ configure(rootProject) {
 		gradleVersion = '1.5'
 	}
 }
+*/

@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':api')
+    compile project(':util')
+    testCompile libraries.junit
+    testCompile libraries.logback_classic
+}

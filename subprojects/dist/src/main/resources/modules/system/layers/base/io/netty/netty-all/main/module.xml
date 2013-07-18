@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="io.netty.netty-all">
+    <properties>
+        <property name="swarm.api" value="private"/>
+    </properties>
+
+    <resources>
+        <resource-root path="netty-all-4.0.3.Final.jar"/>
+    </resources>
+
+    <dependencies>
+		<module name="sun.jdk"/>
+		<module name="org.javassist.javassist"/>
+    </dependencies>
+</module>

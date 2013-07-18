@@ -17,7 +17,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.eclipse.jetty.util.ConcurrentHashSet;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import org.gethydrated.hydra.actors.ActorRef;
 import org.gethydrated.hydra.core.InternalHydra;
 import org.gethydrated.hydra.core.io.transport.Envelope;
@@ -30,6 +30,7 @@ import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,8 +50,7 @@ public final class NetKernelImpl implements NetKernel {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private final ChannelGroup channels = new DefaultChannelGroup(
-            "hydra-channels");
+    private final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private ServerBootstrap serverBootstrap;
 
     private final InternalHydra hydra;
@@ -62,7 +62,7 @@ public final class NetKernelImpl implements NetKernel {
     private final ConcurrentHashMap<UUID, Connection> knownNodes = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Integer, UUID> idMatches = new ConcurrentHashMap<>();
 
-    private final ConcurrentHashSet<UUID> connectingNodes = new ConcurrentHashSet<>();
+    private final CopyOnWriteArraySet<UUID> connectingNodes = new CopyOnWriteArraySet<>();
 
     private final AtomicInteger nodeId = new AtomicInteger(0);
     private final ChannelInitializerFactory initializerFactory;
@@ -94,6 +94,9 @@ public final class NetKernelImpl implements NetKernel {
             serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
+                    .localAddress(port)
+                    .option(ChannelOption.SO_BACKLOG, 100)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .childHandler(initializerFactory.createServerInitializer());
             serverBootstrap.option(ChannelOption.SO_REUSEADDR, false);
             try {
@@ -105,8 +108,8 @@ public final class NetKernelImpl implements NetKernel {
                         .getHostAddress(), addr.getPort());
                 running = true;
             } catch (final Exception e) {
-                bossGroup.shutdown();
-                workerGroup.shutdown();
+                bossGroup.shutdownGracefully();
+                workerGroup.shutdownGracefully();
                 throw new IOException(e);
             }
         }
@@ -123,8 +126,8 @@ public final class NetKernelImpl implements NetKernel {
             } catch (final InterruptedException e) {
                 e.printStackTrace();
             } finally {
-                bossGroup.shutdown();
-                workerGroup.shutdown();
+                bossGroup.shutdownGracefully();
+                workerGroup.shutdownGracefully();
             }
         }
     }
@@ -135,7 +138,6 @@ public final class NetKernelImpl implements NetKernel {
             final Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(workerGroup).channel(NioSocketChannel.class)
                     .handler(initializerFactory.createClientInitializer());
-
             bootstrap.remoteAddress(ip, port);
             final ChannelFuture f = bootstrap.connect().syncUninterruptibly();
             channels.add(f.channel());
@@ -196,7 +198,8 @@ public final class NetKernelImpl implements NetKernel {
 
     @Override
     public boolean isConnected(final int id) {
-        return false;
+        final Connection c = knownNodes.get(idMatches.get(id));
+        return (c != null && c.isConnected());
     }
 
     @Override

@@ -1,16 +1,15 @@
 package org.gethydrated.hydra.util.xml;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Default document loader implementation.
@@ -34,9 +33,9 @@ public class DefaultDocumentLoader implements DocumentLoader {
     /**
      * Constructor.
      */
-    public DefaultDocumentLoader() {
+    public DefaultDocumentLoader(ClassLoader source) {
         this.errorHandler = new DefaultErrorHandler();
-        this.entityResolver = new LocalSchemaResolver();
+        this.entityResolver = new LocalSchemaResolver(source);
     }
 
     /**
@@ -55,7 +54,7 @@ public class DefaultDocumentLoader implements DocumentLoader {
             throws ParserConfigurationException, IOException, SAXException {
         final DocumentBuilderFactory builderFactory = DocumentBuilderFactory
                 .newInstance();
-        builderFactory.setValidating(true);
+        builderFactory.setValidating(false);
         builderFactory.setNamespaceAware(true);
         builderFactory.setAttribute(SCHEMA_LANGUAGE_ATTRIBUTE,
                 XSD_SCHEMA_LANGUAGE);

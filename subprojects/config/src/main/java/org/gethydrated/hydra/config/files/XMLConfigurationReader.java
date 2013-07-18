@@ -12,6 +12,10 @@ import org.gethydrated.hydra.util.xml.XMLParser;
  */
 public class XMLConfigurationReader extends AbstractXMLReader<Configuration> {
 
+    public XMLConfigurationReader() {
+        super(XMLConfigurationReader.class.getClassLoader());
+    }
+
     @Override
     protected final XMLParser<Configuration> getParser() {
         return new ConfigurationParser();

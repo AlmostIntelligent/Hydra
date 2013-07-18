@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.1" name="org.jboss.modules">
+    <dependencies>
+        <system export="true">
+            <paths>
+                <path name="org/jboss/modules"/>
+                <path name="org/jboss/modules/log"/>
+                <path name="org/jboss/modules/filter"/>
+                <path name="org/jboss/modules/ref"/>
+                <path name="org/jboss/modules/management"/>
+                <path name="org/jboss/modules/security"/>
+            </paths>
+        </system>
+    </dependencies>
+</module>

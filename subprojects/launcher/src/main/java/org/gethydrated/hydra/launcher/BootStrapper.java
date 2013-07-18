@@ -1,13 +1,12 @@
 package org.gethydrated.hydra.launcher;
 
+import org.jboss.modules.Module;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,6 +35,7 @@ public final class BootStrapper {
      */
     public static void bootstrap(final String[] args, final File hydraHome)
             throws Exception {
+       /*
         final List<File> systemJars = new ArrayList<>();
 
         addFileSet(systemJars, new File(hydraHome, "lib"), ".jar");
@@ -58,12 +58,13 @@ public final class BootStrapper {
                 convertList(commons), ClassLoader.getSystemClassLoader()
                         .getParent());
         final URLClassLoader rootLoader = new URLClassLoader(
-                convertList(hydra), commonsLoader);
+                convertList(hydra), commonsLoader); */
+        Module module = Module.forClass(BootStrapper.class);
 
-        final Class<?> mainClass = rootLoader
+        final Class<?> mainClass = module.getClassLoader()
                 .loadClass("org.gethydrated.hydra.launcher.HydraStarter");
         final Method mainMethod = mainClass.getMethod("start", String[].class);
-        Thread.currentThread().setContextClassLoader(rootLoader);
+        Thread.currentThread().setContextClassLoader(module.getClassLoader());
         mainMethod.invoke(null, new Object[] {args});
     }
 
