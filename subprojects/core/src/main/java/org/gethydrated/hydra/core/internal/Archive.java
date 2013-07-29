@@ -1,5 +1,7 @@
 package org.gethydrated.hydra.core.internal;
 
+import org.jboss.modules.Module;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -14,6 +16,8 @@ public final class Archive {
     private String name;
 
     private String version;
+
+    private Module module;
 
     private final Map<String, Service> services = new HashMap<>();
 
@@ -71,24 +75,11 @@ public final class Archive {
         return services.get(serviceName);
     }
 
-    /**
-     * Adds a jar file to the archive.
-     * @param url file url
-     */
-    public void addArchiveURL(final URL url) {
-        archiveJars.add(url);
+    public void setModule(Module module) {
+        this.module = module;
     }
 
-    /**
-     * Returns all archive jars.
-     * @return archive jars.
-     */
-    public URL[] getArchiveURLs() {
-        int i = 0;
-        final URL[] urls = new URL[archiveJars.size()];
-        for (@SuppressWarnings("unused") final URL url : archiveJars) {
-            urls[i] = archiveJars.get(i++);
-        }
-        return urls;
+    public ClassLoader getClassLoader() {
+        return module.getClassLoader();
     }
 }

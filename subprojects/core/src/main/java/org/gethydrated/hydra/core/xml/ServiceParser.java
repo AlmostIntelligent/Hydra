@@ -1,14 +1,15 @@
 package org.gethydrated.hydra.core.xml;
 
-import java.util.LinkedList;
-import java.util.List;
-
+import org.gethydrated.hydra.api.service.deploy.ServiceSpec;
+import org.gethydrated.hydra.api.service.deploy.ServiceSpec.Builder;
 import org.gethydrated.hydra.core.internal.Dependency;
-import org.gethydrated.hydra.core.internal.Service;
 import org.gethydrated.hydra.util.xml.XMLParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Service parser.
@@ -17,11 +18,11 @@ import org.w3c.dom.Element;
  * @author Hanno Sternberg
  * @since 0.2.0
  */
-public class ServiceParser implements XMLParser<Service> {
+public class ServiceParser implements XMLParser<ServiceSpec> {
 
     private final Logger logger = LoggerFactory.getLogger(ServiceParser.class);
 
-    private Service service;
+    private Builder service;
 
     private boolean complete = false;
 
@@ -30,8 +31,8 @@ public class ServiceParser implements XMLParser<Service> {
     private List<Dependency> deps;
 
     @Override
-    public Service getResult() {
-        return complete ? service : null;
+    public ServiceSpec getResult() {
+        return complete ? service.create() : null;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class ServiceParser implements XMLParser<Service> {
     }
 
     private void parseServiceStart(final Element element) {
-        service = new Service();
+        service = ServiceSpec.build();
     }
 
     private void parseServiceEnd(final Element element) {
@@ -105,7 +106,7 @@ public class ServiceParser implements XMLParser<Service> {
 
     private void parseDependenciesEnd(final Element element) {
         for (final Dependency dep : deps) {
-            service.addDependency(dep);
+            //service.addDependency(dep);
         }
     }
 

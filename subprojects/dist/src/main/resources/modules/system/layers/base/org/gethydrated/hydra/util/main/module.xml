@@ -6,7 +6,7 @@
     </properties>
 
     <resources>
-        <resource-root path="util-1.0.0.jar"/>
+        <resource-root path="util-1.1.0-SNAPSHOT.jar"/>
     </resources>
 
     <dependencies>

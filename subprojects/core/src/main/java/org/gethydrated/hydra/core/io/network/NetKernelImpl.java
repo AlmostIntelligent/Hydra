@@ -120,7 +120,6 @@ public final class NetKernelImpl implements NetKernel {
         if (running) {
             try {
                 running = false;
-                channels.close();
                 final ChannelGroupFuture f = channels.close();
                 f.await();
             } catch (final InterruptedException e) {

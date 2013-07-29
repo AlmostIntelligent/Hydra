@@ -9,8 +9,10 @@ import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.Configuration;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USID;
+import org.gethydrated.hydra.api.service.deploy.ServiceResolver;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.cli.CLIService;
+import org.gethydrated.hydra.core.concurrent.Coordinator;
 import org.gethydrated.hydra.core.concurrent.DistributedLockManager;
 import org.gethydrated.hydra.core.internal.Archives;
 import org.gethydrated.hydra.core.internal.DeadMessageRecycler;
@@ -26,9 +28,11 @@ import org.gethydrated.hydra.core.sid.DefaultSIDFactory;
 import org.gethydrated.hydra.core.sid.ForeignSID;
 import org.gethydrated.hydra.core.sid.InternalSID;
 import org.gethydrated.hydra.core.sid.LocalSID;
+import org.jboss.modules.Module;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -73,11 +77,11 @@ public final class HydraImpl implements InternalHydra {
      *            Hydra configuration.
      * @throws HydraException on failure.
      */
-    public HydraImpl(final ConfigurationImpl cfg) throws HydraException {
+    public HydraImpl(final ConfigurationImpl cfg, Set<ServiceResolver> resolvers) throws HydraException {
         logger.info("Starting Hydra.");
         this.cfg = cfg;
         shutdownhook.register();
-        archives = new Archives(cfg);
+        archives = new Archives(cfg, resolvers, Module.getBootModuleLoader());
         try {
             actorSystem = ActorSystem.create(cfg.getSubItems("actors"));
             netKernel = new NetKernelImpl(this);
@@ -130,6 +134,12 @@ public final class HydraImpl implements InternalHydra {
         actorSystem.spawnActor(new ActorFactory() {
             @Override
             public Actor create() throws Exception {
+                return new Coordinator(netKernel);
+            }
+        }, "coordinator");
+        actorSystem.spawnActor(new ActorFactory() {
+            @Override
+            public Actor create() throws Exception {
                 return new DeadMessageRecycler(sidFactory);
             }
         }, "recycler");
@@ -142,13 +152,13 @@ public final class HydraImpl implements InternalHydra {
         if (actorSystem != null) {
             actorSystem.shutdown();
         }
-        netKernel.close();
     }
 
     @Override
     public void await() throws InterruptedException {
         logger.info("await");
         actorSystem.await();
+        netKernel.close();
     }
 
     @Override

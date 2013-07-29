@@ -1,5 +1,6 @@
 package org.gethydrated.hydra.core.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.gethydrated.hydra.actors.Actor;
 import org.gethydrated.hydra.api.event.*;
@@ -63,6 +64,7 @@ public final class ServiceImpl extends Actor implements Service {
         ctx = new ServiceContextImpl(this, hydra);
         monitor = new ServiceMonitor(sidFactory.fromActorRef(getSelf()),
                 sidFactory);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             final Class<?> clazz = cl.loadClass(activator);
             if (clazz == null) {
@@ -70,7 +72,7 @@ public final class ServiceImpl extends Actor implements Service {
                         + activator);
             }
             this.activator = (ServiceActivator) clazz.newInstance();
-        } catch (Exception | NoClassDefFoundError e) {
+        } catch (Exception | LinkageError e) {
             throw new ServiceException(e);
         }
     }

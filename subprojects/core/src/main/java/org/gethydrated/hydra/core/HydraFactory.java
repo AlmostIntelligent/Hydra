@@ -3,8 +3,12 @@ package org.gethydrated.hydra.core;
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.api.HydraException;
 import org.gethydrated.hydra.api.configuration.ConfigItemNotFoundException;
+import org.gethydrated.hydra.api.service.deploy.ServiceResolver;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.gethydrated.hydra.core.configuration.ConfigurationInitializer;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 
@@ -17,6 +21,8 @@ public final class HydraFactory {
      * Default configuration.
      */
     private static final ConfigurationImpl DEFAULTCFG = new ConfigurationImpl();
+
+    private Set<ServiceResolver> resolvers = new HashSet<>();
 
     /**
      * Factory state.
@@ -35,11 +41,19 @@ public final class HydraFactory {
      * @return Hydra instance.
      * @throws HydraException on failure.
      */
-    public static Hydra getHydra() throws HydraException {
+    public Hydra getHydra() throws HydraException {
+        return new HydraImpl(DEFAULTCFG, resolvers);
+    }
+
+    public void addResolver(ServiceResolver resolver) {
+        resolvers.add(resolver);
+    }
+
+    public static HydraFactory create() {
         if (!initialized) {
             init();
         }
-        return new HydraImpl(DEFAULTCFG);
+        return new HydraFactory();
     }
 
     /**

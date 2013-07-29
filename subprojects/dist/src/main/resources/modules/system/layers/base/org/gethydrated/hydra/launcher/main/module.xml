@@ -8,7 +8,7 @@
     <main-class name="org.gethydrated.hydra.launcher.Launcher"/>
 
     <resources>
-        <resource-root path="launcher-1.0.0.jar"/>
+        <resource-root path="launcher-1.1.0-SNAPSHOT.jar"/>
     </resources>
 
     <dependencies>

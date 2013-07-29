@@ -8,9 +8,11 @@ import org.gethydrated.hydra.api.event.*;
 import org.gethydrated.hydra.api.service.SID;
 import org.gethydrated.hydra.api.service.USIDAware;
 import org.gethydrated.hydra.core.cli.CLIResponse;
+import org.gethydrated.hydra.core.concurrent.LockGranted;
 import org.gethydrated.hydra.core.concurrent.LockRelease;
-import org.gethydrated.hydra.core.concurrent.LockReply;
 import org.gethydrated.hydra.core.concurrent.LockRequest;
+import org.gethydrated.hydra.core.concurrent.messages.Election;
+import org.gethydrated.hydra.core.concurrent.messages.Leader;
 import org.gethydrated.hydra.core.io.network.Connection;
 import org.gethydrated.hydra.core.io.network.NodeController;
 import org.gethydrated.hydra.core.io.transport.Envelope;
@@ -89,7 +91,7 @@ public class Node extends Actor {
                 logger.debug("discarded message: {}", message.getClass()
                         .getName());
             }
-        } catch (final Exception t) {
+        } catch (final Throwable t) {
             logger.error("Error in node actor: {}", getSelf().getName(), t);
         }
     }
@@ -171,8 +173,10 @@ public class Node extends Actor {
         if (o instanceof CLIResponse) {
             return getContext().getActor("/app/cli");
         }
-        if (o instanceof LockRelease || o instanceof LockRequest
-                || o instanceof LockReply) {
+        if (o instanceof LockRelease || o instanceof LockRequest) {
+            return getContext().getActor("/app/coordinator");
+        }
+        if (o instanceof LockGranted) {
             return getContext().getActor("/app/locking");
         }
         if (o instanceof RegistryState || o instanceof Sync) {
@@ -180,6 +184,9 @@ public class Node extends Actor {
         }
         if (o instanceof StopService) {
             return getContext().getActor("/app/services");
+        }
+        if (o instanceof Leader || o instanceof Election) {
+            return getContext().getActor("/app/coordinator");
         }
         return new NullRef();
     }

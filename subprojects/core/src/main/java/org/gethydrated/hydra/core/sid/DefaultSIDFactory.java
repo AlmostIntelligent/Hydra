@@ -179,6 +179,9 @@ public class DefaultSIDFactory implements SIDFactory {
                 case "/app/globalregistry":
                     usid = new USID(nodeId, 1, 8);
                     break;
+                case "/app/coordinator":
+                    usid = new USID(nodeId, 1, 9);
+                    break;
                 default:
                     break;
                 }
@@ -231,6 +234,9 @@ public class DefaultSIDFactory implements SIDFactory {
                 break;
             case 8:
                 path = "/app/globalregistry";
+                break;
+            case 9:
+                path = "/app/coordinator";
                 break;
             default:
                 break;

@@ -43,6 +43,9 @@ ext {
         from (rootProject.configurations.modules) {
             rename '(.*).jar', 'jboss-modules.jar'
         }
+        into('services') {
+            from rootProject.configurations.services - rootProject.configurations.runtime
+        }
         with (modulesImage)
     }
 }

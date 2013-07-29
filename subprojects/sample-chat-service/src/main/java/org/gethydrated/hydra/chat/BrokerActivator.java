@@ -9,6 +9,8 @@ import org.gethydrated.hydra.api.service.ServiceActivator;
 import org.gethydrated.hydra.api.service.ServiceContext;
 import org.gethydrated.hydra.chat.messages.Discover;
 import org.gethydrated.hydra.chat.messages.NewClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,12 +35,15 @@ public class BrokerActivator implements ServiceActivator {
 
     private ServiceContext context;
 
+    private final Logger logger = LoggerFactory.getLogger(BrokerActivator.class);
+
     @Override
     public void start(final ServiceContext context) throws Exception {
         this.context = context;
         try {
             context.registerGlobal("chat-broker", context.getSelf());
         } catch (Exception e) {
+            logger.warn("",e);
             context.stopService(context.getSelf());
         }
         context.registerMessageHandler(Discover.class,

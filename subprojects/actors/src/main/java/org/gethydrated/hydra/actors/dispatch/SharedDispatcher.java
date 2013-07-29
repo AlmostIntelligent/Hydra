@@ -1,16 +1,12 @@
 package org.gethydrated.hydra.actors.dispatch;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
-
 import org.gethydrated.hydra.actors.mailbox.BlockingQueueMailbox;
 import org.gethydrated.hydra.actors.mailbox.Mailbox;
 import org.gethydrated.hydra.actors.mailbox.Message;
 import org.gethydrated.hydra.actors.node.ActorNode;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.*;
 
 
 /**
@@ -129,7 +125,7 @@ public class SharedDispatcher implements Dispatcher {
                 return true;
             } catch (final Throwable t) {
                 final Thread th = Thread.currentThread();
-                Thread.getDefaultUncaughtExceptionHandler().uncaughtException(
+                th.getUncaughtExceptionHandler().uncaughtException(
                         th, t);
                 throw t;
             }

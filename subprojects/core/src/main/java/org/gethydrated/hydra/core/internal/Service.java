@@ -1,7 +1,5 @@
 package org.gethydrated.hydra.core.internal;
 
-import java.net.URLClassLoader;
-
 /**
  * Service holder.
  */
@@ -75,7 +73,6 @@ public class Service {
      * @return service classloader.
      */
     public ClassLoader getClassLoader() {
-        return new URLClassLoader(parent.getArchiveURLs(), this.getClass()
-                .getClassLoader().getParent());
+        return parent.getClassLoader();
     }
 }

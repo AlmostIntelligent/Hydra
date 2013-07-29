@@ -1,0 +1,90 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+import org.gradle.api.artifacts.maven.MavenDeployment
+
+def sonatypeRepositoryUrl
+
+if (project.version.endsWith("SNAPSHOT")) {
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+} else {
+    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+}
+
+configurations {
+    publishCompile
+    publishRuntime
+    compile {
+        extendsFrom publishCompile
+    }
+    publishCompileWithProjectJar {
+        extendsFrom publishCompile
+    }
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from { sourceSets.main.java.srcDirs }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+artifacts {
+    publishCompileWithProjectJar jar
+    publishRuntime jar
+    publishRuntime sourceJar
+    publishRuntime javadocJar
+}
+
+uploadArchives { task ->
+    onlyIf { !project.hasProperty("noUpload") }
+
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.hasTask(task)) {
+            // check properties defined and fail early
+            sonatypeUserName
+            sonatypeUserPassword
+        }
+    }
+    configuration = configurations.publishRuntime
+    uploadDescriptor = false
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signPom(deployment)}
+
+        repository(url: sonatypeRepositoryUrl) {
+            authentication(userName: sonatypeUserName, password: sonatypeUserPassword)
+        }
+
+
+        pom.project {
+            name project.name
+            packaging 'jar'
+            description 'Hydra distributed computing'
+            url 'https://github.com/AlmostIntelligent/Hydra'
+
+            scm {
+                url 'scm:git@github.com:AlmostIntelligent/Hydra.git'
+                connection 'scm:git@github.com:AlmostIntelligent/Hydra.git'
+                developerConnection 'scm:git@github.com:AlmostIntelligent/Hydra.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'cikey'
+                    name 'Christian Kulpa'
+                }
+            }
+        }
+    }
+}

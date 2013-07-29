@@ -2,6 +2,7 @@ package org.gethydrated.hydra.launcher;
 
 import org.gethydrated.hydra.api.Hydra;
 import org.gethydrated.hydra.core.HydraFactory;
+import org.gethydrated.hydra.core.deploy.FileBaseResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +35,12 @@ public final class HydraStarter {
      *             on failure.
      */
     public static void start(final String[] args) throws Exception {
-        configureLogback(System.getProperty("hydra.home"));
+        configureLogback(System.getProperty("hydra.home.dir"));
         final Logger logger = LoggerFactory.getLogger(HydraStarter.class);
         try {
-            final Hydra hydra = HydraFactory.getHydra();
+            final HydraFactory factory = HydraFactory.create();
+            factory.addResolver(new FileBaseResolver(System.getProperty("hydra.deploy.dir")));
+            final Hydra hydra = factory.getHydra();
             hydra.await();
         } catch (final Exception e) {
             logger.error("An error occured while running hydra:", e);

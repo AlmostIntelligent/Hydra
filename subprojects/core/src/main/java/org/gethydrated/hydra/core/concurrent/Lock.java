@@ -52,30 +52,27 @@ public class Lock {
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-        final Lock lock = (Lock) o;
+        Lock lock = (Lock) o;
 
-        if (id != null ? !id.equals(lock.id) : lock.id != null) {
-            return false;
-        }
-        if (type != lock.type) {
-            return false;
-        }
+        if (id != null ? !id.equals(lock.id) : lock.id != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "Lock{" +
+                "id='" + id + '\'' +
+                ", type=" + type +
+                '}';
     }
 }

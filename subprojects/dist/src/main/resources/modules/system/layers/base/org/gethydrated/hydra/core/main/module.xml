@@ -6,13 +6,15 @@
     </properties>
 
     <resources>
-        <resource-root path="core-1.0.0.jar"/>
+        <resource-root path="core-1.1.0-SNAPSHOT.jar"/>
     </resources>
 
     <dependencies>
 		<module name="org.slf4j.slf4j-api"/>
 		<module name="javax.api"/>
 		<module name="io.netty.netty-all"/>
+		<module name="org.jboss.jboss-vfs"/>
+        <module name="org.jboss.modules"/>
 		<module name="com.fasterxml.jackson.core.jackson-core"/>
 		<module name="com.fasterxml.jackson.core.jackson-databind"/>
 		<module name="com.fasterxml.jackson.core.jackson-annotations"/>

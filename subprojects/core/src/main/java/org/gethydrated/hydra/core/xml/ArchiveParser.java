@@ -1,28 +1,29 @@
 package org.gethydrated.hydra.core.xml;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import org.gethydrated.hydra.core.internal.Archive;
-import org.gethydrated.hydra.core.internal.Service;
+import org.gethydrated.hydra.api.service.deploy.ArchiveSpec;
+import org.gethydrated.hydra.api.service.deploy.ArchiveSpec.Builder;
+import org.gethydrated.hydra.api.service.deploy.ServiceSpec;
 import org.gethydrated.hydra.util.xml.XMLParser;
 import org.w3c.dom.Element;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
  */
-public class ArchiveParser implements XMLParser<Archive> {
+public class ArchiveParser implements XMLParser<Builder> {
 
-    private Archive archive;
+    private ArchiveSpec.Builder archive;
 
     private boolean complete = false;
 
-    private List<Service> services;
+    private List<ServiceSpec> services;
 
     private XMLParser<?> delegate = null;
 
     @Override
-    public Archive getResult() {
+    public Builder getResult() {
         return complete ? archive : null;
     }
 
@@ -71,7 +72,7 @@ public class ArchiveParser implements XMLParser<Archive> {
     }
 
     private void parseArchiveStart(final Element element) {
-        archive = new Archive();
+        archive = ArchiveSpec.build();
     }
 
     private void parseArchiveEnd(final Element element) {
@@ -99,7 +100,7 @@ public class ArchiveParser implements XMLParser<Archive> {
     }
 
     private void parseServicesEnd(final Element element) {
-        for (final Service s : services) {
+        for (final ServiceSpec s : services) {
             archive.addService(s);
         }
     }
@@ -111,7 +112,7 @@ public class ArchiveParser implements XMLParser<Archive> {
 
     private void parseServiceEnd(final Element element) {
         delegate.endElement(element);
-        final Service s = (Service) delegate.getResult();
+        final ServiceSpec s = (ServiceSpec) delegate.getResult();
         if (s != null) {
             services.add(s);
         }

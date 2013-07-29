@@ -12,7 +12,7 @@ extensions.buildTypes = new BuildTypes(project)
 
 buildTypes {
     testBuild "assemble", "test"
-    packageBuild "clean", "assemble", "buildDists"
+    packageBuild "clean", "assemble", "test", "buildDists"
     promotionBuild "clean", "assemble", "test", "buildDists", "uploadArchives"
 }
 
@@ -42,14 +42,22 @@ subprojects { subproject ->
 }
 
 configurations {
-    runtime
-    modules
+    runtime {
+        visible = false
+    }
+    modules {
+        visible = false
+    }
+    services {
+        visible = false
+    }
 }
 
 dependencies {
     runtime project(':launcher')
     runtime libraries.vfs
     modules libraries.modules
+    services project(':sample-chat-service')
 }
 
 evaluationDependsOn ':dist'

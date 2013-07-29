@@ -6,7 +6,7 @@
     </properties>
 
     <resources>
-        <resource-root path="actors-1.0.0.jar"/>
+        <resource-root path="actors-1.1.0-SNAPSHOT.jar"/>
     </resources>
 
     <dependencies>

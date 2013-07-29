@@ -191,6 +191,7 @@ public class ActorNode implements ActorSource, ActorContext {
         } catch (final Exception e) {
             handleError(e);
         } catch (final Throwable t) {
+            t.printStackTrace();
             if (!Util.isNonFatal(t)) {
                 Util.throwUnchecked(t);
             }
@@ -281,17 +282,18 @@ public class ActorNode implements ActorSource, ActorContext {
         supervisor.handleFailedChildren(failed.getCause(), failed.getChild());
     }
 
-    private void create() throws Exception {
+    private void create() throws Throwable {
         try {
             nodeRef.set(this);
             actor = factory.create();
             actor.onStart();
-            nodeRef.remove();
         } catch (final Throwable e) {
             if (Util.isNonFatal(e)) {
                 throw new ActorInitialisationException(e);
             }
             throw e;
+        } finally {
+            nodeRef.remove();
         }
     }
 
@@ -320,7 +322,7 @@ public class ActorNode implements ActorSource, ActorContext {
                 actor.onStop();
                 actor = null;
             }
-        } catch (final Exception e) {
+        } catch (final Throwable e) {
             logger.error("Error shutting down actor '{}':", self, e);
         }
         dispatcher.detach(this);

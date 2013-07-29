@@ -6,8 +6,7 @@ import org.gethydrated.hydra.api.event.NodeDown;
 import org.gethydrated.hydra.api.event.NodeUp;
 import org.gethydrated.hydra.core.io.network.NodeController;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -15,33 +14,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class DistributedLockManager extends Actor {
 
-    private final Set<UUID> lockableNodes = new HashSet<>();
-
     private final NodeController nodeController;
-
-    private Set<UUID> remainingGranted;
 
     private Lock holder;
 
+    private AtomicBoolean granted;
+
     private boolean enqueued;
 
+    private boolean haslock;
+
     private final HashMap<Lock, ActorRef> localQueue = new HashMap<>();
-
-    private AtomicBoolean currentGranted;
-
-    private LockRequest currentLockRequest;
-
-    private final PriorityQueue<LockRequest> queue = new PriorityQueue<>(10,
-            new Comparator<LockRequest>() {
-                @Override
-                public int compare(final LockRequest o1, final LockRequest o2) {
-                    if (o1.getTimestamp() == o2.getTimestamp()) {
-                        return o1.getNodeId().compareTo(o2.getNodeId());
-                    }
-                    return ((Long) o1.getTimestamp()).compareTo(o2
-                            .getTimestamp());
-                }
-            });
 
     /**
      * Constructor.
@@ -54,16 +37,7 @@ public class DistributedLockManager extends Actor {
     @Override
     public void onReceive(final Object message) throws Exception {
         try {
-            if (message instanceof LockRequest) {
-                enqueue((LockRequest) message);
-            } else if (message instanceof LockRelease) {
-                release((LockRelease) message);
-            } else if (message instanceof LockReply) {
-                if (remainingGranted != null) {
-                    remainingGranted.remove(((LockReply) message).getNodeId());
-                    checkGranted();
-                }
-            } else if (message instanceof Lock) {
+            if (message instanceof Lock) {
                 switch (((Lock) message).getType()) {
                 case LOCK:
                     enqueueLocal((Lock) message);
@@ -74,108 +48,53 @@ public class DistributedLockManager extends Actor {
                 default:
                     break;
                 }
-            } else if (message instanceof NodeDown) {
-                release(new LockRelease(((NodeDown) message).getUuid()));
-                lockableNodes.remove(((NodeDown) message).getUuid());
-            } else if (message instanceof NodeUp) {
-                if (currentLockRequest != null) {
-                    final LockRelease rl = new LockRelease(
-                            nodeController.getLocal());
-                    queue.remove(rl);
-                    for (UUID u : lockableNodes) {
-                        final ActorRef r = getContext().getActor(
-                                "/app/nodes/" + nodeController.getID(u));
-                        r.tell(rl, getSelf());
-                    }
-                }
-                lockableNodes.add(((NodeUp) message).getUuid());
-                if (currentLockRequest != null) {
-                    for (UUID u : lockableNodes) {
-                        final ActorRef r = getContext().getActor(
-                                "/app/nodes/" + nodeController.getID(u));
-                        r.tell(currentLockRequest, getSelf());
-                    }
-                    queue.add(currentLockRequest);
-                }
             }
-        } catch (final Exception e) {
-            e.printStackTrace();
+            if (message instanceof LockGranted) {
+                System.out.println("lockgranted");
+                processQueue();
+                enqueued = false;
+                haslock = true;
+            }
+        } catch (final Throwable t) {
+            t.printStackTrace();
         }
     }
 
     private void releaseLocal(final Lock lock) {
-        if (holder != null && holder.getId().equals(lock.getId())) {
-            final LockRelease rl = new LockRelease(
-                    nodeController.getLocal());
-            for (final UUID u : lockableNodes) {
-                final ActorRef r = getContext().getActor(
-                        "/app/nodes/" + nodeController.getID(u));
-                r.tell(rl, getSelf());
-            }
+        System.out.println("release local " + enqueued);
+        if (lock.equals(holder)) {
+            granted.set(false);
+            granted = null;
             holder = null;
-            currentGranted.set(false);
-            currentGranted = null;
-            release(new LockRelease(nodeController.getLocal()));
-        } else if (localQueue.containsKey(lock)) {
-            localQueue.remove(lock);
+
+        }
+        System.out.println(localQueue.remove(lock));
+        if (localQueue.size() == 0) {
+            System.out.println("release global");
+            getContext().getActor("/app/coordinator").tell(new LockRelease(nodeController.getLocal()), getSelf());
+            enqueued = false;
+            haslock = false;
         }
     }
 
     private void enqueueLocal(final Lock lock) {
+        System.out.println("request local " + enqueued);
         localQueue.put(lock, getSender());
-        enqueue(new LockRequest(nodeController.getLocal(), getSystem()
-                .getClock().getCurrentTime()));
-    }
-
-    private void enqueue(final LockRequest lockRequest) {
-        if (lockRequest.getNodeId().equals(nodeController.getLocal())) {
-            if (!enqueued && holder == null) {
-                for (final UUID u : lockableNodes) {
-                    final ActorRef r = getContext().getActor(
-                            "/app/nodes/" + nodeController.getID(u));
-                    r.tell(lockRequest, getSelf());
-                }
-                remainingGranted = new HashSet<>(lockableNodes);
-                queue.add(lockRequest);
-                currentLockRequest = lockRequest;
-                enqueued = true;
-                checkGranted();
-            }
-        } else {
-            queue.add(lockRequest);
-            getSender().tell(
-                    new LockReply(nodeController.getLocal(), getSystem()
-                            .getClock().getCurrentTime()), getSelf());
+        if (!enqueued && !haslock) {
+            System.out.println("request global");
+            getContext().getActor("/app/coordinator").tell(new LockRequest(nodeController.getLocal(), getSystem().getClock().getCurrentTime()), getSelf());
+            enqueued = true;
         }
-
     }
 
-    private void release(final LockRelease lockRelease) {
-        queue.remove(new LockRequest(lockRelease.getNodeId(), 0));
-        checkGranted();
-    }
-
-    private void checkGranted() {
-        if (remainingGranted != null && remainingGranted.isEmpty()
-                && !queue.isEmpty()
-                && queue.peek().getNodeId().equals(nodeController.getLocal())
-                && holder == null) {
-            enqueued = false;
-
-            if (!localQueue.isEmpty()) {
-                final Entry<Lock, ActorRef> e = localQueue.entrySet()
-                        .iterator().next();
-                if (e.getValue() != null) {
-                    holder = e.getKey();
-                    currentGranted = new AtomicBoolean(true);
-                    currentLockRequest = null;
-                    e.getValue().tell(new Granted(currentGranted), getSelf());
-                    localQueue.remove(e.getKey());
-                } else {
-                    release(new LockRelease(nodeController.getLocal()));
-                }
-            } else {
-                release(new LockRelease(nodeController.getLocal()));
+    private void processQueue() {
+        if (holder == null) {
+            if (localQueue.size() > 0) {
+                Lock l = localQueue.keySet().iterator().next();
+                holder = l;
+                granted = new AtomicBoolean(true);
+                ActorRef ref = localQueue.get(l);
+                ref.tell(new Granted(granted), getSelf());
             }
         }
     }

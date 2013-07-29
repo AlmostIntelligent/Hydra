@@ -37,6 +37,12 @@ public class LazyConnection implements Connection {
         this.id = id;
         this.uuid = uuid;
         this.netKernel = netKernel;
+        listeners.add(new Runnable() {
+            @Override
+            public void run() {
+                netKernel.removeNode(uuid);
+            }
+        });
     }
 
     @Override
@@ -61,6 +67,7 @@ public class LazyConnection implements Connection {
 
     @Override
     public void channel(final Channel chan) {
+        System.err.println("set channel: " + uuid);
         this.channel = chan;
         synchronized (lock) {
             lock.notifyAll();
@@ -107,7 +114,7 @@ public class LazyConnection implements Connection {
                     }
                 }
             }
-            channel.writeAndFlush(envelope);
+            channel.writeAndFlush(envelope).syncUninterruptibly();
         }
     }
 

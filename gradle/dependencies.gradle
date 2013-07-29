@@ -18,7 +18,9 @@ libraries.jackson_annotations = 'com.fasterxml.jackson.core:jackson-annotations:
 libraries.netty = 'io.netty:netty-all:4.0.3.Final'
 libraries.javassist = 'org.javassist:javassist:3.18.0-GA@jar'
 
-libraries.vfs = 'org.jboss:jboss-vfs:3.2.0.Beta1@jar'
+libraries.vfs = [
+        dependencies.create('org.jboss:jboss-vfs:3.2.0.Beta1')
+]
 
 libraries.junit = 'junit:junit:4.10'
 libraries.jmockit = 'com.googlecode.jmockit:jmockit:0.999.18'

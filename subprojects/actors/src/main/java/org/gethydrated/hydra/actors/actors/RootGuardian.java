@@ -1,8 +1,5 @@
 package org.gethydrated.hydra.actors.actors;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.gethydrated.hydra.actors.ActorCreator;
 import org.gethydrated.hydra.actors.ActorPath;
 import org.gethydrated.hydra.actors.ActorRef;
@@ -13,6 +10,9 @@ import org.gethydrated.hydra.actors.refs.AbstractMinimalRef;
 import org.gethydrated.hydra.actors.refs.InternalRef;
 import org.gethydrated.hydra.actors.refs.NullRef;
 import org.slf4j.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Root guardian.

@@ -61,7 +61,9 @@ public class GlobalRegistry extends Actor {
             acquireLock();
             enqueue(message);
         } else if (message instanceof Granted) {
+            System.out.println("granted - " + getSender());
             if (((Granted) message).isValid()) {
+                System.out.println("valid");
                 hasLock = true;
                 waitingForLock = false;
                 if (syncing) {
@@ -70,6 +72,7 @@ public class GlobalRegistry extends Actor {
                 try {
                     processQueue();
                 } finally {
+                    System.out.println("release");
                     releaseLock();
                 }
             }

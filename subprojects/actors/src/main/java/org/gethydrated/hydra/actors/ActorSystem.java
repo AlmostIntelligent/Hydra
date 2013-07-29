@@ -1,9 +1,5 @@
 package org.gethydrated.hydra.actors;
 
-import java.lang.Thread.UncaughtExceptionHandler;
-import java.net.MalformedURLException;
-import java.util.List;
-
 import org.gethydrated.hydra.actors.clock.LamportsClock;
 import org.gethydrated.hydra.actors.dispatch.Dispatcher;
 import org.gethydrated.hydra.actors.dispatch.Dispatchers;
@@ -17,6 +13,10 @@ import org.gethydrated.hydra.api.util.LogicalClock;
 import org.gethydrated.hydra.api.util.Util;
 import org.gethydrated.hydra.config.ConfigurationImpl;
 import org.slf4j.Logger;
+
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.net.MalformedURLException;
+import java.util.List;
 
 /**
  * @author Christian Kulpa
@@ -44,6 +44,8 @@ public final class ActorSystem implements ActorSource {
 
     private final UncaughtExceptionHandler exceptionHandler = new UncaughtExceptionHandler() {
 
+        private boolean fatal = false;
+
         @Override
         public void uncaughtException(final Thread t, final Throwable e) {
             e.printStackTrace(System.err);
@@ -54,6 +56,15 @@ public final class ActorSystem implements ActorSource {
                 logger.error(
                         "Unhandled fatal error from thread '{}'. Shutting down ActorSystem.",
                         t.getName(), e);
+            }
+            if (!fatal) {
+                fatal = true;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        shutdown();
+                    }
+                }).start();
             }
 
         }
